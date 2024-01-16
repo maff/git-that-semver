@@ -1,6 +1,6 @@
-import type { PlatformAdapter } from "platform";
+import type { Platform } from "platform";
 
-export class GitlabAdapter implements PlatformAdapter {
+export class GitlabPlatform implements Platform {
   type = "gitlab";
 
   isSupported(): boolean {

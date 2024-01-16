@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { adapterTypes } from "../platform";
+import { specificPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
@@ -26,7 +26,7 @@ export const StrategyConfig = z.object({
 
 export const ConfigFile = z.object({
   defaults: DefaultConfig,
-  scmAdapter: z.enum(["auto", ...adapterTypes]).default("auto"),
+  platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
   strategy: z.record(StrategyConfig),
 });
 
