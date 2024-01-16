@@ -1,4 +1,4 @@
-import type { PlatformAdapter } from "platforms";
+import type { PlatformAdapter } from "platform";
 
 export class GitlabAdapter implements PlatformAdapter {
   type = "gitlab";

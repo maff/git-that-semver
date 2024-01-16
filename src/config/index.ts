@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { adapterTypes } from "../platforms";
+import { adapterTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
