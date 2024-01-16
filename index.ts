@@ -1,34 +1,14 @@
-import { ConfigFile } from "config";
+import { Command } from "@commander-js/extra-typings";
+import { parseConfig } from "config";
+import path from "path";
 import util from "util";
 
-console.log("Hello via Bun!");
-console.log(Bun.argv);
-console.log(Bun.argv[2]);
+const program = new Command("git-semantic-release")
+  .version("0.0.1")
+  .requiredOption("-c, --config-file <configFile>", "Config file", "gsr.toml")
+  .parse();
 
-const toml = await import(Bun.argv[2]);
-console.log(util.inspect(toml, false, null, true));
+const configFilePath = path.resolve(program.opts().configFile);
+const configFile = await parseConfig(configFilePath);
 
-const parsed = ConfigFile.parse(toml);
-console.log(util.inspect(parsed, false, null, true));
-
-console.log(Object.keys(parsed.strategy));
-
-// iterate strategies
-for (const [strategy, strategyConfig] of Object.entries(parsed.strategy)) {
-  console.log(strategy);
-  console.log(strategyConfig);
-
-  parsed.strategy[strategy] = {
-    ...strategyConfig,
-    nightly: {
-      ...parsed.defaults.nightly,
-      ...strategyConfig.nightly,
-    },
-    properties: {
-      ...parsed.defaults.properties,
-      ...strategyConfig.properties,
-    },
-  };
-}
-
-console.log(util.inspect(parsed, false, null, true));
+console.log(util.inspect(configFile, false, null, true));
