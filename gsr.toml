@@ -1,0 +1,24 @@
+[defaults]
+branchPrefixes = ["feature/", "bugfix/", "tech/"]
+
+[defaults.nightly]
+prefix = ""
+suffix = ""
+maxLength = 100
+
+[defaults.properties]
+foo = "baz"
+
+[strategy.java]
+[strategy.java.nightly]
+suffix = "-SNAPSHOT"
+
+[strategy.npm]
+[strategy.npm.nightly]
+prefix = "v0.0.0-"
+[strategy.npm.properties]
+foo = "bar"
+
+[strategy.docker]
+enabled = false
+type = "container"
