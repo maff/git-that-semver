@@ -12,6 +12,7 @@ foo = "baz"
 [strategy.java]
 [strategy.java.nightly]
 suffix = "-SNAPSHOT"
+maxLength = 80
 
 [strategy.npm]
 [strategy.npm.nightly]
