@@ -5,6 +5,7 @@ branchPrefixes = ["feature/", "bugfix/", "tech/"]
 prefix = ""
 suffix = ""
 maxLength = 100
+defaultBranches = ["master", "main"]
 
 [defaults.properties]
 foo = "baz"

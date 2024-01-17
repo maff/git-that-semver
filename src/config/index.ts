@@ -9,6 +9,7 @@ export const NightlyConfig = z.object({
   prefix: z.string().optional(),
   suffix: z.string().optional(),
   maxLength: z.number().int().optional(),
+  defaultBranches: z.array(z.string()).default(["main"]),
 });
 
 export const DefaultConfig = z.object({
