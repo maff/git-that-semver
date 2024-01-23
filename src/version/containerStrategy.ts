@@ -25,7 +25,7 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags,
+      tags: tags.join(" "),
     };
   }
 }

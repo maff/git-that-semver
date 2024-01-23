@@ -7,7 +7,7 @@ import type { VersionStrategy } from "version";
 
 export type StrategyVersion = {
   version: string;
-  [key: string]: string | string[];
+  [key: string]: string;
 };
 
 export type VersionInfo = {
@@ -29,7 +29,7 @@ export const resolveVersion = (
   config: Config,
   platform: Platform,
   strategies: VersionStrategy[]
-): VersionResult | null => {
+): VersionResult => {
   const tag = platform.getGitTag();
 
   if (tag) {
