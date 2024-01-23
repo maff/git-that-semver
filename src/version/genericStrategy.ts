@@ -1,4 +1,5 @@
 import type { StrategyConfig } from "config";
+import { Liquid } from "liquidjs";
 import type { SemVer } from "semver";
 import type { VersionStrategy, VersionStrategyContext } from "version";
 import type { CommitInfo, StrategyVersion } from "versionResolver";
@@ -34,11 +35,42 @@ export class GenericStrategy implements VersionStrategy {
     context: VersionStrategyContext,
     commitInfo: CommitInfo
   ): StrategyVersion {
-    // TODO implement configurable nightly versioning schemes
-    const identifier = `${commitInfo.dateTime}.${commitInfo.sha}`;
+    const tplEngine = new Liquid();
+    const tplContext = {
+      config: this.config,
+      commitInfo,
+    };
+
+    const branchIdentifier = tplEngine.parseAndRenderSync(
+      this.config.nightly.branchIdentifierTpl,
+      {
+        ...tplContext,
+        branchIdentifier: this.config.nightly.defaultBranches.includes(
+          commitInfo.refName
+        )
+          ? undefined
+          : commitInfo.refNameSlug,
+      }
+    );
+
+    const commitIdentifier = tplEngine.parseAndRenderSync(
+      this.config.nightly.commitIdentifierTpl,
+      tplContext
+    );
+
+    const version = tplEngine.parseAndRenderSync(
+      this.config.nightly.versionTpl,
+      {
+        ...tplContext,
+        branchIdentifier,
+        commitIdentifier,
+      }
+    );
+
+    console.log({ version, tplContext, branchIdentifier, commitIdentifier });
 
     return {
-      version: identifier,
+      version: version,
     };
   }
 }

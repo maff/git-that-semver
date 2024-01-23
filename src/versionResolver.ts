@@ -120,7 +120,7 @@ const resolveTaggedVersion = (
 export type CommitInfo = {
   sha: string;
   refName: string;
-  refSlug: string;
+  refNameSlug: string;
   dateTime: string;
 };
 
@@ -134,7 +134,7 @@ const resolveNightlyVersion = (
   const commitInfo: CommitInfo = {
     sha: commitSha,
     refName: commitRefName,
-    refSlug: slug(commitRefName, { lower: true, trim: true }),
+    refNameSlug: resolveRefSlugName(config, commitRefName),
     dateTime: getCommitDateTime(commitSha),
   };
 
@@ -159,4 +159,16 @@ const resolveNightlyVersion = (
       ])
     ),
   };
+};
+
+const resolveRefSlugName = (config: Config, refName: string) => {
+  let slugRefName = refName;
+  for (const prefix of config.defaults.branchPrefixes) {
+    if (slugRefName.startsWith(prefix)) {
+      slugRefName = slugRefName.substring(prefix.length);
+      break;
+    }
+  }
+
+  return slug(slugRefName, { lower: true, trim: true });
 };
