@@ -1,6 +1,6 @@
-import { getCommitDateTime } from "git";
+import { getCommitDateTime, listTags } from "git";
 import type { Platform } from "platform";
-import semver from "semver";
+import semver, { SemVer } from "semver";
 import type { Config } from "./config";
 
 type StrategyVersion = {
@@ -12,6 +12,7 @@ type VersionResult = {
   isNightlyVersion: boolean;
   isTaggedVersion: boolean;
   isSemVerVersion: boolean;
+  isReleaseSemVerVersion: boolean;
   isHighestSemVerVersion: boolean;
   isHighestSemVerReleaseVersion: boolean;
   strategies: {
@@ -38,7 +39,6 @@ const resolveTaggedVersion = (
   tag: string
 ): VersionResult => {
   const semVerVersion = semver.parse(tag);
-  console.log("SEMVER VERSION", semVerVersion);
 
   // no semver tag -> tag is the version
   if (!semVerVersion) {
@@ -46,6 +46,7 @@ const resolveTaggedVersion = (
       isNightlyVersion: false,
       isTaggedVersion: true,
       isSemVerVersion: false,
+      isReleaseSemVerVersion: false,
       isHighestSemVerVersion: false,
       isHighestSemVerReleaseVersion: false,
       strategies: {
@@ -56,16 +57,47 @@ const resolveTaggedVersion = (
     };
   }
 
-  // TODO
+  // release tag = no prerelease and no build info
+  const isReleaseSemVerTag = (tag: SemVer) =>
+    tag.prerelease.length === 0 && tag.build.length === 0;
+
+  const isHighestTagInList = (tags: SemVer[]) =>
+    tags.length == 0 || semVerVersion.compare(tags[0]) === 0;
+
+  const semVerTags = listTags()
+    .map((tag) => semver.parse(tag))
+    .filter((tag): tag is SemVer => tag !== null)
+    .sort(semver.compareBuild)
+    .reverse();
+
+  const releaseSemVerTags = semVerTags.filter((t) => isReleaseSemVerTag(t));
+
+  // is it a release semver version?
+  const isReleaseSemVerVersion = isReleaseSemVerTag(semVerVersion);
+
+  // is it the highest semver tag in the repository?
+  const isHighestSemVerVersion = isHighestTagInList(semVerTags);
+
+  // is it the highest semver release tag in the repository?
+  const isHighestSemVerReleaseVersion =
+    isReleaseSemVerVersion && isHighestTagInList(releaseSemVerTags);
+
+  // "clean" semver version (without prefix, but including the build part)
+  let cleanSemVerVersion = semVerVersion.version;
+  if (semVerVersion.build.length > 0) {
+    cleanSemVerVersion += `+${semVerVersion.build.join(".")}`;
+  }
+
   return {
     isNightlyVersion: false,
     isTaggedVersion: true,
     isSemVerVersion: true,
-    isHighestSemVerVersion: false,
-    isHighestSemVerReleaseVersion: false,
+    isReleaseSemVerVersion,
+    isHighestSemVerVersion,
+    isHighestSemVerReleaseVersion,
     strategies: {
       dummy: {
-        version: tag,
+        version: cleanSemVerVersion,
       },
     },
   };
@@ -86,6 +118,7 @@ const resolveNightlyVersion = (
     isNightlyVersion: true,
     isTaggedVersion: false,
     isSemVerVersion: false,
+    isReleaseSemVerVersion: false,
     isHighestSemVerVersion: false,
     isHighestSemVerReleaseVersion: false,
     strategies: {
