@@ -25,19 +25,17 @@ export const StrategyConfig = z.object({
   properties: FreeformProperties.default({}),
 });
 
-export const ConfigFile = z.object({
+export const Config = z.object({
   defaults: DefaultConfig,
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
   strategy: z.record(StrategyConfig),
 });
 
-type ConfigFile = z.infer<typeof ConfigFile>;
+export type Config = z.infer<typeof Config>;
 
-export const parseConfig = async (
-  configFilePath: string
-): Promise<ConfigFile> => {
+export const parseConfig = async (configFilePath: string): Promise<Config> => {
   const rawConfig = await import(configFilePath);
-  const configFile = ConfigFile.parse(rawConfig);
+  const configFile = Config.parse(rawConfig);
 
   // merge with defaults
   // TODO can we do this in zod

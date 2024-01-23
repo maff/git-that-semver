@@ -1,9 +1,22 @@
 import type { Platform } from "platform";
+import { env, requiredEnv } from "util/env";
 
 export class GitlabPlatform implements Platform {
   type = "gitlab";
 
+  getGitTag(): string {
+    return env("CI_COMMIT_TAG", "");
+  }
+
+  getCommitSha(): string {
+    return requiredEnv("CI_COMMIT_SHA");
+  }
+
+  getCommitRefName(): string {
+    return requiredEnv("CI_COMMIT_REF_NAME");
+  }
+
   isSupported(): boolean {
-    return Bun.env.CI === "true" && Bun.env.GITLAB_CI === "true";
+    return process.env.CI === "true" && process.env.GITLAB_CI === "true";
   }
 }

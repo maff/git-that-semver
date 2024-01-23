@@ -3,11 +3,9 @@ import { GitlabPlatform } from "./gitlab";
 export interface Platform {
   type: string;
   isSupported(): boolean;
-  // getCommitSha(): string;
-  // getCommitDateTime(): string;
-  // getCommitRefName(): string;
-  // getDefaultBranch(): string;
-  // getGitTag(): string;
+  getCommitSha(): string;
+  getCommitRefName(): string;
+  getGitTag(): string | undefined;
 }
 
 export const platforms = Object.fromEntries(

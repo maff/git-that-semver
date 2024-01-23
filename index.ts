@@ -3,6 +3,7 @@ import { parseConfig } from "config";
 import path from "path";
 import { resolvePlatform } from "platform";
 import util from "util";
+import { resolveVersion } from "versionResolver";
 
 const program = new Command("git-semantic-release")
   .version("0.0.1")
@@ -11,8 +12,11 @@ const program = new Command("git-semantic-release")
 
 const configFilePath = path.resolve(program.opts().configFile);
 
-const configFile = await parseConfig(configFilePath);
-console.log(util.inspect(configFile, false, null, true));
+const config = await parseConfig(configFilePath);
+console.log(util.inspect(config, false, null, true));
 
-const platform = resolvePlatform(configFile.platform);
-console.log(platform);
+const platform = resolvePlatform(config.platform);
+console.log(`Using platform ${platform.type}`);
+
+const version = resolveVersion(config, platform);
+console.log(util.inspect(version, false, null, true));
