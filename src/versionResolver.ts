@@ -2,19 +2,24 @@ import { getCommitDateTime, listTags } from "git";
 import type { Platform } from "platform";
 import semver, { SemVer } from "semver";
 import type { Config } from "./config";
+import slug from "slug";
+import type { VersionStrategy } from "version";
 
-type StrategyVersion = {
+export type StrategyVersion = {
   version: string;
-  [key: string]: string;
+  [key: string]: string | string[];
 };
 
-type VersionResult = {
+export type VersionInfo = {
   isNightlyVersion: boolean;
   isTaggedVersion: boolean;
   isSemVerVersion: boolean;
   isReleaseSemVerVersion: boolean;
   isHighestSemVerVersion: boolean;
   isHighestSemVerReleaseVersion: boolean;
+};
+
+export type VersionResult = VersionInfo & {
   strategies: {
     [key: string]: StrategyVersion;
   };
@@ -22,38 +27,45 @@ type VersionResult = {
 
 export const resolveVersion = (
   config: Config,
-  platform: Platform
+  platform: Platform,
+  strategies: VersionStrategy[]
 ): VersionResult | null => {
   const tag = platform.getGitTag();
 
   if (tag) {
-    return resolveTaggedVersion(config, platform, tag);
+    return resolveTaggedVersion(config, platform, strategies, tag);
   } else {
-    return resolveNightlyVersion(config, platform);
+    return resolveNightlyVersion(config, platform, strategies);
   }
 };
 
 const resolveTaggedVersion = (
   config: Config,
   platform: Platform,
+  strategies: VersionStrategy[],
   tag: string
 ): VersionResult => {
-  const semVerVersion = semver.parse(tag);
+  const version = semver.parse(tag);
 
   // no semver tag -> tag is the version
-  if (!semVerVersion) {
-    return {
+  if (!version) {
+    const versionInfo = {
       isNightlyVersion: false,
       isTaggedVersion: true,
       isSemVerVersion: false,
       isReleaseSemVerVersion: false,
       isHighestSemVerVersion: false,
       isHighestSemVerReleaseVersion: false,
-      strategies: {
-        dummy: {
-          version: tag,
-        },
-      },
+    };
+
+    return {
+      ...versionInfo,
+      strategies: Object.fromEntries(
+        strategies.map((strategy) => [
+          strategy.name,
+          strategy.taggedVersionResult({ config, platform, versionInfo }, tag),
+        ])
+      ),
     };
   }
 
@@ -62,7 +74,7 @@ const resolveTaggedVersion = (
     tag.prerelease.length === 0 && tag.build.length === 0;
 
   const isHighestTagInList = (tags: SemVer[]) =>
-    tags.length == 0 || semVerVersion.compare(tags[0]) === 0;
+    tags.length == 0 || version.compare(tags[0]) === 0;
 
   const semVerTags = listTags()
     .map((tag) => semver.parse(tag))
@@ -73,7 +85,7 @@ const resolveTaggedVersion = (
   const releaseSemVerTags = semVerTags.filter((t) => isReleaseSemVerTag(t));
 
   // is it a release semver version?
-  const isReleaseSemVerVersion = isReleaseSemVerTag(semVerVersion);
+  const isReleaseSemVerVersion = isReleaseSemVerTag(version);
 
   // is it the highest semver tag in the repository?
   const isHighestSemVerVersion = isHighestTagInList(semVerTags);
@@ -82,49 +94,69 @@ const resolveTaggedVersion = (
   const isHighestSemVerReleaseVersion =
     isReleaseSemVerVersion && isHighestTagInList(releaseSemVerTags);
 
-  // "clean" semver version (without prefix, but including the build part)
-  let cleanSemVerVersion = semVerVersion.version;
-  if (semVerVersion.build.length > 0) {
-    cleanSemVerVersion += `+${semVerVersion.build.join(".")}`;
-  }
-
-  return {
+  const versionInfo = {
     isNightlyVersion: false,
     isTaggedVersion: true,
     isSemVerVersion: true,
     isReleaseSemVerVersion,
     isHighestSemVerVersion,
     isHighestSemVerReleaseVersion,
-    strategies: {
-      dummy: {
-        version: cleanSemVerVersion,
-      },
-    },
   };
+
+  return {
+    ...versionInfo,
+    strategies: Object.fromEntries(
+      strategies.map((strategy) => [
+        strategy.name,
+        strategy.semVerVersionResult(
+          { config, platform, versionInfo },
+          version
+        ),
+      ])
+    ),
+  };
+};
+
+export type CommitInfo = {
+  sha: string;
+  refName: string;
+  refSlug: string;
+  dateTime: string;
 };
 
 const resolveNightlyVersion = (
   config: Config,
-  platform: Platform
+  platform: Platform,
+  strategies: VersionStrategy[]
 ): VersionResult => {
   const commitSha = platform.getCommitSha();
   const commitRefName = platform.getCommitRefName();
-  const commitDateTime = getCommitDateTime(commitSha);
+  const commitInfo: CommitInfo = {
+    sha: commitSha,
+    refName: commitRefName,
+    refSlug: slug(commitRefName, { lower: true, trim: true }),
+    dateTime: getCommitDateTime(commitSha),
+  };
 
-  const identifier = `${commitDateTime}.${commitSha}`;
-
-  // TODO use different strategies
-  return {
+  const versionInfo = {
     isNightlyVersion: true,
     isTaggedVersion: false,
     isSemVerVersion: false,
     isReleaseSemVerVersion: false,
     isHighestSemVerVersion: false,
     isHighestSemVerReleaseVersion: false,
-    strategies: {
-      dummy: {
-        version: identifier,
-      },
-    },
+  };
+
+  return {
+    ...versionInfo,
+    strategies: Object.fromEntries(
+      strategies.map((strategy) => [
+        strategy.name,
+        strategy.nightlyVersionResult(
+          { config, platform, versionInfo },
+          commitInfo
+        ),
+      ])
+    ),
   };
 };

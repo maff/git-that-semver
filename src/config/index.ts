@@ -25,6 +25,8 @@ export const StrategyConfig = z.object({
   properties: FreeformProperties.default({}),
 });
 
+export type StrategyConfig = z.infer<typeof StrategyConfig>;
+
 export const Config = z.object({
   defaults: DefaultConfig,
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),

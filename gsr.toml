@@ -22,5 +22,5 @@ prefix = "v0.0.0-"
 foo = "bar"
 
 [strategy.docker]
-enabled = false
+enabled = true
 type = "container"
