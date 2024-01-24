@@ -17,7 +17,7 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags: this.joinTags([result.version]),
+      tags: [result.version],
     };
   }
 
@@ -37,7 +37,7 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags: this.joinTags(tags),
+      tags: tags,
     };
   }
 
@@ -49,11 +49,7 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags: this.joinTags([result.version]),
+      tags: [result.version],
     };
-  }
-
-  private joinTags(tags: string[]): string {
-    return tags.join(" ");
   }
 }

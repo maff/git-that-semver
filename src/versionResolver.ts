@@ -8,7 +8,7 @@ import { semVerVersionString } from "util/semVer";
 
 export type StrategyVersion = {
   version: string;
-  [key: string]: string;
+  [key: string]: string | string[];
 };
 
 export type VersionInfo = {

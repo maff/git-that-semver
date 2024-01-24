@@ -34,10 +34,15 @@ export const StrategyConfig = z.object({
 
 export type StrategyConfig = z.infer<typeof StrategyConfig>;
 
+export const OutputConfig = z.object({
+  prefix: z.string().default("GSR_"),
+});
+
 export const Config = z.object({
-  defaults: DefaultConfig,
+  defaults: DefaultConfig.default({}),
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
   strategy: z.record(StrategyConfig),
+  output: OutputConfig.default({}),
 });
 
 export type Config = z.infer<typeof Config>;

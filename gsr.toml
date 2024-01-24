@@ -1,5 +1,3 @@
-[defaults]
-
 [strategy.java]
 [strategy.java.nightly]
 suffixTpl = "-SNAPSHOT"

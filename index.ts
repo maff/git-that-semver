@@ -28,4 +28,4 @@ const strategies = resolveStrategies(config.strategy);
 const result = resolveVersion(config, platform, strategies);
 console.log(util.inspect(result, false, null, true));
 
-printVersions(result);
+printVersions(config, result);
