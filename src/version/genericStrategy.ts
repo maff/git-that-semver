@@ -36,6 +36,12 @@ export class GenericStrategy implements VersionStrategy {
     commitInfo: CommitInfo
   ): StrategyVersion {
     const tplEngine = new Liquid();
+
+    // only allow alphanumeric characters at start and end
+    tplEngine.registerFilter("trim_alphanumeric", (v) =>
+      v.replace(/^[^a-zA-Z0-9]/g, "").replace(/[^a-zA-Z0-9]$/g, "")
+    );
+
     const tplContext = {
       config: this.config,
       commitInfo,

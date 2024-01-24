@@ -4,7 +4,6 @@ branchPrefixes = ["feature/", "bugfix/", "tech/"]
 [defaults.nightly]
 prefix = ""
 suffix = ""
-maxLength = 100
 defaultBranches = ["master", "main"]
 
 [defaults.properties]
@@ -12,8 +11,8 @@ foo = "baz"
 
 [strategy.java]
 [strategy.java.nightly]
+prefix = "v0.0.0-"
 suffix = "-SNAPSHOT"
-maxLength = 80
 
 [strategy.npm]
 [strategy.npm.nightly]
