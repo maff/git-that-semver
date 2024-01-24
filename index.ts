@@ -10,19 +10,21 @@ import { resolveVersion } from "versionResolver";
 const program = new Command("git-semantic-release")
   .version("0.0.1")
   .requiredOption("-c, --config-file <configFile>", "Config file", "gsr.toml")
+  .option("--dump-config", "Dump configuration for debug purposes")
   .parse();
 
 const configFilePath = path.resolve(program.opts().configFile);
 
 const config = await parseConfig(configFilePath);
-console.log(util.inspect(config, false, null, true));
+if (program.opts().dumpConfig) {
+  console.log(util.inspect(config, false, null, true));
+  process.exit(0);
+}
 
 const platform = resolvePlatform(config.platform);
 console.log(`Using platform ${platform.type}`);
 
 const strategies = resolveStrategies(config.strategy);
-console.log("Strategies", util.inspect(strategies, false, null, true));
-
 const result = resolveVersion(config, platform, strategies);
 console.log(util.inspect(result, false, null, true));
 
