@@ -74,15 +74,6 @@ export class GenericStrategy implements VersionStrategy {
       }
     );
 
-    // TODO remove
-    console.log({
-      version,
-      tplContext: templateContext,
-      branchIdentifier,
-      commitIdentifier,
-      commitInfo,
-    });
-
     return {
       version: version,
     };

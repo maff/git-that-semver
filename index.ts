@@ -22,10 +22,10 @@ if (program.opts().dumpConfig) {
 }
 
 const platform = resolvePlatform(config.platform);
-console.log(`Using platform ${platform.type}`);
+// console.log(`Using platform ${platform.type}`);
 
 const strategies = resolveStrategies(config.strategy);
 const result = resolveVersion(config, platform, strategies);
-console.log(util.inspect(result, false, null, true));
+// console.log(util.inspect(result, false, null, true));
 
 printVersions(config, result);
