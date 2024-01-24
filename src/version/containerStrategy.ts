@@ -1,12 +1,24 @@
 import type { SemVer } from "semver";
 import type { VersionStrategyContext } from "version";
-import type { StrategyVersion } from "versionResolver";
+import type { CommitInfo, StrategyVersion } from "versionResolver";
 import { GenericStrategy } from "./genericStrategy";
 import type { StrategyConfig } from "config";
 
 export class ContainerStrategy extends GenericStrategy {
   constructor(public name: string, protected config: StrategyConfig) {
     super(name, config);
+  }
+
+  taggedVersionResult(
+    context: VersionStrategyContext,
+    tag: string
+  ): StrategyVersion {
+    const result = super.taggedVersionResult(context, tag);
+
+    return {
+      ...result,
+      tags: this.joinTags([result.version]),
+    };
   }
 
   semVerVersionResult(
@@ -25,7 +37,23 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags: tags.join(" "),
+      tags: this.joinTags(tags),
     };
+  }
+
+  nightlyVersionResult(
+    context: VersionStrategyContext,
+    commitInfo: CommitInfo
+  ): StrategyVersion {
+    const result = super.nightlyVersionResult(context, commitInfo);
+
+    return {
+      ...result,
+      tags: this.joinTags([result.version]),
+    };
+  }
+
+  private joinTags(tags: string[]): string {
+    return tags.join(" ");
   }
 }

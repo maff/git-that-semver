@@ -2,7 +2,7 @@
 branchPrefixes = ["feature/", "bugfix/", "tech/"]
 
 [defaults.nightly]
-prefix = ""
+prefix = "0.0.0-"
 suffix = ""
 defaultBranches = ["master", "main"]
 
@@ -11,15 +11,12 @@ foo = "baz"
 
 [strategy.java]
 [strategy.java.nightly]
-prefix = "v0.0.0-"
 suffix = "-SNAPSHOT"
 
 [strategy.npm]
 [strategy.npm.nightly]
-prefix = "v0.0.0-"
 [strategy.npm.properties]
 foo = "bar"
 
 [strategy.docker]
-enabled = true
 type = "container"
