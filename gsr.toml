@@ -1,22 +1,10 @@
 [defaults]
-branchPrefixes = ["feature/", "bugfix/", "tech/"]
-
-[defaults.nightly]
-prefix = "0.0.0-"
-suffix = ""
-defaultBranches = ["master", "main"]
-
-[defaults.properties]
-foo = "baz"
 
 [strategy.java]
 [strategy.java.nightly]
 suffixTpl = "-SNAPSHOT"
 
 [strategy.npm]
-[strategy.npm.nightly]
-[strategy.npm.properties]
-foo = "bar"
 
 [strategy.docker]
 type = "container"
