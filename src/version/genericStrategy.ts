@@ -1,7 +1,8 @@
 import type { StrategyConfig } from "config";
 import { Liquid } from "liquidjs";
 import type { SemVer } from "semver";
-import { cleanSemVerVersionString } from "util/semVer";
+import { templateEngine } from "tpl/templateEngine";
+import { semVerVersionString } from "util/semVer";
 import type { VersionStrategy, VersionStrategyContext } from "version";
 import type { CommitInfo, StrategyVersion } from "versionResolver";
 
@@ -22,7 +23,7 @@ export class GenericStrategy implements VersionStrategy {
     version: SemVer
   ): StrategyVersion {
     return {
-      version: cleanSemVerVersionString(version),
+      version: semVerVersionString(version),
     };
   }
 
@@ -30,22 +31,25 @@ export class GenericStrategy implements VersionStrategy {
     context: VersionStrategyContext,
     commitInfo: CommitInfo
   ): StrategyVersion {
-    const tplEngine = new Liquid();
-
-    // only allow alphanumeric characters at start and end
-    tplEngine.registerFilter("trim_alphanumeric", (v) =>
-      v.replace(/^[^a-zA-Z0-9]/g, "").replace(/[^a-zA-Z0-9]$/g, "")
-    );
-
-    const tplContext = {
+    const templateContext = {
       config: this.config,
       commitInfo,
     };
 
-    const branchIdentifier = tplEngine.parseAndRenderSync(
+    const prefix = templateEngine.parseAndRenderSync(
+      this.config.nightly.prefixTpl,
+      templateContext
+    );
+
+    const suffix = templateEngine.parseAndRenderSync(
+      this.config.nightly.suffixTpl,
+      templateContext
+    );
+
+    const branchIdentifier = templateEngine.parseAndRenderSync(
       this.config.nightly.branchIdentifierTpl,
       {
-        ...tplContext,
+        ...templateContext,
         branchIdentifier: this.config.nightly.defaultBranches.includes(
           commitInfo.refName
         )
@@ -54,15 +58,17 @@ export class GenericStrategy implements VersionStrategy {
       }
     );
 
-    const commitIdentifier = tplEngine.parseAndRenderSync(
+    const commitIdentifier = templateEngine.parseAndRenderSync(
       this.config.nightly.commitIdentifierTpl,
-      tplContext
+      templateContext
     );
 
-    const version = tplEngine.parseAndRenderSync(
+    const version = templateEngine.parseAndRenderSync(
       this.config.nightly.versionTpl,
       {
-        ...tplContext,
+        ...templateContext,
+        prefix,
+        suffix,
         branchIdentifier,
         commitIdentifier,
       }
@@ -71,7 +77,7 @@ export class GenericStrategy implements VersionStrategy {
     // TODO remove
     console.log({
       version,
-      tplContext,
+      tplContext: templateContext,
       branchIdentifier,
       commitIdentifier,
       commitInfo,

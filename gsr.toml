@@ -11,7 +11,7 @@ foo = "baz"
 
 [strategy.java]
 [strategy.java.nightly]
-suffix = "-SNAPSHOT"
+suffixTpl = "-SNAPSHOT"
 
 [strategy.npm]
 [strategy.npm.nightly]

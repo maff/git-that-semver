@@ -5,14 +5,15 @@ export const FreeformProperties = z.record(z.string(), z.string());
 
 export const SupportedTypes = z.enum(["generic", "container"]);
 
+const defaultPrefixTpl = `{{ commitInfo.previousSemVerReleaseVersion | semver_inc: "minor" | append: "-" }}`;
 const defaultBranchIdentifierTpl = `{% if branchIdentifier %}{{ branchIdentifier | truncate: 20, "" | trim_alphanumeric | append: "." }}{% endif %}`;
 const defaultCommitIdentifierTpl = `{{ commitInfo.dateTime }}.{{ commitInfo.sha | truncate: 12, "" }}`;
-const defaultVersionTpl = `{{ config.nightly.prefix }}{{ branchIdentifier }}{{ commitIdentifier }}{{ config.nightly.suffix }}`;
+const defaultVersionTpl = `{{ prefix }}{{ branchIdentifier }}{{ commitIdentifier }}{{ suffix }}`;
 
 export const NightlyConfig = z.object({
-  prefix: z.string().optional(),
-  suffix: z.string().optional(),
   defaultBranches: z.array(z.string()).default(["main"]),
+  prefixTpl: z.string().default(defaultPrefixTpl),
+  suffixTpl: z.string().default(""),
   branchIdentifierTpl: z.string().default(defaultBranchIdentifierTpl),
   commitIdentifierTpl: z.string().default(defaultCommitIdentifierTpl),
   versionTpl: z.string().default(defaultVersionTpl),

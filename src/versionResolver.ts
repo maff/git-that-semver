@@ -4,7 +4,7 @@ import semver, { SemVer } from "semver";
 import type { Config } from "./config";
 import slug from "slug";
 import type { VersionStrategy } from "version";
-import { cleanSemVerVersionString } from "util/semVer";
+import { semVerVersionString } from "util/semVer";
 
 export type StrategyVersion = {
   version: string;
@@ -197,11 +197,11 @@ const findPreviousSemVerVersions = (commitSha: string) => {
   return {
     previousSemVerVersion:
       previousSemVerTags.length > 0
-        ? cleanSemVerVersionString(previousSemVerTags[0])
+        ? semVerVersionString(previousSemVerTags[0])
         : "0.0.0",
     previousSemVerReleaseVersion:
       releaseSemVerTags.length > 0
-        ? cleanSemVerVersionString(releaseSemVerTags[0])
+        ? semVerVersionString(releaseSemVerTags[0])
         : "0.0.0",
   };
 };
