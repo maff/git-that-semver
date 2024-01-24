@@ -1,4 +1,4 @@
-import { getCommitDateTime, listTags, listTagsBeforeCommit } from "git";
+import { getCommitDateTime, listTags, listTagsBeforeCommit } from "util/git";
 import type { Platform } from "platform";
 import semver, { SemVer } from "semver";
 import type { Config } from "./config";
