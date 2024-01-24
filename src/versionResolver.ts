@@ -1,9 +1,10 @@
-import { getCommitDateTime, listTags } from "git";
+import { getCommitDateTime, listTags, listTagsBeforeCommit } from "git";
 import type { Platform } from "platform";
 import semver, { SemVer } from "semver";
 import type { Config } from "./config";
 import slug from "slug";
 import type { VersionStrategy } from "version";
+import { cleanSemVerVersionString } from "util/semVer";
 
 export type StrategyVersion = {
   version: string;
@@ -17,6 +18,11 @@ export type VersionInfo = {
   isReleaseSemVerVersion: boolean;
   isHighestSemVerVersion: boolean;
   isHighestSemVerReleaseVersion: boolean;
+};
+
+export type PreviousSemVerVersions = {
+  previousSemVerVersion: string;
+  previousSemVerReleaseVersion: string;
 };
 
 export type VersionResult = VersionInfo & {
@@ -69,10 +75,6 @@ const resolveTaggedVersion = (
     };
   }
 
-  // release tag = no prerelease and no build info
-  const isReleaseSemVerTag = (tag: SemVer) =>
-    tag.prerelease.length === 0 && tag.build.length === 0;
-
   const isHighestTagInList = (tags: SemVer[]) =>
     tags.length == 0 || version.compare(tags[0]) === 0;
 
@@ -122,7 +124,7 @@ export type CommitInfo = {
   refName: string;
   refNameSlug: string;
   dateTime: string;
-};
+} & PreviousSemVerVersions;
 
 const resolveNightlyVersion = (
   config: Config,
@@ -131,11 +133,14 @@ const resolveNightlyVersion = (
 ): VersionResult => {
   const commitSha = platform.getCommitSha();
   const commitRefName = platform.getCommitRefName();
+  const previousSemVerVersions = findPreviousSemVerVersions(commitSha);
+
   const commitInfo: CommitInfo = {
     sha: commitSha,
     refName: commitRefName,
     refNameSlug: resolveRefSlugName(config, commitRefName),
     dateTime: getCommitDateTime(commitSha),
+    ...previousSemVerVersions,
   };
 
   const versionInfo = {
@@ -171,4 +176,32 @@ const resolveRefSlugName = (config: Config, refName: string) => {
   }
 
   return slug(slugRefName, { lower: true, trim: true });
+};
+
+// release tag = no prerelease and no build info
+const isReleaseSemVerTag = (tag: SemVer) =>
+  tag.prerelease.length === 0 && tag.build.length === 0;
+
+// find previous semver version tags in the repository
+const findPreviousSemVerVersions = (commitSha: string) => {
+  const previousSemVerTags = listTagsBeforeCommit(commitSha)
+    .map((tag) => semver.parse(tag))
+    .filter((tag): tag is SemVer => tag !== null)
+    .sort(semver.compareBuild)
+    .reverse();
+
+  const releaseSemVerTags = previousSemVerTags.filter((t) =>
+    isReleaseSemVerTag(t)
+  );
+
+  return {
+    previousSemVerVersion:
+      previousSemVerTags.length > 0
+        ? cleanSemVerVersionString(previousSemVerTags[0])
+        : "0.0.0",
+    previousSemVerReleaseVersion:
+      releaseSemVerTags.length > 0
+        ? cleanSemVerVersionString(releaseSemVerTags[0])
+        : "0.0.0",
+  };
 };

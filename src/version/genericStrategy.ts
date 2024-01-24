@@ -1,6 +1,7 @@
 import type { StrategyConfig } from "config";
 import { Liquid } from "liquidjs";
 import type { SemVer } from "semver";
+import { cleanSemVerVersionString } from "util/semVer";
 import type { VersionStrategy, VersionStrategyContext } from "version";
 import type { CommitInfo, StrategyVersion } from "versionResolver";
 
@@ -20,14 +21,8 @@ export class GenericStrategy implements VersionStrategy {
     context: VersionStrategyContext,
     version: SemVer
   ): StrategyVersion {
-    // "clean" semver version (without prefix, but including the build part)
-    let cleanSemVerVersion = version.version;
-    if (version.build.length > 0) {
-      cleanSemVerVersion += `+${version.build.join(".")}`;
-    }
-
     return {
-      version: cleanSemVerVersion,
+      version: cleanSemVerVersionString(version),
     };
   }
 
@@ -73,7 +68,14 @@ export class GenericStrategy implements VersionStrategy {
       }
     );
 
-    console.log({ version, tplContext, branchIdentifier, commitIdentifier });
+    // TODO remove
+    console.log({
+      version,
+      tplContext,
+      branchIdentifier,
+      commitIdentifier,
+      commitInfo,
+    });
 
     return {
       version: version,
