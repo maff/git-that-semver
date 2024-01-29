@@ -14,7 +14,6 @@ FROM oven/bun:1-alpine AS release
 ENV NODE_ENV=production
 
 RUN apk add git
-RUN git config --global --add safe.directory '*'
 
 COPY --from=compile /temp/compile/gsr /usr/local/bin/gsr
 
