@@ -100,7 +100,11 @@ const resolveTaggedVersion = (
       strategies: Object.fromEntries(
         strategies.map((strategy) => [
           strategy.name,
-          strategy.taggedVersionResult({ config, platform, versionInfo }, tag),
+          strategy.taggedVersionResult(
+            { config, platform, versionInfo },
+            commitInfo,
+            tag
+          ),
         ])
       ),
     };
@@ -143,6 +147,7 @@ const resolveTaggedVersion = (
         strategy.name,
         strategy.semVerVersionResult(
           { config, platform, versionInfo },
+          commitInfo,
           version
         ),
       ])

@@ -1,5 +1,4 @@
 import type { StrategyConfig } from "config";
-import { Liquid } from "liquidjs";
 import type { SemVer } from "semver";
 import { templateEngine } from "tpl/templateEngine";
 import { semVerVersionString } from "util/semVer";
