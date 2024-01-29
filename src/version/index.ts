@@ -16,11 +16,13 @@ export interface VersionStrategy {
 
   taggedVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     tag: string
   ): StrategyVersion;
 
   semVerVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     version: SemVer
   ): StrategyVersion;
 

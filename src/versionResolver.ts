@@ -25,6 +25,14 @@ export type PreviousSemVerVersions = {
   previousSemVerReleaseVersion: string;
 };
 
+export type CommitInfo = {
+  sha: string;
+  refName: string;
+  refNameSlug: string;
+  tag: string | undefined;
+  dateTime: string;
+} & PreviousSemVerVersions;
+
 export type VersionResult = VersionInfo & {
   strategies: {
     [key: string]: StrategyVersion;
@@ -36,19 +44,42 @@ export const resolveVersion = (
   platform: Platform,
   strategies: VersionStrategy[]
 ): VersionResult => {
-  const tag = platform.getGitTag();
+  const commitInfo = fetchCommitInfo(config, platform);
 
-  if (tag) {
-    return resolveTaggedVersion(config, platform, strategies, tag);
+  if (commitInfo.tag) {
+    return resolveTaggedVersion(
+      config,
+      platform,
+      strategies,
+      commitInfo,
+      commitInfo.tag
+    );
   } else {
-    return resolveNightlyVersion(config, platform, strategies);
+    return resolveNightlyVersion(config, platform, strategies, commitInfo);
   }
+};
+
+const fetchCommitInfo = (config: Config, platform: Platform): CommitInfo => {
+  const commitSha = platform.getCommitSha();
+  const commitRefName = platform.getCommitRefName();
+  const tag = platform.getGitTag();
+  const previousSemVerVersions = findPreviousSemVerVersions(commitSha);
+
+  return {
+    sha: commitSha,
+    refName: commitRefName,
+    refNameSlug: resolveRefSlugName(config, commitRefName),
+    tag,
+    dateTime: getCommitDateTime(commitSha),
+    ...previousSemVerVersions,
+  };
 };
 
 const resolveTaggedVersion = (
   config: Config,
   platform: Platform,
   strategies: VersionStrategy[],
+  commitInfo: CommitInfo,
   tag: string
 ): VersionResult => {
   const version = semver.parse(tag);
@@ -119,30 +150,12 @@ const resolveTaggedVersion = (
   };
 };
 
-export type CommitInfo = {
-  sha: string;
-  refName: string;
-  refNameSlug: string;
-  dateTime: string;
-} & PreviousSemVerVersions;
-
 const resolveNightlyVersion = (
   config: Config,
   platform: Platform,
-  strategies: VersionStrategy[]
+  strategies: VersionStrategy[],
+  commitInfo: CommitInfo
 ): VersionResult => {
-  const commitSha = platform.getCommitSha();
-  const commitRefName = platform.getCommitRefName();
-  const previousSemVerVersions = findPreviousSemVerVersions(commitSha);
-
-  const commitInfo: CommitInfo = {
-    sha: commitSha,
-    refName: commitRefName,
-    refNameSlug: resolveRefSlugName(config, commitRefName),
-    dateTime: getCommitDateTime(commitSha),
-    ...previousSemVerVersions,
-  };
-
   const versionInfo = {
     isNightlyVersion: true,
     isTaggedVersion: false,

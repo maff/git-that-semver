@@ -11,24 +11,26 @@ export class ContainerStrategy extends GenericStrategy {
 
   taggedVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     tag: string
   ): StrategyVersion {
-    const result = super.taggedVersionResult(context, tag);
+    const result = super.taggedVersionResult(context, commitInfo, tag);
 
     return {
       ...result,
-      tags: [result.version],
+      tags: [commitInfo.sha, result.version],
     };
   }
 
   semVerVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     version: SemVer
   ): StrategyVersion {
-    const result = super.semVerVersionResult(context, version);
+    const result = super.semVerVersionResult(context, commitInfo, version);
 
     // TODO add configuration to add other version tags (e.g. 1.2)
-    const tags = [result.version];
+    const tags = [commitInfo.sha, result.version];
 
     // TODO make this configurable
     if (context.versionInfo.isHighestSemVerReleaseVersion) {
@@ -49,7 +51,7 @@ export class ContainerStrategy extends GenericStrategy {
 
     return {
       ...result,
-      tags: [result.version],
+      tags: [commitInfo.sha, result.version],
     };
   }
 }

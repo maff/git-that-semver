@@ -11,6 +11,7 @@ export class GenericStrategy implements VersionStrategy {
 
   taggedVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     tag: string
   ): StrategyVersion {
     return {
@@ -20,6 +21,7 @@ export class GenericStrategy implements VersionStrategy {
 
   semVerVersionResult(
     context: VersionStrategyContext,
+    commitInfo: CommitInfo,
     version: SemVer
   ): StrategyVersion {
     return {
