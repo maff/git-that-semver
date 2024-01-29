@@ -39,7 +39,7 @@ const valueToString = (value: boolean | string | string[]): string => {
     }
 
     // add quotes when multiple values
-    return `"${value.join(" ")}"`;
+    return `${value.join(" ")}`;
   }
 
   return value;
