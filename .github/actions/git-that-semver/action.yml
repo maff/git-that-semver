@@ -5,4 +5,4 @@ outputs:
     description: "Resolved variables"
 runs:
   using: "docker"
-  image: "docker://ghcr.io/maff/git-that-semver:main"
+  image: "../../../Dockerfile"
