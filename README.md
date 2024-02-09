@@ -1,4 +1,4 @@
-# git-semantic-release
+# git-that-semver
 
 ## TODOs
 

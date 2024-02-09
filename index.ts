@@ -7,9 +7,13 @@ import util from "util";
 import { resolveStrategies } from "version";
 import { resolveVersion } from "versionResolver";
 
-const program = new Command("git-semantic-release")
+const program = new Command("git-that-semver")
   .version("0.0.1")
-  .requiredOption("-c, --config-file <configFile>", "Config file", "gsr.toml")
+  .requiredOption(
+    "-c, --config-file <configFile>",
+    "Config file",
+    "git-that-semver.toml"
+  )
   .option("--dump-config", "Dump configuration for debug purposes")
   .parse();
 
@@ -22,10 +26,7 @@ if (program.opts().dumpConfig) {
 }
 
 const platform = resolvePlatform(config.platform);
-// console.log(`Using platform ${platform.type}`);
-
 const strategies = resolveStrategies(config.strategy);
 const result = resolveVersion(config, platform, strategies);
-// console.log(util.inspect(result, false, null, true));
 
 printVersions(config, result);

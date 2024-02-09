@@ -35,7 +35,7 @@ export const StrategyConfig = z.object({
 export type StrategyConfig = z.infer<typeof StrategyConfig>;
 
 export const OutputConfig = z.object({
-  prefix: z.string().default("GSR_"),
+  prefix: z.string().default("GTS_"),
 });
 
 export const Config = z.object({
