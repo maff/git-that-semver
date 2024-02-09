@@ -15,7 +15,7 @@ ENV NODE_ENV=production
 
 RUN apk add git
 
+COPY entrypoint.sh /entrypoint.sh
 COPY --from=compile /temp/compile/gsr /usr/local/bin/gsr
 
-USER bun
-ENTRYPOINT [ "gsr" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
