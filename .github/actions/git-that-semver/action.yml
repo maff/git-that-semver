@@ -1,0 +1,8 @@
+name: "git-that-semver"
+description: "Generate SemVer version data from git history and tags"
+outputs:
+  result:
+    description: "Resolved variables"
+runs:
+  using: "docker"
+  image: "docker://ghcr.io/maff/git-that-semver:main"
