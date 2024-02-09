@@ -17,6 +17,10 @@ export class GitHubPlatform implements Platform {
   }
 
   getCommitRefName(): string {
+    if (requiredEnv("GITHUB_EVENT_NAME") === "pull_request") {
+      return requiredEnv("GITHUB_HEAD_REF");
+    }
+
     return requiredEnv("GITHUB_REF_NAME");
   }
 
