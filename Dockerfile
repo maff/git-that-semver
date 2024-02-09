@@ -17,5 +17,4 @@ RUN apk add git
 
 COPY --from=compile /temp/compile/gsr /usr/local/bin/gsr
 
-USER bun
 ENTRYPOINT [ "gsr" ]
