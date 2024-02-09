@@ -1,4 +1,5 @@
-import { GitlabPlatform } from "./gitlab";
+import { GitHubPlatform } from "./github";
+import { GitLabPlatform } from "./gitlab";
 
 export interface Platform {
   type: string;
@@ -9,7 +10,7 @@ export interface Platform {
 }
 
 export const platforms = Object.fromEntries(
-  [new GitlabPlatform()].map((a) => [a.type, a])
+  [new GitHubPlatform(), new GitLabPlatform()].map((a) => [a.type, a])
 );
 
 export const specificPlatformTypes = Object.keys(platforms);

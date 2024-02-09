@@ -1,7 +1,7 @@
 import type { Platform } from "platform";
 import { env, requiredEnv } from "util/env";
 
-export class GitlabPlatform implements Platform {
+export class GitLabPlatform implements Platform {
   type = "gitlab";
 
   getGitTag(): string {
