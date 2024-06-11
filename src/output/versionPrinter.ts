@@ -22,6 +22,10 @@ export function printVersions(config: Config, versionResult: VersionResult) {
     ([strategyName, strategyResult]) => {
       const strategyPrefix = `${prefix}${strategyName.toUpperCase()}_`;
       Object.entries(strategyResult).forEach(([key, value]) => {
+        if (key == "tags" && value.length === 0) {
+          return;
+        }
+
         console.log(
           `${strategyPrefix}${key.toUpperCase()}=${valueToString(value)}`
         );

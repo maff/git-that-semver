@@ -8,6 +8,7 @@ import { semVerVersionString } from "util/semVer";
 
 export type StrategyVersion = {
   version: string;
+  tags: string[];
   [key: string]: string | string[];
 };
 
