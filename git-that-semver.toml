@@ -11,7 +11,11 @@ type = "container"
 enabled = true
 [strategy.docker.tags]
 enabled = true
-nightly = ["{{ version }}", "{{ commitInfo.sha }}"]
+nightly = [
+    "{{ version }}",
+    "{{ commitInfo.sha }}",
+    "{% if config.nightly.defaultBranches contains commitInfo.refName %}{{ commitInfo.refName }}{% endif %}",
+]
 tagged = ["{{ version }}"]
 semVer = [
     "{{ version }}",
