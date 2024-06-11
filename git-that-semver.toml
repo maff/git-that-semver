@@ -19,7 +19,7 @@ nightly = [
 tagged = ["{{ version }}"]
 semVer = [
     "{{ version }}",
-    "{% if versionInfo.isHighestSameMajorVersion and semVer.major > 0 %}{{ semVer.major }}{% endif %}",
     "{% if versionInfo.isHighestSameMinorVersion %}{{ semVer.major }}.{{ semVer.minor }}{% endif %}",
+    "{% if versionInfo.isHighestSameMajorVersion and semVer.major > 0 %}{{ semVer.major }}{% endif %}",
     "{% if versionInfo.isHighestSemVerReleaseVersion %}latest{% endif %}",
 ]
