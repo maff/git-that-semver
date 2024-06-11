@@ -15,6 +15,11 @@ export class GenericStrategy implements VersionStrategy {
   ): StrategyVersion {
     return {
       version: tag,
+      tags: this.uniqueTags(this.config.tags.tagged, {
+        ...this.templateContext(context, commitInfo),
+        version: tag,
+      }),
+      ...this.config.properties,
     };
   }
 
@@ -23,8 +28,16 @@ export class GenericStrategy implements VersionStrategy {
     commitInfo: CommitInfo,
     version: SemVer
   ): StrategyVersion {
+    const stringVersion = semVerVersionString(version);
+
     return {
-      version: semVerVersionString(version),
+      version: stringVersion,
+      tags: this.uniqueTags(this.config.tags.semVer, {
+        ...this.templateContext(context, commitInfo),
+        version: stringVersion,
+        semVer: version,
+      }),
+      ...this.config.properties,
     };
   }
 
@@ -32,10 +45,7 @@ export class GenericStrategy implements VersionStrategy {
     context: VersionStrategyContext,
     commitInfo: CommitInfo
   ): StrategyVersion {
-    const templateContext = {
-      config: this.config,
-      commitInfo,
-    };
+    const templateContext = this.templateContext(context, commitInfo);
 
     const prefix = templateEngine.parseAndRenderSync(
       this.config.nightly.prefixTpl,
@@ -77,6 +87,35 @@ export class GenericStrategy implements VersionStrategy {
 
     return {
       version: version,
+      tags: this.uniqueTags(this.config.tags.nightly, {
+        ...templateContext,
+        version,
+      }),
+      ...this.config.properties,
     };
+  }
+
+  private templateContext(
+    context: VersionStrategyContext,
+    commitInfo: CommitInfo
+  ) {
+    return {
+      config: this.config,
+      commitInfo,
+      versionInfo: context.versionInfo,
+    };
+  }
+
+  private uniqueTags(templates: string[], context: any) {
+    if (!this.config.tags.enabled) {
+      return [];
+    }
+
+    const tags = templates
+      .map((tagTpl) => templateEngine.parseAndRenderSync(tagTpl, context))
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
+    return [...new Set(tags)];
   }
 }

@@ -19,9 +19,17 @@ export const NightlyConfig = z.object({
   versionTpl: z.string().default(defaultVersionTpl),
 });
 
+export const TagsConfig = z.object({
+  enabled: z.boolean().default(false),
+  nightly: z.array(z.string()).default([]),
+  tagged: z.array(z.string()).default([]),
+  semVer: z.array(z.string()).default([]),
+});
+
 export const DefaultConfig = z.object({
   branchPrefixes: z.array(z.string()).default(["feature/", "bugfix/", "tech/"]),
   nightly: NightlyConfig.default({}),
+  tags: TagsConfig.default({}),
   properties: FreeformProperties.default({}),
 });
 
@@ -29,6 +37,7 @@ export const StrategyConfig = z.object({
   enabled: z.boolean().default(true),
   type: SupportedTypes.default("generic"),
   nightly: NightlyConfig.default({}),
+  tags: TagsConfig.default({}),
   properties: FreeformProperties.default({}),
 });
 

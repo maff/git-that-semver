@@ -1,8 +1,21 @@
 [strategy.java]
+enabled = true
 [strategy.java.nightly]
 suffixTpl = "-SNAPSHOT"
 
 [strategy.npm]
+enabled = true
 
 [strategy.docker]
 type = "container"
+enabled = true
+[strategy.docker.tags]
+enabled = true
+nightly = ["{{ version }}", "{{ commitInfo.sha }}"]
+tagged = ["{{ version }}"]
+semVer = [
+    "{{ version }}",
+    "{% if versionInfo.isHighestSameMajorVersion and semVer.major > 0 %}{{ semVer.major }}{% endif %}",
+    "{% if versionInfo.isHighestSameMinorVersion %}{{ semVer.major }}.{{ semVer.minor }}{% endif %}",
+    "{% if versionInfo.isHighestSemVerReleaseVersion %}latest{% endif %}",
+]
