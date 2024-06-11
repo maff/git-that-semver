@@ -12,6 +12,8 @@ export function printVersions(config: Config, versionResult: VersionResult) {
     IS_HIGHEST_SEMVER_VERSION: versionResult.isHighestSemVerVersion,
     IS_HIGHEST_SEMVER_RELEASE_VERSION:
       versionResult.isHighestSemVerReleaseVersion,
+    IS_HIGHEST_SAME_MAJOR_VERSION: versionResult.isHighestSameMajorVersion,
+    IS_HIGHEST_SAME_MINOR_VERSION: versionResult.isHighestSameMinorVersion,
   }).forEach(([key, value]) => {
     console.log(`${prefix}${key}=${valueToString(value)}`);
   });

@@ -18,6 +18,8 @@ export type VersionInfo = {
   isReleaseSemVerVersion: boolean;
   isHighestSemVerVersion: boolean;
   isHighestSemVerReleaseVersion: boolean;
+  isHighestSameMajorVersion: boolean;
+  isHighestSameMinorVersion: boolean;
 };
 
 export type PreviousSemVerVersions = {
@@ -86,13 +88,15 @@ const resolveTaggedVersion = (
 
   // no semver tag -> tag is the version
   if (!version) {
-    const versionInfo = {
+    const versionInfo: VersionInfo = {
       isNightlyVersion: false,
       isTaggedVersion: true,
       isSemVerVersion: false,
       isReleaseSemVerVersion: false,
       isHighestSemVerVersion: false,
       isHighestSemVerReleaseVersion: false,
+      isHighestSameMajorVersion: false,
+      isHighestSameMinorVersion: false,
     };
 
     return {
@@ -119,8 +123,6 @@ const resolveTaggedVersion = (
     .sort(semver.compareBuild)
     .reverse();
 
-  const releaseSemVerTags = semVerTags.filter((t) => isReleaseSemVerTag(t));
-
   // is it a release semver version?
   const isReleaseSemVerVersion = isReleaseSemVerTag(version);
 
@@ -129,15 +131,30 @@ const resolveTaggedVersion = (
 
   // is it the highest semver release tag in the repository?
   const isHighestSemVerReleaseVersion =
-    isReleaseSemVerVersion && isHighestTagInList(releaseSemVerTags);
+    isReleaseSemVerVersion &&
+    isHighestTagInList(semVerTags.filter((t) => isReleaseSemVerTag(t)));
 
-  const versionInfo = {
+  // is it the highest same major semver tag in the repository?
+  const isHighestSameMajorVersion = isHighestTagInList(
+    semVerTags.filter((t) => t.major === version.major)
+  );
+
+  // is it the highest same minor semver tag in the repository?
+  const isHighestSameMinorVersion = isHighestTagInList(
+    semVerTags.filter(
+      (t) => t.major == version.major && t.minor === version.minor
+    )
+  );
+
+  const versionInfo: VersionInfo = {
     isNightlyVersion: false,
     isTaggedVersion: true,
     isSemVerVersion: true,
     isReleaseSemVerVersion,
     isHighestSemVerVersion,
     isHighestSemVerReleaseVersion,
+    isHighestSameMajorVersion,
+    isHighestSameMinorVersion,
   };
 
   return {
@@ -161,13 +178,15 @@ const resolveNightlyVersion = (
   strategies: VersionStrategy[],
   commitInfo: CommitInfo
 ): VersionResult => {
-  const versionInfo = {
+  const versionInfo: VersionInfo = {
     isNightlyVersion: true,
     isTaggedVersion: false,
     isSemVerVersion: false,
     isReleaseSemVerVersion: false,
     isHighestSemVerVersion: false,
     isHighestSemVerReleaseVersion: false,
+    isHighestSameMajorVersion: false,
+    isHighestSameMinorVersion: false,
   };
 
   return {
@@ -201,7 +220,9 @@ const isReleaseSemVerTag = (tag: SemVer) =>
   tag.prerelease.length === 0 && tag.build.length === 0;
 
 // find previous semver version tags in the repository
-const findPreviousSemVerVersions = (commitSha: string) => {
+const findPreviousSemVerVersions = (
+  commitSha: string
+): PreviousSemVerVersions => {
   const previousSemVerTags = listTagsBeforeCommit(commitSha)
     .map((tag) => semver.parse(tag))
     .filter((tag): tag is SemVer => tag !== null)
