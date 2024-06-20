@@ -75,6 +75,10 @@ export const parseConfig = async (configFilePath: string): Promise<Config> => {
           ...configFile.defaults.nightly,
           ...strategyConfig.nightly,
         },
+        tags: {
+          ...configFile.defaults.tags,
+          ...strategyConfig.tags,
+        },
         properties: {
           ...configFile.defaults.properties,
           ...strategyConfig.properties,
