@@ -1,11 +1,4 @@
-[strategy.java]
-enabled = true
-[strategy.java.nightly]
-suffixTpl = "-SNAPSHOT"
-
-[strategy.npm]
-enabled = true
-
+# docker containers
 [strategy.docker]
 type = "container"
 enabled = true
@@ -23,3 +16,13 @@ semVer = [
     "{% if versionInfo.isHighestSameMajorVersion and semVer.major > 0 %}{{ semVer.major }}{% endif %}",
     "{% if versionInfo.isHighestSemVerReleaseVersion %}latest{% endif %}",
 ]
+
+# NPM
+[strategy.npm]
+enabled = false
+
+# Java
+[strategy.java]
+enabled = true
+[strategy.java.nightly]
+suffixTpl = "-SNAPSHOT"

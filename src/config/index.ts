@@ -1,4 +1,6 @@
 import { z } from "zod";
+import log from "loglevel";
+import { merge } from "merge-anything";
 import { specificPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
@@ -57,35 +59,36 @@ export const Config = z.object({
 export type Config = z.infer<typeof Config>;
 
 export const parseConfig = async (configFilePath: string): Promise<Config> => {
-  const rawConfig = await import(configFilePath);
-  const configFile = Config.parse(rawConfig);
+  const defaultConfigRaw = await import("./git-that-semver.default.toml");
+  const defaultConfig = Config.parse(defaultConfigRaw);
+  log.debug("Default config", defaultConfig);
 
-  // merge with defaults
-  // TODO can we do this in zod
-  // TODO use filter/map instead of delete
-  for (const [strategy, strategyConfig] of Object.entries(
-    configFile.strategy
-  )) {
+  let config: Config = defaultConfig;
+  if (await Bun.file(configFilePath).exists()) {
+    const customConfigRaw = await import(configFilePath);
+    const customConfig = Config.parse(customConfigRaw);
+    log.debug("Custom config", customConfig);
+
+    config = merge(defaultConfig, customConfig);
+  }
+
+  log.trace("Merged config before strategy merge", config);
+  for (const [strategy, strategyConfig] of Object.entries(config.strategy)) {
     if (strategyConfig.enabled === false) {
-      delete configFile.strategy[strategy];
+      delete config.strategy[strategy];
     } else {
-      configFile.strategy[strategy] = {
+      config.strategy[strategy] = {
         ...strategyConfig,
-        nightly: {
-          ...configFile.defaults.nightly,
-          ...strategyConfig.nightly,
-        },
-        tags: {
-          ...configFile.defaults.tags,
-          ...strategyConfig.tags,
-        },
-        properties: {
-          ...configFile.defaults.properties,
-          ...strategyConfig.properties,
-        },
+        nightly: merge(config.defaults.nightly, strategyConfig.nightly),
+        tags: merge(config.defaults.tags, strategyConfig.tags),
+        properties: merge(
+          config.defaults.properties,
+          strategyConfig.properties
+        ),
       };
     }
   }
 
-  return Object.freeze(configFile);
+  log.debug("Resolved config", config);
+  return Object.freeze(config);
 };
