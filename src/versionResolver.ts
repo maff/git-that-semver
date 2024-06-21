@@ -1,7 +1,7 @@
 import { getCommitDateTime, listTags, listTagsBeforeCommit } from "util/git";
 import type { Platform } from "platform";
 import semver, { SemVer } from "semver";
-import type { Config } from "./config";
+import type { Config } from "config/types";
 import slug from "slug";
 import type { VersionStrategy } from "version";
 import { semVerVersionString } from "util/semVer";

@@ -1,4 +1,4 @@
-import type { Config } from "config";
+import type { Config } from "config/types";
 import type { VersionResult } from "versionResolver";
 
 export function printVersions(config: Config, versionResult: VersionResult) {

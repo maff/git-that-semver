@@ -1,4 +1,4 @@
-import type { Config, StrategyConfig } from "config";
+import type { Config, StrategyConfig } from "config/types";
 import type { Platform } from "platform";
 import type { SemVer } from "semver";
 import type { CommitInfo, VersionInfo, StrategyVersion } from "versionResolver";

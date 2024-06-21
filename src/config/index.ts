@@ -1,59 +1,8 @@
-import { z } from "zod";
 import log from "loglevel";
-import YAML from "yaml";
 import { merge } from "merge-anything";
-import { specificPlatformTypes } from "../platform";
+import YAML from "yaml";
 import defaultConfigFilePath from "./git-that-semver.default.yaml";
-
-export const FreeformProperties = z.record(z.string(), z.string());
-
-export const SupportedTypes = z.enum(["generic", "container"]);
-
-export const NightlyConfig = z.object({
-  defaultBranches: z.array(z.string()).default([]),
-  prefixTpl: z.string().default(""),
-  suffixTpl: z.string().default(""),
-  branchIdentifierTpl: z.string().default(""),
-  commitIdentifierTpl: z.string().default(""),
-  versionTpl: z.string().default(""),
-});
-
-export const TagsConfig = z.object({
-  enabled: z.boolean().default(false),
-  nightly: z.array(z.string()).default([]),
-  tagged: z.array(z.string()).default([]),
-  semVer: z.array(z.string()).default([]),
-});
-
-export const DefaultConfig = z.object({
-  branchPrefixes: z.array(z.string()).default([]),
-  nightly: NightlyConfig.default({}),
-  tags: TagsConfig.default({}),
-  properties: FreeformProperties.default({}),
-});
-
-export const StrategyConfig = z.object({
-  enabled: z.boolean().default(true),
-  type: SupportedTypes.default("generic"),
-  nightly: NightlyConfig.default({}),
-  tags: TagsConfig.default({}),
-  properties: FreeformProperties.default({}),
-});
-
-export type StrategyConfig = z.infer<typeof StrategyConfig>;
-
-export const OutputConfig = z.object({
-  prefix: z.string().default(""),
-});
-
-export const Config = z.object({
-  defaults: DefaultConfig.default({}),
-  platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
-  strategies: z.record(StrategyConfig),
-  output: OutputConfig,
-});
-
-export type Config = z.infer<typeof Config>;
+import { Config } from "./types";
 
 export const parseConfig = async (
   customConfigFilePath: string
