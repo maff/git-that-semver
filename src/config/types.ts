@@ -7,18 +7,18 @@ export const SupportedTypes = z.enum(["generic", "container"]);
 
 export const NightlyConfig = z.object({
   defaultBranches: z.array(z.string()).default([]),
-  prefixTpl: z.string().default(""),
-  suffixTpl: z.string().default(""),
-  branchIdentifierTpl: z.string().default(""),
-  commitIdentifierTpl: z.string().default(""),
-  versionTpl: z.string().default(""),
+  prefixTpl: z.string().trim().default(""),
+  suffixTpl: z.string().trim().default(""),
+  branchIdentifierTpl: z.string().trim().default(""),
+  commitIdentifierTpl: z.string().trim().default(""),
+  versionTpl: z.string().trim().default(""),
 });
 
 export const TagsConfig = z.object({
   enabled: z.boolean().default(false),
-  nightly: z.array(z.string()).default([]),
-  tagged: z.array(z.string()).default([]),
-  semVer: z.array(z.string()).default([]),
+  nightly: z.array(z.string().trim()).default([]),
+  tagged: z.array(z.string().trim()).default([]),
+  semVer: z.array(z.string().trim()).default([]),
 });
 
 export const DefaultConfig = z.object({
