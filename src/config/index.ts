@@ -1,15 +1,13 @@
 import log from "loglevel";
 import { merge } from "merge-anything";
 import YAML from "yaml";
-import defaultConfigFilePath from "./git-that-semver.default.yaml";
+import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
 import { Config } from "./types";
 
 export const parseConfig = async (
   customConfigFilePath: string
 ): Promise<Config> => {
-  const defaultConfig = YAML.parse(
-    await Bun.file(defaultConfigFilePath).text()
-  );
+  const defaultConfig = YAML.parse(defaultConfigContents);
   log.trace("Default config", defaultConfig);
 
   let mergedConfig = defaultConfig;
