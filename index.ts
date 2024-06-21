@@ -7,6 +7,7 @@ import { resolvePlatform } from "platform";
 import util from "util";
 import { resolveStrategies } from "version";
 import { resolveVersion } from "versionResolver";
+import chalk from "chalk";
 
 const program = new Command("git-that-semver")
   .version("0.0.1")
@@ -37,8 +38,19 @@ if (program.opts().dumpConfig) {
   process.exit(0);
 }
 
-const platform = resolvePlatform(config.platform);
-const strategies = resolveStrategies(config.strategies);
-const result = resolveVersion(config, platform, strategies);
+try {
+  const platform = resolvePlatform(config.platform);
+  const strategies = resolveStrategies(config.strategies);
+  const result = resolveVersion(config, platform, strategies);
 
-printVersions(config, result);
+  printVersions(config, result);
+} catch (e) {
+  let errorMessage = "An error occurred.";
+  if (e instanceof Error) {
+    errorMessage = e.message;
+  } else if (typeof e === "string") {
+    errorMessage = e;
+  }
+
+  console.error(chalk.red("ERROR:") + " " + errorMessage);
+}
