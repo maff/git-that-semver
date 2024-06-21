@@ -1,2 +1,3 @@
 node_modules/
+/git-that-semver
 *.bun-build
