@@ -3,53 +3,7 @@ import log from "loglevel";
 import YAML from "yaml";
 import { merge } from "merge-anything";
 import { specificPlatformTypes } from "../platform";
-
-const DEFAULT_CONFIG = `
-platform: auto
-
-defaults:
-  branchPrefixes:
-    - feature/
-    - bugfix/
-    - tech/
-
-  nightly:
-    defaultBranches:
-      - main
-    prefixTpl: "{{ commitInfo.previousSemVerReleaseVersion | semver_inc: 'minor' | append: '-' }}"
-    branchIdentifierTpl: "{% if branchIdentifier %}{{ branchIdentifier | truncate: 20, '' | trim_alphanumeric | append: '.' }}{% endif %}"
-    commitIdentifierTpl: "{{ commitInfo.dateTime }}.{{ commitInfo.sha | truncate: 12, '' }}"
-    versionTpl: "{{ prefix }}{{ branchIdentifier }}{{ commitIdentifier }}{{ suffix }}"
-
-strategies:
-  docker:
-    enabled: true
-    type: container
-    tags:
-      enabled: true
-      nightly:
-        - "{{ version }}"
-        - "{{ commitInfo.sha }}"
-        - "{% if config.nightly.defaultBranches contains commitInfo.refName %}{{ commitInfo.refName }}{% endif %}"
-      tagged:
-        - "{{ version }}"
-      semVer:
-        - "{{ version }}"
-        - "{% if versionInfo.isHighestSameMinorVersion %}{{ semVer.major }}.{{ semVer.minor }}{% endif %}"
-        - "{% if versionInfo.isHighestSameMajorVersion and semVer.major > 0 %}{{ semVer.major }}{% endif %}"
-        - "{% if versionInfo.isHighestSemVerReleaseVersion %}latest{% endif %}"
-
-  npm:
-    enabled: false
-
-  java:
-    enabled: false
-    nightly:
-      suffixTpl: "-SNAPSHOT"
-
-output:
-  prefix: GTS_
-`;
+import defaultConfigFilePath from "./git-that-semver.default.yaml";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
@@ -101,15 +55,12 @@ export const Config = z.object({
 
 export type Config = z.infer<typeof Config>;
 
-const readYamlFile = async (filePath: string): Promise<any> => {
-  const text = await Bun.file(filePath).text();
-  return YAML.parse(text);
-};
-
 export const parseConfig = async (
   customConfigFilePath: string
 ): Promise<Config> => {
-  const defaultConfig = YAML.parse(DEFAULT_CONFIG);
+  const defaultConfig = YAML.parse(
+    await Bun.file(defaultConfigFilePath).text()
+  );
   log.trace("Default config", defaultConfig);
 
   let mergedConfig = defaultConfig;
