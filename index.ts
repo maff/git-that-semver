@@ -45,6 +45,9 @@ try {
 
   printVersions(config, result);
 } catch (e) {
+  log.debug("Encountered exception");
+  log.debug(e);
+
   let errorMessage = "An error occurred.";
   if (e instanceof Error) {
     errorMessage = e.message;
