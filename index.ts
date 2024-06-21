@@ -11,9 +11,12 @@ import { resolveVersion } from "versionResolver";
 const program = new Command("git-that-semver")
   .version("0.0.1")
   .addOption(
-    new Option("-c, --config-file <configFile>", "Config file")
+    new Option(
+      "-c, --config-file <configFile>",
+      "Config file (git-that-semver.yaml)"
+    )
       .env("GTS_CONFIG_FILE")
-      .default("git-that-semver.toml")
+      .default("git-that-semver.yaml")
   )
   .addOption(
     new Option("--log-level <level>", "Log level")
@@ -35,7 +38,7 @@ if (program.opts().dumpConfig) {
 }
 
 const platform = resolvePlatform(config.platform);
-const strategies = resolveStrategies(config.strategy);
+const strategies = resolveStrategies(config.strategies);
 const result = resolveVersion(config, platform, strategies);
 
 printVersions(config, result);

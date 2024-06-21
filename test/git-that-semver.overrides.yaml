@@ -1,0 +1,13 @@
+strategies:
+  docker:
+    enabled: true
+    type: generic
+  java:
+    enabled: true
+  python:
+    enabled: true
+    nightly:
+      suffixTpl: "-python"
+
+output:
+  prefix: GIT_THAT_SEMVER_

@@ -1,5 +1,0 @@
-[strategy.docker]
-type = "generic"
-
-[output]
-prefix = "GIT_THAT_SEMVER_"
