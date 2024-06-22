@@ -4,8 +4,10 @@ import YAML from "yaml";
 import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
 import { Config } from "./types";
 
-export const parseConfig = async (
-  customConfigFilePath: string
+export const resolveConfig = async (
+  customConfigFilePath: string,
+  enabledStrategies: string[],
+  disabledStrategies: string[]
 ): Promise<Config> => {
   const defaultConfig = YAML.parse(defaultConfigContents);
   log.trace("Default config", defaultConfig);
@@ -18,6 +20,11 @@ export const parseConfig = async (
     log.trace("Custom config", customConfig);
     mergedConfig = merge(defaultConfig, customConfig);
   }
+
+  log.trace("Merged config before enabled/disabled strategy handling", { enabledStrategies, disabledStrategies }, mergedConfig);
+  const enabledStrategyConfig = createShallowStrategiesWithState(enabledStrategies, true);
+  const disabledStrategyConfig = createShallowStrategiesWithState(disabledStrategies, false);
+  mergedConfig = merge(mergedConfig, { strategies: enabledStrategyConfig }, { strategies: disabledStrategyConfig });
 
   log.trace("Merged config before strategy merge", mergedConfig);
 
@@ -48,4 +55,17 @@ export const parseConfig = async (
 
   log.debug("Final config", config);
   return Object.freeze(config);
+};
+
+const createShallowStrategiesWithState = (strategies: string[], state: boolean):ShallowStrategies => {
+  const result: ShallowStrategies = {};
+  for (const strategy of strategies) {
+    result[strategy] = { enabled: state };
+  }
+
+  return result;
+}
+
+type ShallowStrategies = {
+  [key: string]: { enabled: boolean };
 };

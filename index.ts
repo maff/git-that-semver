@@ -1,5 +1,5 @@
 import { Command, Option } from "@commander-js/extra-typings";
-import { parseConfig } from "config";
+import { resolveConfig } from "config";
 import { printVersions } from "output/versionPrinter";
 import log from "loglevel";
 import path from "path";
@@ -26,6 +26,18 @@ const program = new Command("git-that-semver")
       .default("info" as const)
       .choices(["trace", "debug", "info", "warn", "error"] as const)
   )
+  .addOption(
+    new Option(
+      "-e, --enable-strategies <strategies...>",
+      "Enable strategies by name"
+    ).default([])
+  )
+  .addOption(
+    new Option(
+      "-d, --disable-strategies <strategies...>",
+      "Disable strategies by name"
+    ).default([])
+  )
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
@@ -36,7 +48,12 @@ const program = new Command("git-that-semver")
 log.setDefaultLevel(program.opts().logLevel);
 
 try {
-  const config = await parseConfig(path.resolve(program.opts().configFile));
+  const config = await resolveConfig(
+    path.resolve(program.opts().configFile),
+    program.opts().enableStrategies,
+    program.opts().disableStrategies
+  );
+
   if (program.opts().dumpConfig) {
     console.log(util.inspect(config, false, null, true));
     process.exit(0);
