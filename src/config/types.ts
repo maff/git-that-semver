@@ -38,7 +38,10 @@ export const StrategyConfig = z.object({
 export type StrategyConfig = z.infer<typeof StrategyConfig>;
 
 export const OutputConfig = z.object({
-  prefix: z.string().default(""),
+  type: z.enum(["env", "json"]).default("env"),
+  env: z.object({
+    prefix: z.string().default(""),
+  }),
 });
 
 export const Config = z.object({

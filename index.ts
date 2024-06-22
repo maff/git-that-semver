@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 
 import { resolveConfig } from "./src/config";
 import { LogLevel, logger } from "./src/logging";
-import { printVersions } from "./src/output/versionPrinter";
+import { resolveOutputPrinter } from "./src/output";
 import { resolvePlatform } from "./src/platform";
 import { resolveStrategies } from "./src/version";
 import { resolveVersion } from "./src/versionResolver";
@@ -64,7 +64,8 @@ try {
   const strategies = resolveStrategies(config.strategies);
   const result = resolveVersion(config, platform, strategies);
 
-  printVersions(config, result);
+  const outputPrinter = resolveOutputPrinter(config);
+  outputPrinter.printResult(config, result);
 } catch (e) {
   logger.debug("Encountered exception", e);
 

@@ -10,4 +10,5 @@ strategies:
       useChangeRequestIdentifier: false
 
 output:
-  prefix: GIT_THAT_SEMVER_
+  env:
+    prefix: GIT_THAT_SEMVER_
