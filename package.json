@@ -8,6 +8,8 @@
     "@types/bun": "^1.1.5",
     "@types/semver": "^7.5.8",
     "@types/slug": "^5.0.8",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
     "prettier": "3.3.2"
   },
   "peerDependencies": {
@@ -23,5 +25,11 @@
     "slug": "^9.1.0",
     "yaml": "^2.4.5",
     "zod": "^3.23.8"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "scripts": {
+    "prepare": "husky"
   }
 }
