@@ -25,7 +25,6 @@ defaults:
 strategies:
   docker:
     enabled: true
-    type: container
     tags:
       enabled: true
       nightly:

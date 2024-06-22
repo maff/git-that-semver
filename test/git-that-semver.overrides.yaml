@@ -1,7 +1,6 @@
 strategies:
   docker:
     enabled: true
-    type: generic
   java:
     enabled: true
   python:

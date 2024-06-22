@@ -3,7 +3,6 @@ import type { Platform } from "platform";
 import type { SemVer } from "semver";
 import type { CommitInfo, VersionInfo, StrategyVersion } from "versionResolver";
 import { GenericStrategy } from "./genericStrategy";
-import { ContainerStrategy } from "./containerStrategy";
 
 export type VersionStrategyContext = {
   config: Config;
@@ -41,8 +40,6 @@ export function resolveStrategies(strategies: {
       switch (strategyConfig.type) {
         case "generic":
           return new GenericStrategy(name, strategyConfig);
-        case "container":
-          return new ContainerStrategy(name, strategyConfig);
       }
     });
 }

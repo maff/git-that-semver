@@ -3,7 +3,7 @@ import { specificPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
-export const SupportedTypes = z.enum(["generic", "container"]);
+export const SupportedTypes = z.enum(["generic"]);
 
 export const NightlyConfig = z.object({
   defaultBranches: z.array(z.string()).default([]),
