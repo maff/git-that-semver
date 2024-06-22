@@ -8,6 +8,7 @@ strategies:
     enabled: true
     nightly:
       suffixTpl: "-python"
+      useChangeRequestIdentifier: false
 
 output:
   prefix: GIT_THAT_SEMVER_

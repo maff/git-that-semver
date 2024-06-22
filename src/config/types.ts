@@ -7,6 +7,7 @@ export const SupportedTypes = z.enum(["generic", "container"]);
 
 export const NightlyConfig = z.object({
   defaultBranches: z.array(z.string()).default([]),
+  useChangeRequestIdentifier: z.boolean().default(true),
   prefixTpl: z.string().trim().default(""),
   suffixTpl: z.string().trim().default(""),
   branchIdentifierTpl: z.string().trim().default(""),

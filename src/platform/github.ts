@@ -24,6 +24,18 @@ export class GitHubPlatform implements Platform {
     return requiredEnv("GITHUB_REF_NAME");
   }
 
+  getChangeRequestIdentifier(): string | undefined {
+    if (requiredEnv("GITHUB_EVENT_NAME") === "pull_request") {
+      const ref = requiredEnv("GITHUB_REF");
+      if (ref) {
+        const pr = /^refs\/pull\/(?<pr>\d+)\/merge$/.exec(ref)?.groups?.pr;
+        if (pr) {
+          return `pr-${pr}`;
+        }
+      }
+    }
+  }
+
   isSupported(): boolean {
     return process.env.CI === "true" && process.env.GITHUB_ACTIONS === "true";
   }

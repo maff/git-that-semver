@@ -6,6 +6,7 @@ export interface Platform {
   isSupported(): boolean;
   getCommitSha(): string;
   getCommitRefName(): string;
+  getChangeRequestIdentifier(): string | undefined;
   getGitTag(): string | undefined;
 }
 

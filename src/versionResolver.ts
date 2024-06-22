@@ -32,6 +32,7 @@ export type CommitInfo = {
   sha: string;
   refName: string;
   refNameSlug: string;
+  changeRequestIdentifier: string | undefined;
   tag: string | undefined;
   dateTime: string;
 } & PreviousSemVerVersions;
@@ -65,6 +66,7 @@ export const resolveVersion = (
 const fetchCommitInfo = (config: Config, platform: Platform): CommitInfo => {
   const commitSha = platform.getCommitSha();
   const commitRefName = platform.getCommitRefName();
+  const changeRequestIdentifier = platform.getChangeRequestIdentifier();
   const tag = platform.getGitTag();
   const previousSemVerVersions = findPreviousSemVerVersions(commitSha);
 
@@ -72,6 +74,7 @@ const fetchCommitInfo = (config: Config, platform: Platform): CommitInfo => {
     sha: commitSha,
     refName: commitRefName,
     refNameSlug: resolveRefSlugName(config, commitRefName),
+    changeRequestIdentifier,
     tag,
     dateTime: getCommitDateTime(commitSha),
     ...previousSemVerVersions,
