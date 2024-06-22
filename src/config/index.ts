@@ -1,7 +1,8 @@
 import log from "loglevel";
 import { merge } from "merge-anything";
 import YAML from "yaml";
-import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
+
+import defaultConfigContents from "./git-that-semver.default.yaml" assert { type: "text" };
 import { Config } from "./types";
 
 export const resolveConfig = async (

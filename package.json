@@ -4,11 +4,11 @@
   "type": "module",
   "devDependencies": {
     "@commander-js/extra-typings": "^12.1.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bun": "^1.1.5",
     "@types/semver": "^7.5.8",
     "@types/slug": "^5.0.8",
-    "prettier": "3.3.2",
-    "prettier-plugin-organize-imports": "^3.2.4"
+    "prettier": "3.3.2"
   },
   "peerDependencies": {
     "typescript": "^5.5.2"

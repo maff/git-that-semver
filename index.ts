@@ -4,6 +4,7 @@ import log from "loglevel";
 import path from "path";
 import util from "util";
 import { ZodError } from "zod";
+
 import { resolveConfig } from "./src/config";
 import { printVersions } from "./src/output/versionPrinter";
 import { resolvePlatform } from "./src/platform";

@@ -1,4 +1,5 @@
 import type { SemVer } from "semver";
+
 import type { Config, StrategyConfig } from "../config/types";
 import type { Platform } from "../platform";
 import type {

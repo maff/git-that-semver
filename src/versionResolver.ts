@@ -1,5 +1,6 @@
 import semver, { SemVer } from "semver";
 import slug from "slug";
+
 import type { Config } from "./config/types";
 import type { Platform } from "./platform";
 import { getCommitDateTime, listTags, listTagsBeforeCommit } from "./util/git";

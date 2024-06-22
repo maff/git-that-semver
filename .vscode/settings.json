@@ -1,5 +1,5 @@
 {
   "editor.defaultFormatter": "oven.bun-vscode",
   "editor.formatOnSave": true,
-  "editor.formatOnPaste": true
+  "editor.formatOnPaste": false
 }
