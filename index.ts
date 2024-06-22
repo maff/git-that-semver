@@ -47,8 +47,12 @@ try {
   log.debug("Encountered exception");
   log.debug(e);
 
+  let exitCode = 1;
   let errorMessage = chalk.white.bold("An unexpected error occurred.");
+
   if (e instanceof ZodError) {
+    exitCode = 2;
+
     errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
     errorMessage += e.errors
       .map(
@@ -66,4 +70,5 @@ try {
   }
 
   console.error(chalk.red.bold("ERROR:") + " " + errorMessage);
+  process.exit(exitCode);
 }
