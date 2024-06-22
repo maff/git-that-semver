@@ -1,7 +1,7 @@
 import { Command, Option } from "@commander-js/extra-typings";
 import chalk from "chalk";
 import path from "path";
-import util from "util";
+import YAML from "yaml";
 import { ZodError } from "zod";
 
 import { resolveConfig } from "./src/config";
@@ -56,7 +56,8 @@ try {
   );
 
   if (program.opts().dumpConfig) {
-    console.log(util.inspect(config, false, null, true));
+    logger.info("Dumping resolved config file as --dump-config was passed");
+    console.log(YAML.stringify(config));
     process.exit(0);
   }
 
