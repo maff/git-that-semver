@@ -7,7 +7,7 @@ strategies:
   python:
     enabled: true
     nightly:
-      suffixTpl: "-python"
+      suffixTpl: "-python{% if env.PYTHON_SUFFIX %}{{ env.PYTHON_SUFFIX | prepend: '-' }}{% endif %}"
       useChangeRequestIdentifier: false
 
 output:

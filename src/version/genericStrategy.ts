@@ -103,6 +103,7 @@ export class GenericStrategy implements VersionStrategy {
       config: this.config,
       commitInfo,
       versionInfo: context.versionInfo,
+      env: process.env,
     };
   }
 
