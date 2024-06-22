@@ -27,6 +27,10 @@ const program = new Command("git-that-semver")
       .choices(["trace", "debug", "info", "warn", "error"] as const)
   )
   .option("--dump-config", "Dump configuration for debug purposes")
+  .configureOutput({
+    writeErr: (str) =>
+      process.stderr.write(`${chalk.red.bold("[ERR]")} ${str}`),
+  })
   .parse();
 
 log.setDefaultLevel(program.opts().logLevel);
@@ -47,11 +51,11 @@ try {
   log.debug("Encountered exception");
   log.debug(e);
 
-  let exitCode = 1;
+  let exitCode = 2;
   let errorMessage = chalk.white.bold("An unexpected error occurred.");
 
   if (e instanceof ZodError) {
-    exitCode = 2;
+    exitCode = 3;
 
     errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
     errorMessage += e.errors
@@ -69,6 +73,5 @@ try {
     errorMessage = chalk.white.bold(e);
   }
 
-  console.error(chalk.red.bold("ERROR:") + " " + errorMessage);
-  process.exit(exitCode);
+  program.error(errorMessage, { exitCode: exitCode });
 }
