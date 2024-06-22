@@ -1,6 +1,8 @@
 # compile stage
 FROM oven/bun:1-alpine AS compile
 
+ENV HUSKY=0
+
 RUN mkdir -p /temp/compile
 WORKDIR /temp/compile
 
