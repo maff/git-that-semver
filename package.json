@@ -19,7 +19,6 @@
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "liquidjs": "^10.14.0",
-    "loglevel": "^1.9.1",
     "merge-anything": "^6.0.2",
     "semver": "^7.6.2",
     "slug": "^9.1.0",
