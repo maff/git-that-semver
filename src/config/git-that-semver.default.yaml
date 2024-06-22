@@ -48,4 +48,6 @@ strategies:
       suffixTpl: "-SNAPSHOT"
 
 output:
-  prefix: GTS_
+  type: env
+  env:
+    prefix: GTS_
