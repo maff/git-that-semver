@@ -1,14 +1,14 @@
 import { Command, Option } from "@commander-js/extra-typings";
-import { resolveConfig } from "./src/config";
-import { printVersions } from "./src/output/versionPrinter";
+import chalk from "chalk";
 import log from "loglevel";
 import path from "path";
-import { resolvePlatform } from "./src/platform";
 import util from "util";
+import { ZodError } from "zod";
+import { resolveConfig } from "./src/config";
+import { printVersions } from "./src/output/versionPrinter";
+import { resolvePlatform } from "./src/platform";
 import { resolveStrategies } from "./src/version";
 import { resolveVersion } from "./src/versionResolver";
-import chalk from "chalk";
-import { ZodError } from "zod";
 
 const program = new Command("git-that-semver")
   .version("0.0.1")

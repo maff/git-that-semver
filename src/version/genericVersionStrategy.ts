@@ -1,5 +1,5 @@
-import type { StrategyConfig } from "../config/types";
 import type { SemVer } from "semver";
+import type { StrategyConfig } from "../config/types";
 import { templateEngine } from "../tpl/templateEngine";
 import { semVerVersionString } from "../util/semVer";
 import type { VersionStrategy, VersionStrategyContext } from "../version";
