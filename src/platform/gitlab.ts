@@ -24,6 +24,6 @@ export class GitLabPlatform implements Platform {
   }
 
   isSupported(): boolean {
-    return process.env.CI === "true" && process.env.GITLAB_CI === "true";
+    return process.env["CI"] === "true" && process.env["GITLAB_CI"] === "true";
   }
 }
