@@ -1,3 +1,4 @@
+import log from "loglevel";
 import semver, { SemVer } from "semver";
 import slug from "slug";
 
@@ -50,6 +51,7 @@ export const resolveVersion = (
   strategies: VersionStrategy[],
 ): VersionResult => {
   const commitInfo = fetchCommitInfo(config, platform);
+  log.debug("Commit info: ", commitInfo);
 
   if (commitInfo.tag) {
     return resolveTaggedVersion(
