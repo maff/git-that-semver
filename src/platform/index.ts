@@ -11,7 +11,7 @@ export interface Platform {
 }
 
 export const platforms = Object.fromEntries(
-  [new GitHubPlatform(), new GitLabPlatform()].map((a) => [a.type, a])
+  [new GitHubPlatform(), new GitLabPlatform()].map((a) => [a.type, a]),
 );
 
 export const specificPlatformTypes = Object.keys(platforms);
@@ -31,7 +31,7 @@ export function resolvePlatform(platformType: string): Platform {
 
 function resolveAutoPlatform(): Platform {
   const platformType = specificPlatformTypes.find((t) =>
-    platforms[t].isSupported()
+    platforms[t].isSupported(),
   );
 
   if (!platformType) {

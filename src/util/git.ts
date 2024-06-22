@@ -40,6 +40,6 @@ function executeCommand(parts: string[]): string {
   throw new Error(
     `Process exited with code ${
       proc.exitCode
-    }. STDERR: ${proc.stderr.toString()}`
+    }. STDERR: ${proc.stderr.toString()}`,
   );
 }

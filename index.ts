@@ -15,28 +15,28 @@ const program = new Command("git-that-semver")
   .addOption(
     new Option(
       "-c, --config-file <configFile>",
-      "Config file (git-that-semver.yaml)"
+      "Config file (git-that-semver.yaml)",
     )
       .env("GTS_CONFIG_FILE")
-      .default("git-that-semver.yaml")
+      .default("git-that-semver.yaml"),
   )
   .addOption(
     new Option("--log-level <level>", "Log level")
       .env("GTS_LOG_LEVEL")
       .default("info" as const)
-      .choices(["trace", "debug", "info", "warn", "error"] as const)
+      .choices(["trace", "debug", "info", "warn", "error"] as const),
   )
   .addOption(
     new Option(
       "-e, --enable-strategies <strategies...>",
-      "Enable strategies by name"
-    ).default([])
+      "Enable strategies by name",
+    ).default([]),
   )
   .addOption(
     new Option(
       "-d, --disable-strategies <strategies...>",
-      "Disable strategies by name"
-    ).default([])
+      "Disable strategies by name",
+    ).default([]),
   )
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
@@ -51,7 +51,7 @@ try {
   const config = await resolveConfig(
     path.resolve(program.opts().configFile),
     program.opts().enableStrategies,
-    program.opts().disableStrategies
+    program.opts().disableStrategies,
   );
 
   if (program.opts().dumpConfig) {
@@ -81,7 +81,7 @@ try {
           chalk.red.bold(" •") +
           " " +
           chalk.white.bold(err.path.join(".") + ": ") +
-          err.message
+          err.message,
       )
       .join("\n");
   } else if (e instanceof Error) {

@@ -6,12 +6,15 @@ import type { VersionStrategy, VersionStrategyContext } from "version";
 import type { CommitInfo, StrategyVersion } from "versionResolver";
 
 export class GenericVersionStrategy implements VersionStrategy {
-  constructor(public name: string, protected config: StrategyConfig) {}
+  constructor(
+    public name: string,
+    protected config: StrategyConfig,
+  ) {}
 
   taggedVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
-    tag: string
+    tag: string,
   ): StrategyVersion {
     return {
       version: tag,
@@ -26,7 +29,7 @@ export class GenericVersionStrategy implements VersionStrategy {
   semVerVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
-    version: SemVer
+    version: SemVer,
   ): StrategyVersion {
     const stringVersion = semVerVersionString(version);
 
@@ -43,18 +46,18 @@ export class GenericVersionStrategy implements VersionStrategy {
 
   nightlyVersionResult(
     context: VersionStrategyContext,
-    commitInfo: CommitInfo
+    commitInfo: CommitInfo,
   ): StrategyVersion {
     const templateContext = this.templateContext(context, commitInfo);
 
     const prefix = templateEngine.parseAndRenderSync(
       this.config.nightly.prefixTpl,
-      templateContext
+      templateContext,
     );
 
     const suffix = templateEngine.parseAndRenderSync(
       this.config.nightly.suffixTpl,
-      templateContext
+      templateContext,
     );
 
     const branchIdentifier = templateEngine.parseAndRenderSync(
@@ -62,16 +65,16 @@ export class GenericVersionStrategy implements VersionStrategy {
       {
         ...templateContext,
         branchIdentifier: this.config.nightly.defaultBranches.includes(
-          commitInfo.refName
+          commitInfo.refName,
         )
           ? undefined
           : commitInfo.refNameSlug,
-      }
+      },
     );
 
     const commitIdentifier = templateEngine.parseAndRenderSync(
       this.config.nightly.commitIdentifierTpl,
-      templateContext
+      templateContext,
     );
 
     const version = templateEngine.parseAndRenderSync(
@@ -82,7 +85,7 @@ export class GenericVersionStrategy implements VersionStrategy {
         suffix,
         branchIdentifier,
         commitIdentifier,
-      }
+      },
     );
 
     return {
@@ -97,7 +100,7 @@ export class GenericVersionStrategy implements VersionStrategy {
 
   private templateContext(
     context: VersionStrategyContext,
-    commitInfo: CommitInfo
+    commitInfo: CommitInfo,
   ) {
     return {
       config: this.config,

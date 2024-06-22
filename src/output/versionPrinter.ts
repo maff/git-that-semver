@@ -27,10 +27,10 @@ export function printVersions(config: Config, versionResult: VersionResult) {
         }
 
         console.log(
-          `${strategyPrefix}${key.toUpperCase()}=${valueToString(value)}`
+          `${strategyPrefix}${key.toUpperCase()}=${valueToString(value)}`,
         );
       });
-    }
+    },
   );
 }
 

@@ -46,7 +46,7 @@ export type VersionResult = VersionInfo & {
 export const resolveVersion = (
   config: Config,
   platform: Platform,
-  strategies: VersionStrategy[]
+  strategies: VersionStrategy[],
 ): VersionResult => {
   const commitInfo = fetchCommitInfo(config, platform);
 
@@ -56,7 +56,7 @@ export const resolveVersion = (
       platform,
       strategies,
       commitInfo,
-      commitInfo.tag
+      commitInfo.tag,
     );
   } else {
     return resolveNightlyVersion(config, platform, strategies, commitInfo);
@@ -86,7 +86,7 @@ const resolveTaggedVersion = (
   platform: Platform,
   strategies: VersionStrategy[],
   commitInfo: CommitInfo,
-  tag: string
+  tag: string,
 ): VersionResult => {
   const version = semver.parse(tag);
 
@@ -111,9 +111,9 @@ const resolveTaggedVersion = (
           strategy.taggedVersionResult(
             { config, platform, versionInfo },
             commitInfo,
-            tag
+            tag,
           ),
-        ])
+        ]),
       ),
     };
   }
@@ -140,14 +140,14 @@ const resolveTaggedVersion = (
 
   // is it the highest same major semver tag in the repository?
   const isHighestSameMajorVersion = isHighestTagInList(
-    semVerTags.filter((t) => t.major === version.major)
+    semVerTags.filter((t) => t.major === version.major),
   );
 
   // is it the highest same minor semver tag in the repository?
   const isHighestSameMinorVersion = isHighestTagInList(
     semVerTags.filter(
-      (t) => t.major == version.major && t.minor === version.minor
-    )
+      (t) => t.major == version.major && t.minor === version.minor,
+    ),
   );
 
   const versionInfo: VersionInfo = {
@@ -169,9 +169,9 @@ const resolveTaggedVersion = (
         strategy.semVerVersionResult(
           { config, platform, versionInfo },
           commitInfo,
-          version
+          version,
         ),
-      ])
+      ]),
     ),
   };
 };
@@ -180,7 +180,7 @@ const resolveNightlyVersion = (
   config: Config,
   platform: Platform,
   strategies: VersionStrategy[],
-  commitInfo: CommitInfo
+  commitInfo: CommitInfo,
 ): VersionResult => {
   const versionInfo: VersionInfo = {
     isNightlyVersion: true,
@@ -200,9 +200,9 @@ const resolveNightlyVersion = (
         strategy.name,
         strategy.nightlyVersionResult(
           { config, platform, versionInfo },
-          commitInfo
+          commitInfo,
         ),
-      ])
+      ]),
     ),
   };
 };
@@ -225,7 +225,7 @@ const isReleaseSemVerTag = (tag: SemVer) =>
 
 // find previous semver version tags in the repository
 const findPreviousSemVerVersions = (
-  commitSha: string
+  commitSha: string,
 ): PreviousSemVerVersions => {
   const previousSemVerTags = listTagsBeforeCommit(commitSha)
     .map((tag) => semver.parse(tag))
@@ -234,7 +234,7 @@ const findPreviousSemVerVersions = (
     .reverse();
 
   const releaseSemVerTags = previousSemVerTags.filter((t) =>
-    isReleaseSemVerTag(t)
+    isReleaseSemVerTag(t),
   );
 
   return {

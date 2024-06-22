@@ -16,18 +16,18 @@ export interface VersionStrategy {
   taggedVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
-    tag: string
+    tag: string,
   ): StrategyVersion;
 
   semVerVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
-    version: SemVer
+    version: SemVer,
   ): StrategyVersion;
 
   nightlyVersionResult(
     context: VersionStrategyContext,
-    commitInfo: CommitInfo
+    commitInfo: CommitInfo,
   ): StrategyVersion;
 }
 
@@ -38,6 +38,6 @@ export function resolveStrategies(strategies: {
     .filter(([_, strategyConfig]) => strategyConfig.enabled)
     .map(
       ([name, strategyConfig]) =>
-        new GenericVersionStrategy(name, strategyConfig)
+        new GenericVersionStrategy(name, strategyConfig),
     );
 }
