@@ -2,7 +2,7 @@ import type { Config, StrategyConfig } from "config/types";
 import type { Platform } from "platform";
 import type { SemVer } from "semver";
 import type { CommitInfo, VersionInfo, StrategyVersion } from "versionResolver";
-import { GenericStrategy } from "./genericStrategy";
+import { GenericVersionStrategy } from "./genericVersionStrategy";
 
 export type VersionStrategyContext = {
   config: Config;
@@ -35,11 +35,9 @@ export function resolveStrategies(strategies: {
   [key: string]: StrategyConfig;
 }): VersionStrategy[] {
   return Object.entries(strategies)
-    .filter(([name, strategyConfig]) => strategyConfig.enabled)
-    .map(([name, strategyConfig]) => {
-      switch (strategyConfig.type) {
-        case "generic":
-          return new GenericStrategy(name, strategyConfig);
-      }
-    });
+    .filter(([_, strategyConfig]) => strategyConfig.enabled)
+    .map(
+      ([name, strategyConfig]) =>
+        new GenericVersionStrategy(name, strategyConfig)
+    );
 }

@@ -5,7 +5,7 @@ import { semVerVersionString } from "util/semVer";
 import type { VersionStrategy, VersionStrategyContext } from "version";
 import type { CommitInfo, StrategyVersion } from "versionResolver";
 
-export class GenericStrategy implements VersionStrategy {
+export class GenericVersionStrategy implements VersionStrategy {
   constructor(public name: string, protected config: StrategyConfig) {}
 
   taggedVersionResult(

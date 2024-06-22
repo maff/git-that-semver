@@ -3,8 +3,6 @@ import { specificPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
-export const SupportedTypes = z.enum(["generic"]);
-
 export const NightlyConfig = z.object({
   defaultBranches: z.array(z.string()).default([]),
   useChangeRequestIdentifier: z.boolean().default(true),
@@ -31,7 +29,6 @@ export const DefaultConfig = z.object({
 
 export const StrategyConfig = z.object({
   enabled: z.boolean().default(true),
-  type: SupportedTypes.default("generic"),
   nightly: NightlyConfig.default({}),
   tags: TagsConfig.default({}),
   properties: FreeformProperties.default({}),
