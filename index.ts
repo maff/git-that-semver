@@ -39,6 +39,12 @@ const program = new Command("git-that-semver")
       "Disable strategies by name",
     ).default([]),
   )
+  .addOption(
+    new Option("-o, --output-format <format>", "Output format")
+      .env("GTS_OUTPUT_FORMAT")
+      .default("env")
+      .choices(["env", "json", "yaml"] as const),
+  )
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
@@ -53,11 +59,27 @@ try {
     path.resolve(program.opts().configFile),
     program.opts().enableStrategies,
     program.opts().disableStrategies,
+    program.opts().outputFormat,
   );
 
   if (program.opts().dumpConfig) {
     logger.info("Dumping resolved config file as --dump-config was passed");
-    console.log(YAML.stringify(config));
+
+    let configOutputFormat = program.opts().outputFormat;
+    if (configOutputFormat === "env") {
+      logger.info(
+        "Selected output format is 'env' which is not supported for config dump, using YAML instead",
+      );
+
+      configOutputFormat = "yaml";
+    }
+
+    if (configOutputFormat === "json") {
+      console.log(JSON.stringify(config, null, 2));
+    } else if (configOutputFormat === "yaml") {
+      console.log(YAML.stringify(config));
+    }
+
     process.exit(0);
   }
 

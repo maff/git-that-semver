@@ -11,6 +11,7 @@ export const resolveConfig = async (
   customConfigFilePath: string,
   enabledStrategies: string[],
   disabledStrategies: string[],
+  outputFormat: string | undefined,
 ): Promise<Config> => {
   const defaultConfig = YAML.parse(defaultConfigContents);
   configLogger.trace("Default config", defaultConfig);
@@ -43,6 +44,10 @@ export const resolveConfig = async (
     { strategies: enabledStrategyConfig },
     { strategies: disabledStrategyConfig },
   );
+
+  if (outputFormat) {
+    mergedConfig = merge(mergedConfig, { output: { type: outputFormat } });
+  }
 
   configLogger.trace("Merged config before strategy merge", mergedConfig);
 
