@@ -1,12 +1,12 @@
 import { Command, Option } from "@commander-js/extra-typings";
-import { resolveConfig } from "config";
-import { printVersions } from "output/versionPrinter";
+import { resolveConfig } from "./src/config";
+import { printVersions } from "./src/output/versionPrinter";
 import log from "loglevel";
 import path from "path";
-import { resolvePlatform } from "platform";
+import { resolvePlatform } from "./src/platform";
 import util from "util";
-import { resolveStrategies } from "version";
-import { resolveVersion } from "versionResolver";
+import { resolveStrategies } from "./src/version";
+import { resolveVersion } from "./src/versionResolver";
 import chalk from "chalk";
 import { ZodError } from "zod";
 

@@ -1,9 +1,9 @@
-import type { StrategyConfig } from "config/types";
+import type { StrategyConfig } from "../config/types";
 import type { SemVer } from "semver";
-import { templateEngine } from "tpl/templateEngine";
-import { semVerVersionString } from "util/semVer";
-import type { VersionStrategy, VersionStrategyContext } from "version";
-import type { CommitInfo, StrategyVersion } from "versionResolver";
+import { templateEngine } from "../tpl/templateEngine";
+import { semVerVersionString } from "../util/semVer";
+import type { VersionStrategy, VersionStrategyContext } from "../version";
+import type { CommitInfo, StrategyVersion } from "../versionResolver";
 
 export class GenericVersionStrategy implements VersionStrategy {
   constructor(

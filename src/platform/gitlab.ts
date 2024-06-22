@@ -1,5 +1,5 @@
-import type { Platform } from "platform";
-import { env, requiredEnv } from "util/env";
+import type { Platform } from "../platform";
+import { env, requiredEnv } from "../util/env";
 
 export class GitLabPlatform implements Platform {
   type = "gitlab";

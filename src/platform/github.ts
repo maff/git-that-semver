@@ -1,5 +1,5 @@
-import type { Platform } from "platform";
-import { requiredEnv } from "util/env";
+import type { Platform } from "../platform";
+import { requiredEnv } from "../util/env";
 
 export class GitHubPlatform implements Platform {
   type = "github";

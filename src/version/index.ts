@@ -1,7 +1,11 @@
-import type { Config, StrategyConfig } from "config/types";
-import type { Platform } from "platform";
 import type { SemVer } from "semver";
-import type { CommitInfo, VersionInfo, StrategyVersion } from "versionResolver";
+import type { Config, StrategyConfig } from "../config/types";
+import type { Platform } from "../platform";
+import type {
+  CommitInfo,
+  StrategyVersion,
+  VersionInfo,
+} from "../versionResolver";
 import { GenericVersionStrategy } from "./genericVersionStrategy";
 
 export type VersionStrategyContext = {
