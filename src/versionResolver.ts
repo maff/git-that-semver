@@ -1,12 +1,14 @@
-import log from "loglevel";
 import semver, { SemVer } from "semver";
 import slug from "slug";
 
 import type { Config } from "./config/types";
+import { logger } from "./logging";
 import type { Platform } from "./platform";
 import { getCommitDateTime, listTags, listTagsBeforeCommit } from "./util/git";
 import { semVerVersionString } from "./util/semVer";
 import type { VersionStrategy } from "./version";
+
+const versionResolveLogger = logger.childLogger("version-resolver");
 
 export type StrategyVersion = {
   version: string;
@@ -51,7 +53,7 @@ export const resolveVersion = (
   strategies: VersionStrategy[],
 ): VersionResult => {
   const commitInfo = fetchCommitInfo(config, platform);
-  log.debug("Commit info: ", commitInfo);
+  versionResolveLogger.debug("Commit info: ", commitInfo);
 
   if (commitInfo.tag) {
     return resolveTaggedVersion(

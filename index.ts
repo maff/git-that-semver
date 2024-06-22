@@ -1,11 +1,11 @@
 import { Command, Option } from "@commander-js/extra-typings";
 import chalk from "chalk";
-import log from "loglevel";
 import path from "path";
 import util from "util";
 import { ZodError } from "zod";
 
 import { resolveConfig } from "./src/config";
+import { LogLevel, logger } from "./src/logging";
 import { printVersions } from "./src/output/versionPrinter";
 import { resolvePlatform } from "./src/platform";
 import { resolveStrategies } from "./src/version";
@@ -24,8 +24,8 @@ const program = new Command("git-that-semver")
   .addOption(
     new Option("--log-level <level>", "Log level")
       .env("GTS_LOG_LEVEL")
-      .default("info" as const)
-      .choices(["trace", "debug", "info", "warn", "error"] as const),
+      .default("INFO" as LogLevel)
+      .choices(["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "SILENT"] as const),
   )
   .addOption(
     new Option(
@@ -42,11 +42,11 @@ const program = new Command("git-that-semver")
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
-      process.stderr.write(`${chalk.red.bold("[ERR]")} ${str}`),
+      process.stderr.write(`${chalk.red.bold("[ERROR]")} ${str}`),
   })
   .parse();
 
-log.setDefaultLevel(program.opts().logLevel);
+logger.setLevel(LogLevel[program.opts().logLevel]);
 
 try {
   const config = await resolveConfig(
@@ -66,8 +66,7 @@ try {
 
   printVersions(config, result);
 } catch (e) {
-  log.debug("Encountered exception");
-  log.debug(e);
+  logger.debug("Encountered exception", e);
 
   let exitCode = 2;
   let errorMessage = chalk.white.bold("An unexpected error occurred.");

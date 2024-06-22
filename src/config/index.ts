@@ -1,9 +1,11 @@
-import log from "loglevel";
 import { merge } from "merge-anything";
 import YAML from "yaml";
 
+import { logger } from "../logging";
 import defaultConfigContents from "./git-that-semver.default.yaml" assert { type: "text" };
 import { Config } from "./types";
+
+const configLogger = logger.childLogger("config");
 
 export const resolveConfig = async (
   customConfigFilePath: string,
@@ -11,22 +13,23 @@ export const resolveConfig = async (
   disabledStrategies: string[],
 ): Promise<Config> => {
   const defaultConfig = YAML.parse(defaultConfigContents);
-  log.trace("Default config", defaultConfig);
+  configLogger.trace("Default config", defaultConfig);
 
   let mergedConfig = defaultConfig;
 
   const customConfigFile = Bun.file(customConfigFilePath);
   if (await customConfigFile.exists()) {
     const customConfig = YAML.parse(await customConfigFile.text());
-    log.trace("Custom config", customConfig);
+    configLogger.trace("Custom config", customConfig);
     mergedConfig = merge(defaultConfig, customConfig);
   }
 
-  log.trace(
+  configLogger.trace(
     "Merged config before enabled/disabled strategy handling",
     { enabledStrategies, disabledStrategies },
     mergedConfig,
   );
+
   const enabledStrategyConfig = createShallowStrategiesWithState(
     enabledStrategies,
     true,
@@ -41,7 +44,7 @@ export const resolveConfig = async (
     { strategies: disabledStrategyConfig },
   );
 
-  log.trace("Merged config before strategy merge", mergedConfig);
+  configLogger.trace("Merged config before strategy merge", mergedConfig);
 
   const defaultsWithoutBranchPrefixes = merge({}, mergedConfig.defaults ?? {});
   if (defaultsWithoutBranchPrefixes["branchPrefixes"]) {
@@ -59,7 +62,7 @@ export const resolveConfig = async (
     }
   }
 
-  log.trace("Merged config after strategy merge", mergedConfig);
+  configLogger.trace("Merged config after strategy merge", mergedConfig);
 
   const config = Config.parse(mergedConfig);
   for (const [strategy, strategyConfig] of Object.entries(config.strategies)) {
@@ -68,7 +71,7 @@ export const resolveConfig = async (
     }
   }
 
-  log.debug("Final config", config);
+  configLogger.debug("Final config", config);
   return Object.freeze(config);
 };
 
