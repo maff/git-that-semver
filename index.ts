@@ -8,6 +8,7 @@ import util from "util";
 import { resolveStrategies } from "version";
 import { resolveVersion } from "versionResolver";
 import chalk from "chalk";
+import { ZodError } from "zod";
 
 const program = new Command("git-that-semver")
   .version("0.0.1")
@@ -30,15 +31,13 @@ const program = new Command("git-that-semver")
 
 log.setDefaultLevel(program.opts().logLevel);
 
-const configFilePath = path.resolve(program.opts().configFile);
-
-const config = await parseConfig(configFilePath);
-if (program.opts().dumpConfig) {
-  console.log(util.inspect(config, false, null, true));
-  process.exit(0);
-}
-
 try {
+  const config = await parseConfig(path.resolve(program.opts().configFile));
+  if (program.opts().dumpConfig) {
+    console.log(util.inspect(config, false, null, true));
+    process.exit(0);
+  }
+
   const platform = resolvePlatform(config.platform);
   const strategies = resolveStrategies(config.strategies);
   const result = resolveVersion(config, platform, strategies);
@@ -48,12 +47,23 @@ try {
   log.debug("Encountered exception");
   log.debug(e);
 
-  let errorMessage = "An error occurred.";
-  if (e instanceof Error) {
-    errorMessage = e.message;
+  let errorMessage = chalk.white.bold("An unexpected error occurred.");
+  if (e instanceof ZodError) {
+    errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
+    errorMessage += e.errors
+      .map(
+        (err) =>
+          chalk.red.bold(" •") +
+          " " +
+          chalk.white.bold(err.path.join(".") + ": ") +
+          err.message
+      )
+      .join("\n");
+  } else if (e instanceof Error) {
+    errorMessage = chalk.white.bold(e.message);
   } else if (typeof e === "string") {
-    errorMessage = e;
+    errorMessage = chalk.white.bold(e);
   }
 
-  console.error(chalk.red("ERROR:") + " " + errorMessage);
+  console.error(chalk.red.bold("ERROR:") + " " + errorMessage);
 }
