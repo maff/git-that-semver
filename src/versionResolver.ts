@@ -23,8 +23,8 @@ export type VersionInfo = {
   isReleaseSemVerVersion: boolean;
   isHighestSemVerVersion: boolean;
   isHighestSemVerReleaseVersion: boolean;
-  isHighestSameMajorVersion: boolean;
-  isHighestSameMinorVersion: boolean;
+  isHighestSameMajorReleaseVersion: boolean;
+  isHighestSameMinorReleaseVersion: boolean;
 };
 
 export type PreviousSemVerVersions = {
@@ -104,8 +104,8 @@ const resolveTaggedVersion = (
       isReleaseSemVerVersion: false,
       isHighestSemVerVersion: false,
       isHighestSemVerReleaseVersion: false,
-      isHighestSameMajorVersion: false,
-      isHighestSameMinorVersion: false,
+      isHighestSameMajorReleaseVersion: false,
+      isHighestSameMinorReleaseVersion: false,
     };
 
     return {
@@ -144,16 +144,18 @@ const resolveTaggedVersion = (
     isHighestTagInList(semVerTags.filter((t) => isReleaseSemVerTag(t)));
 
   // is it the highest same major semver tag in the repository?
-  const isHighestSameMajorVersion = isHighestTagInList(
-    semVerTags.filter((t) => t.major === version.major),
-  );
+  const isHighestSameMajorReleaseVersion =
+    isReleaseSemVerVersion &&
+    isHighestTagInList(semVerTags.filter((t) => t.major === version.major));
 
   // is it the highest same minor semver tag in the repository?
-  const isHighestSameMinorVersion = isHighestTagInList(
-    semVerTags.filter(
-      (t) => t.major == version.major && t.minor === version.minor,
-    ),
-  );
+  const isHighestSameMinorReleaseVersion =
+    isReleaseSemVerVersion &&
+    isHighestTagInList(
+      semVerTags.filter(
+        (t) => t.major == version.major && t.minor === version.minor,
+      ),
+    );
 
   const versionInfo: VersionInfo = {
     isNightlyVersion: false,
@@ -162,8 +164,8 @@ const resolveTaggedVersion = (
     isReleaseSemVerVersion,
     isHighestSemVerVersion,
     isHighestSemVerReleaseVersion,
-    isHighestSameMajorVersion,
-    isHighestSameMinorVersion,
+    isHighestSameMajorReleaseVersion,
+    isHighestSameMinorReleaseVersion,
   };
 
   return {
@@ -194,8 +196,8 @@ const resolveNightlyVersion = (
     isReleaseSemVerVersion: false,
     isHighestSemVerVersion: false,
     isHighestSemVerReleaseVersion: false,
-    isHighestSameMajorVersion: false,
-    isHighestSameMinorVersion: false,
+    isHighestSameMajorReleaseVersion: false,
+    isHighestSameMinorReleaseVersion: false,
   };
 
   return {

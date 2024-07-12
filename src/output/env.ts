@@ -14,8 +14,10 @@ export class EnvOutputPrinter implements OutputPrinter {
       IS_HIGHEST_SEMVER_VERSION: versionResult.isHighestSemVerVersion,
       IS_HIGHEST_SEMVER_RELEASE_VERSION:
         versionResult.isHighestSemVerReleaseVersion,
-      IS_HIGHEST_SAME_MAJOR_VERSION: versionResult.isHighestSameMajorVersion,
-      IS_HIGHEST_SAME_MINOR_VERSION: versionResult.isHighestSameMinorVersion,
+      IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION:
+        versionResult.isHighestSameMajorReleaseVersion,
+      IS_HIGHEST_SAME_MINOR_RELEASE_VERSION:
+        versionResult.isHighestSameMinorReleaseVersion,
     }).forEach(([key, value]) => {
       console.log(`${prefix}${key}=${this.valueToString(value)}`);
     });
