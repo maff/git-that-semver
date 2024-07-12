@@ -30,7 +30,7 @@ export interface VersionStrategy {
     version: SemVer,
   ): StrategyVersion;
 
-  nightlyVersionResult(
+  snapshotVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
   ): StrategyVersion;

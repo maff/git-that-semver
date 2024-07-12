@@ -6,13 +6,13 @@ defaults:
     - bugfix/
     - tech/
 
-  nightly:
+  snapshot:
     defaultBranches:
       - main
     prefixTpl: |
       {{ commitInfo.previousSemVerReleaseVersion | semver_inc: 'minor' | append: '-' }}
     branchIdentifierTpl: |
-      {% if config.nightly.useChangeRequestIdentifier and commitInfo.changeRequestIdentifier %}
+      {% if config.snapshot.useChangeRequestIdentifier and commitInfo.changeRequestIdentifier %}
         {{- commitInfo.changeRequestIdentifier | append: '.' -}}
       {% elsif branchIdentifier %}
         {{- branchIdentifier | truncate: 20, '' | trim_alphanumeric | append: '.' -}}
@@ -27,10 +27,10 @@ strategies:
     enabled: true
     tags:
       enabled: true
-      nightly:
+      snapshot:
         - "{{ version }}"
         - "{{ commitInfo.sha }}"
-        - "{% if config.nightly.defaultBranches contains commitInfo.refName %}{{ commitInfo.refName }}{% endif %}"
+        - "{% if config.snapshot.defaultBranches contains commitInfo.refName %}{{ commitInfo.refName }}{% endif %}"
       tagged:
         - "{{ version }}"
       semVer:
@@ -44,7 +44,7 @@ strategies:
 
   java:
     enabled: false
-    nightly:
+    snapshot:
       suffixTpl: "-SNAPSHOT"
 
 output:

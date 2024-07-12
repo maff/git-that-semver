@@ -17,7 +17,7 @@ export type StrategyVersion = {
 };
 
 export type VersionInfo = {
-  isNightlyVersion: boolean;
+  isSnapshotVersion: boolean;
   isTaggedVersion: boolean;
   isSemVerVersion: boolean;
   isReleaseSemVerVersion: boolean;
@@ -64,7 +64,7 @@ export const resolveVersion = (
       commitInfo.tag,
     );
   } else {
-    return resolveNightlyVersion(config, platform, strategies, commitInfo);
+    return resolveSnapshotVersion(config, platform, strategies, commitInfo);
   }
 };
 
@@ -98,7 +98,7 @@ const resolveTaggedVersion = (
   // no semver tag -> tag is the version
   if (!version) {
     const versionInfo: VersionInfo = {
-      isNightlyVersion: false,
+      isSnapshotVersion: false,
       isTaggedVersion: true,
       isSemVerVersion: false,
       isReleaseSemVerVersion: false,
@@ -158,7 +158,7 @@ const resolveTaggedVersion = (
     );
 
   const versionInfo: VersionInfo = {
-    isNightlyVersion: false,
+    isSnapshotVersion: false,
     isTaggedVersion: true,
     isSemVerVersion: true,
     isReleaseSemVerVersion,
@@ -183,14 +183,14 @@ const resolveTaggedVersion = (
   };
 };
 
-const resolveNightlyVersion = (
+const resolveSnapshotVersion = (
   config: Config,
   platform: Platform,
   strategies: VersionStrategy[],
   commitInfo: CommitInfo,
 ): VersionResult => {
   const versionInfo: VersionInfo = {
-    isNightlyVersion: true,
+    isSnapshotVersion: true,
     isTaggedVersion: false,
     isSemVerVersion: false,
     isReleaseSemVerVersion: false,
@@ -205,7 +205,7 @@ const resolveNightlyVersion = (
     strategies: Object.fromEntries(
       strategies.map((strategy) => [
         strategy.name,
-        strategy.nightlyVersionResult(
+        strategy.snapshotVersionResult(
           { config, platform, versionInfo },
           commitInfo,
         ),

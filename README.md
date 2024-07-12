@@ -19,7 +19,7 @@ If the build is based on a tag, the used version number will be the tag name.
 
 If the tag is a valid SemVer version, GTS will resolve additional data, for example, if it is the highest SemVer version in the repository, or if it is a prerelease tag. This additional information can be used to derive additional logic from the version number (e.g. only tag Docker builds with `latest` if it is the highest version number available and not a prerelease tag).
 
-### Nightly versions (non-release versions)
+### Snapshot versions (non-release versions)
 
 If the build is based on a commit that is not tagged, a version number in valid SemVer format will be generated based on the latest tag and the current commit information.
 
@@ -35,9 +35,9 @@ GTS currently has built-in support for GitLab CI and GitHub Actions - let's assu
 
 As our project contains a Java and an NPM application and builds a Docker image, we instruct GTS to use the `java`, `npm` and `docker` strategies. The examples below use the `env` exporter, but you can also use `json` or `yaml` to export the data in different formats.
 
-### 1. Nightly/untagged build
+### 1. Snapshot build
 
-Let's assume you start working on `main` and commit some changes. GTS is running on your pipeline and generating version information which you can use in your actual build logic (e.g. when tagging a docker image). 
+Let's assume you start working on `main` and commit some changes. GTS is running on your pipeline and generating version information which you can use in your actual build logic (e.g. when tagging a docker image).
 
 ```shell
 $ CI=true \
@@ -47,7 +47,7 @@ CI_COMMIT_SHA=d382a736cbc13965792a331af59144f357e5669e \
 git-that-semver -e java -e npm -e docker
 
 [INFO] (platform) Resolved platform: gitlab
-GTS_IS_NIGHTLY_VERSION=true
+GTS_IS_SNAPSHOT_VERSION=true
 GTS_IS_TAGGED_VERSION=false
 GTS_IS_SEMVER_VERSION=false
 GTS_IS_RELEASE_SEMVER_VERSION=false
@@ -61,11 +61,11 @@ GTS_DOCKER_VERSION=0.1.0-20240712221812.d382a736cbc1
 GTS_DOCKER_TAGS=0.1.0-20240712221812.d382a736cbc1 d382a736cbc13965792a331af59144f357e5669e main
 ```
 
-As the commit is not tagged, it is considered a nightly build and all SemVer related variables (e.g. `GTS_IS_HIGHEST_SEMVER_VERSION`) are resolved to false.
+As the commit is not tagged, it is considered a snapshot build and all SemVer related variables (e.g. `GTS_IS_HIGHEST_SEMVER_VERSION`) are resolved to false.
 
 As no previous release exists, the base version for the pre-release is `0.1.0` (the next minor starting from `0.0.0`). In the default config, the pre-release version contains a timestamp and a short commit hash. In addition, you can see that the default configuration defines special semantics for certain strategies, such as:
 
-- The Java nightly version is suffixed in `-SNAPSHOT` in order to push nightly versions to a dedicated repository.
+- The Java snapshot version is suffixed in `-SNAPSHOT` in order to push snapshot versions to a dedicated repository.
 - The Docker strategy, in addition to the version number, exposes a list of tags which can be used to tag the Docker image. How these tags are generated is configurable and you are free to override the defaults to your needs.
 
 ### 2. Release version
@@ -81,7 +81,7 @@ CI_COMMIT_TAG=v1.0.0 \
 git-that-semver -e java -e npm -e docker
 
 [INFO] (platform) Resolved platform: gitlab
-GTS_IS_NIGHTLY_VERSION=false
+GTS_IS_SNAPSHOT_VERSION=false
 GTS_IS_TAGGED_VERSION=true
 GTS_IS_SEMVER_VERSION=true
 GTS_IS_RELEASE_SEMVER_VERSION=true
@@ -110,7 +110,7 @@ CI_COMMIT_TAG=v1.1.0-beta.1 \
 
 git-that-semver -e java -e npm -e docker
 [INFO] (platform) Resolved platform: gitlab
-GTS_IS_NIGHTLY_VERSION=false
+GTS_IS_SNAPSHOT_VERSION=false
 GTS_IS_TAGGED_VERSION=true
 GTS_IS_SEMVER_VERSION=true
 GTS_IS_RELEASE_SEMVER_VERSION=false
@@ -141,7 +141,7 @@ CI_COMMIT_TAG=v1.0.1 \
 git-that-semver -e java -e npm -e docker
 
 [INFO] (platform) Resolved platform: gitlab
-GTS_IS_NIGHTLY_VERSION=false
+GTS_IS_SNAPSHOT_VERSION=false
 GTS_IS_TAGGED_VERSION=true
 GTS_IS_SEMVER_VERSION=true
 GTS_IS_RELEASE_SEMVER_VERSION=true

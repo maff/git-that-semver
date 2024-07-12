@@ -7,7 +7,7 @@ export class EnvOutputPrinter implements OutputPrinter {
     const prefix = config.output.env.prefix;
 
     Object.entries({
-      IS_NIGHTLY_VERSION: versionResult.isNightlyVersion,
+      IS_SNAPSHOT_VERSION: versionResult.isSnapshotVersion,
       IS_TAGGED_VERSION: versionResult.isTaggedVersion,
       IS_SEMVER_VERSION: versionResult.isSemVerVersion,
       IS_RELEASE_SEMVER_VERSION: versionResult.isReleaseSemVerVersion,

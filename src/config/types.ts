@@ -4,7 +4,7 @@ import { specificPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
-export const NightlyConfig = z.object({
+export const SnapshotConfig = z.object({
   defaultBranches: z.array(z.string()).default([]),
   useChangeRequestIdentifier: z.boolean().default(true),
   prefixTpl: z.string().trim().default(""),
@@ -16,21 +16,21 @@ export const NightlyConfig = z.object({
 
 export const TagsConfig = z.object({
   enabled: z.boolean().default(false),
-  nightly: z.array(z.string().trim()).default([]),
+  snapshot: z.array(z.string().trim()).default([]),
   tagged: z.array(z.string().trim()).default([]),
   semVer: z.array(z.string().trim()).default([]),
 });
 
 export const DefaultConfig = z.object({
   branchPrefixes: z.array(z.string()).default([]),
-  nightly: NightlyConfig.default({}),
+  snapshot: SnapshotConfig.default({}),
   tags: TagsConfig.default({}),
   properties: FreeformProperties.default({}),
 });
 
 export const StrategyConfig = z.object({
   enabled: z.boolean().default(true),
-  nightly: NightlyConfig.default({}),
+  snapshot: SnapshotConfig.default({}),
   tags: TagsConfig.default({}),
   properties: FreeformProperties.default({}),
 });

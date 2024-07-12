@@ -45,27 +45,27 @@ export class GenericVersionStrategy implements VersionStrategy {
     };
   }
 
-  nightlyVersionResult(
+  snapshotVersionResult(
     context: VersionStrategyContext,
     commitInfo: CommitInfo,
   ): StrategyVersion {
     const templateContext = this.templateContext(context, commitInfo);
 
     const prefix = templateEngine.parseAndRenderSync(
-      this.config.nightly.prefixTpl,
+      this.config.snapshot.prefixTpl,
       templateContext,
     );
 
     const suffix = templateEngine.parseAndRenderSync(
-      this.config.nightly.suffixTpl,
+      this.config.snapshot.suffixTpl,
       templateContext,
     );
 
     const branchIdentifier = templateEngine.parseAndRenderSync(
-      this.config.nightly.branchIdentifierTpl,
+      this.config.snapshot.branchIdentifierTpl,
       {
         ...templateContext,
-        branchIdentifier: this.config.nightly.defaultBranches.includes(
+        branchIdentifier: this.config.snapshot.defaultBranches.includes(
           commitInfo.refName,
         )
           ? undefined
@@ -74,12 +74,12 @@ export class GenericVersionStrategy implements VersionStrategy {
     );
 
     const commitIdentifier = templateEngine.parseAndRenderSync(
-      this.config.nightly.commitIdentifierTpl,
+      this.config.snapshot.commitIdentifierTpl,
       templateContext,
     );
 
     const version = templateEngine.parseAndRenderSync(
-      this.config.nightly.versionTpl,
+      this.config.snapshot.versionTpl,
       {
         ...templateContext,
         prefix,
@@ -91,7 +91,7 @@ export class GenericVersionStrategy implements VersionStrategy {
 
     return {
       version: version,
-      tags: this.uniqueTags(this.config.tags.nightly, {
+      tags: this.uniqueTags(this.config.tags.snapshot, {
         ...templateContext,
         version,
       }),
