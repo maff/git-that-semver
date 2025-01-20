@@ -33,11 +33,11 @@ Let's assume you start working on a repository `awesome-project` and set up GTS 
 
 GTS currently has built-in support for GitLab CI and GitHub Actions - let's assume you are using GitLab CI here. In a CI scenario, the environment variables we set below would be provided by the CI system.
 
-As our project contains a Java and an NPM application and builds a Docker image, we instruct GTS to use the `java`, `npm` and `docker` strategies.
+As our project contains a Java and an NPM application and builds a Docker image, we instruct GTS to use the `java`, `npm` and `docker` strategies. The examples below use the `env` exporter, but you can also use `json` or `yaml` to export the data in different formats.
 
-### 1. Nightly build
+### 1. Nightly/untagged build
 
-Let's assume you start working on `main` and commit some changes. GTS is running on your pipeline and generating version information which you can use in your actual build logic (e.g. when tagging a docker image). The examples below use the `env` exporter, but you can also use `json` or `yaml` to export the data in different formats.
+Let's assume you start working on `main` and commit some changes. GTS is running on your pipeline and generating version information which you can use in your actual build logic (e.g. when tagging a docker image). 
 
 ```shell
 $ CI=true \
