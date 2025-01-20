@@ -7,7 +7,7 @@ const templateEngine = new Liquid();
 
 // only allow alphanumeric characters at start and end
 templateEngine.registerFilter("trim_alphanumeric", (v) =>
-  v.replace(/^[^a-zA-Z0-9]/g, "").replace(/[^a-zA-Z0-9]$/g, ""),
+  v.replace(/^[^a-zA-Z0-9]+/g, "").replace(/[^a-zA-Z0-9]+$/g, ""),
 );
 
 templateEngine.registerFilter(
