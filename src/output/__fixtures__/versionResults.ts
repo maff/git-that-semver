@@ -1,4 +1,4 @@
-import type { VersionResult } from "../../versionResolver";
+import type { VersionResult } from "../../version/versionResolver";
 
 export const releaseVersionResult: VersionResult = {
   isSnapshotVersion: false,

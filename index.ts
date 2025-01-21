@@ -8,8 +8,8 @@ import { resolveConfig } from "./src/config";
 import { LogLevel, logger } from "./src/logging";
 import { resolveOutputPrinter } from "./src/output";
 import { resolvePlatform } from "./src/platform";
-import { resolveStrategies } from "./src/version";
-import { resolveVersion } from "./src/versionResolver";
+import { resolveVersion } from "./src/version/versionResolver";
+import { resolveStrategies } from "./src/version/versionStrategy";
 
 const program = new Command("git-that-semver")
   .version("0.0.1")
