@@ -1,5 +1,5 @@
 import type { Config } from "../config/types";
-import type { VersionResult } from "../versionResolver";
+import type { VersionResult } from "../version/versionResolver";
 import { EnvOutputPrinter } from "./env";
 import { JsonOutputPrinter } from "./json";
 import { YamlOutputPrinter } from "./yaml";

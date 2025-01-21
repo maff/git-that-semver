@@ -1,12 +1,22 @@
 import type { SemVer } from "semver";
 
-import type { StrategyConfig } from "../config/types";
+import type { Config, StrategyConfig } from "../config/types";
+import type { Platform } from "../platform";
 import { templateEngine } from "../tpl/templateEngine";
 import { semVerVersionString } from "../util/semVer";
-import type { VersionStrategy, VersionStrategyContext } from "../version";
-import type { CommitInfo, StrategyVersion } from "../versionResolver";
+import type {
+  CommitInfo,
+  StrategyVersion,
+  VersionInfo,
+} from "./versionResolver";
 
-export class GenericVersionStrategy implements VersionStrategy {
+export type VersionStrategyContext = {
+  config: Config;
+  platform: Platform;
+  versionInfo: VersionInfo;
+};
+
+export class VersionStrategy {
   constructor(
     public name: string,
     protected config: StrategyConfig,
@@ -123,4 +133,12 @@ export class GenericVersionStrategy implements VersionStrategy {
 
     return [...new Set(tags)];
   }
+}
+
+export function resolveStrategies(strategies: {
+  [key: string]: StrategyConfig;
+}): VersionStrategy[] {
+  return Object.entries(strategies)
+    .filter(([_, strategyConfig]) => strategyConfig.enabled)
+    .map(([name, strategyConfig]) => new VersionStrategy(name, strategyConfig));
 }

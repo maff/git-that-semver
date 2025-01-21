@@ -1,6 +1,6 @@
 import type { OutputPrinter } from ".";
 import type { Config } from "../config/types";
-import type { VersionResult } from "../versionResolver";
+import type { VersionResult } from "../version/versionResolver";
 
 export class EnvOutputPrinter implements OutputPrinter {
   printResult(config: Config, versionResult: VersionResult) {
