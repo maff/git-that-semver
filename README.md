@@ -1,5 +1,9 @@
 # git-that-semver
 
+A command line tool that generates build version numbers based on your git repository state, primarily designed for CI pipelines.
+
+## Overview
+
 `git-that-semver`, or GTS for short, is a command line tool that helps you to generate a build version number based on the current state of your git repository. Its main purpose is to be used in CI pipelines to generate a version number that can be used to identify the build artifacts.
 
 As you can guess from the name, it is targeted to versioning based on the [Semantic Versioning](https://semver.org) specification. It works best with in a workflow following the principles of trunk-based development:
