@@ -7,6 +7,8 @@ describe("Platform Resolution", () => {
 
   beforeEach(() => {
     process.env = { ...originalEnv };
+    delete process.env["GITHUB_ACTIONS"];
+    delete process.env["GITLAB_CI"];
   });
 
   afterEach(() => {
