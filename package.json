@@ -3,27 +3,27 @@
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "@commander-js/extra-typings": "^12.1.0",
+    "@commander-js/extra-typings": "^13.0.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.1",
-    "@types/bun": "^1.1.6",
+    "@types/bun": "^1.1.18",
     "@types/semver": "^7.5.8",
-    "@types/slug": "^5.0.8",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.7",
-    "prettier": "3.3.3"
+    "@types/slug": "^5.0.9",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "prettier": "3.4.2"
   },
   "peerDependencies": {
-    "typescript": "^5.5.2"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0",
-    "liquidjs": "^10.15.0",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "liquidjs": "^10.20.2",
     "merge-anything": "^6.0.2",
-    "semver": "^7.6.2",
-    "slug": "^9.1.0",
-    "yaml": "^2.4.5",
-    "zod": "^3.23.8"
+    "semver": "^7.6.3",
+    "slug": "^10.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.1"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
