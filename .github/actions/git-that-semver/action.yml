@@ -3,4 +3,4 @@ description: "Generates build version numbers and metadata based on your git rep
 runs:
   using: "docker"
   image: "../../../Dockerfile"
-  entrypoint: "entrypoint-action.sh"
+  entrypoint: "/entrypoint-action.sh"
