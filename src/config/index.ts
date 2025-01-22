@@ -2,7 +2,7 @@ import { merge } from "merge-anything";
 import YAML from "yaml";
 
 import { logger } from "../logging";
-import defaultConfigContents from "./git-that-semver.default.yaml" assert { type: "text" };
+import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
 import { Config } from "./types";
 
 const configLogger = logger.childLogger("config");
