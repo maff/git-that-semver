@@ -25,8 +25,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: git-that-semver
+      - id: git-that-semver
+        name: git-that-semver
         uses: ./.github/actions/git-that-semver
+
+      - name: Debug git-that-semver outputs
+        run: |
+          echo "All outputs from git-that-semver:"
+          echo "result: ${{ steps.git-that-semver.outputs }}"
+          env | grep "^GTS_"
 
   test:
     runs-on: ubuntu-latest
@@ -53,7 +60,7 @@ jobs:
 
   docker-build:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, git-that-semver]
 
     permissions:
       contents: read

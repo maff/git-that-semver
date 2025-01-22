@@ -18,6 +18,7 @@ ENV NODE_ENV=production
 RUN apk add git
 
 COPY entrypoint.sh /entrypoint.sh
+COPY entrypoint-action.sh /entrypoint-action.sh
 COPY --from=compile /temp/compile/git-that-semver /usr/local/bin/git-that-semver
 
 ENTRYPOINT [ "/entrypoint.sh" ]

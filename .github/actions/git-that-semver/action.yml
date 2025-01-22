@@ -1,8 +1,6 @@
 name: "git-that-semver"
-description: "Generate SemVer version data from git history and tags"
-outputs:
-  result:
-    description: "Resolved variables"
+description: "Generates build version numbers and metadata based on your git repository state"
 runs:
   using: "docker"
   image: "../../../Dockerfile"
+  entrypoint: "entrypoint-action.sh"
