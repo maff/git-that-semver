@@ -32,7 +32,7 @@ jobs:
       - name: Debug git-that-semver outputs
         run: |
           echo "All outputs from git-that-semver:"
-          echo "result: ${{ steps.git-that-semver.outputs }}"
+          echo "result: ${{ toJson(steps.git-that-semver.outputs) }}"
           env | grep "^GTS_"
 
   test:
