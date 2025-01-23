@@ -8,16 +8,16 @@ inputs:
   json:
     description: "Writes JSON result to GTS_JSON output if enabled"
     type: boolean
-    default: true
+    default: false
   yaml:
     description: "Writes YAML result to GTS_YAML output if enabled"
     type: boolean
-    default: true
+    default: false
 outputs:
   GTS_JSON:
-    description: "git-that-semver result in JSON format"
+    description: "git-that-semver result in JSON format (if enabled)"
   GTS_YAML:
-    description: "git-that-semver result in YAML format"
+    description: "git-that-semver result in YAML format (if enabled)"
 runs:
   using: "docker"
   image: "../../../Dockerfile"

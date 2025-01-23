@@ -24,8 +24,6 @@ jobs:
     outputs:
       GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
       GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
-      GTS_JSON: ${{ steps.git-that-semver.outputs.GTS_JSON }}
-      GTS_YAML: ${{ steps.git-that-semver.outputs.GTS_YAML }}
 
     steps:
       - name: Checkout repository
@@ -34,8 +32,6 @@ jobs:
       - id: git-that-semver
         name: git-that-semver
         uses: ./.github/actions/git-that-semver
-        with:
-          yaml: false
 
   test:
     runs-on: ubuntu-latest
@@ -72,13 +68,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Debug GTS outputs
-        run: |
-          echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
-          echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
-          echo "GTS_JSON: ${{ needs.git-that-semver.outputs.GTS_JSON }}"
-          echo "GTS_YAML: ${{ needs.git-that-semver.outputs.GTS_YAML }}"
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -112,10 +101,6 @@ jobs:
           tags: ${{ steps.prepare-tags.outputs.tags }}
           labels: |
             org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
-
-      - name: Debug metadata-action outputs
-        run: |
-          echo "${{ toJson(steps.meta.outputs) }}"
 
       - name: Build and push Docker image
         id: build-and-push
