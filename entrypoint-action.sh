@@ -10,7 +10,6 @@ result=$(git-that-semver -c output.env.arrayDelimiter=, "$@")
 echo "$result" | tee -a $GITHUB_OUTPUT
 
 # write to step summary
-echo '### git-that-semver result' >> $GITHUB_STEP_SUMMARY
 echo '```env' >> $GITHUB_STEP_SUMMARY
 echo "$result" >> $GITHUB_STEP_SUMMARY
 echo '```' >> $GITHUB_STEP_SUMMARY
