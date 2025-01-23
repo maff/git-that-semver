@@ -87,7 +87,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |-
-            ${{ join(fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags, '\n') }}
+            ${{ join(fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags, '
+            ') }}
           labels: |
             org.opencontainers.image.version=${{ fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.version }}
 
