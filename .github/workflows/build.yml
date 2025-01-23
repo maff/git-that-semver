@@ -24,6 +24,7 @@ jobs:
     outputs:
       GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
       GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
+      GTS_JSON: ${{ steps.git-that-semver.outputs.GTS_JSON }}
 
     steps:
       - name: Checkout repository
@@ -92,25 +93,24 @@ jobs:
           echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
           echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
 
-      - id: tags_with_prefix
+      - id: tags_newline
         name: Convert GTS_DOCKER_TAGS to include image prefix
         env:
           GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}
         run: |
-          tags=()
+          tags=""
           for tag in $GTS_DOCKER_TAGS; do
-            tags+=("${env.REGISTRY}/${env.IMAGE_NAME}:${tag}")
+            tags="${tags}${tag}\n"
           done
 
-          tags_csv=$(IFS=,; echo "${tags[*]}")
-          echo "Joined tags with prefix: $tags_csv"
-          echo "tags_csv=$tags_csv" >> $GITHUB_OUTPUT
+          echo "tags=$tags" | tee -a $GITHUB_OUTPUT
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: ${{ fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags }}
           labels: |
             org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
 
@@ -125,7 +125,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.tags_with_prefix.outputs.tags_csv }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
