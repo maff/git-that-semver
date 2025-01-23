@@ -23,6 +23,7 @@ jobs:
 
     outputs:
       GTS_JSON: ${{ steps.git-that-semver.outputs.GTS_JSON }}
+      GTS_YAML: ${{ steps.git-that-semver.outputs.GTS_YAML }}
 
     steps:
       - name: Checkout repository
@@ -66,6 +67,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Debug GTS_JSON and GTS_YAML
+        run: |
+          echo "GTS_JSON: ${{ needs.git-that-semver.outputs.GTS_JSON }}"
+          echo "GTS_YAML: ${{ needs.git-that-semver.outputs.GTS_YAML }}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
