@@ -19,7 +19,7 @@ export class EnvOutputPrinter implements OutputPrinter {
       IS_HIGHEST_SAME_MINOR_RELEASE_VERSION:
         versionResult.isHighestSameMinorReleaseVersion,
     }).forEach(([key, value]) => {
-      console.log(`${prefix}${key}=${this.valueToString(value)}`);
+      console.log(`${prefix}${key}=${this.valueToString(config, value)}`);
     });
 
     Object.entries(versionResult.strategies).forEach(
@@ -31,25 +31,23 @@ export class EnvOutputPrinter implements OutputPrinter {
           }
 
           console.log(
-            `${strategyPrefix}${key.toUpperCase()}=${this.valueToString(value)}`,
+            `${strategyPrefix}${key.toUpperCase()}=${this.valueToString(config, value)}`,
           );
         });
       },
     );
   }
 
-  private valueToString(value: boolean | string | string[]): string {
+  private valueToString(
+    config: Config,
+    value: boolean | string | string[],
+  ): string {
     if (value === true || value === false) {
       return value ? "true" : "false";
     }
 
     if (Array.isArray(value)) {
-      if (value.length < 2) {
-        return value.join(" ");
-      }
-
-      // add quotes when multiple values
-      return `${value.join(" ")}`;
+      return value.join(config.output.env.arrayDelimiter);
     }
 
     return value;
