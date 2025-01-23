@@ -82,6 +82,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - id: tags_with_prefix
+        name: Convert GTS_DOCKER_TAGS to include image prefix
+        run: |
+          tags=()
+          for tag in $GTS_DOCKER_TAGS; do
+            tags+=("${env.REGISTRY}/${env.IMAGE_NAME}:${tag}")
+          done
+
+          tags_csv=$(IFS=,; echo "${tags[*]}")
+          echo "Joined tags with prefix: $tags_csv"
+          echo "tags_csv=$tags_csv" >> $GITHUB_OUTPUT
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -101,7 +113,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}
+          tags: ${{ steps.tags_with_prefix.outputs.tags_csv }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
