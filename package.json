@@ -29,6 +29,8 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "prettier --check .",
+    "lint-fix": "prettier --write ."
   }
 }
