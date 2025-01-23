@@ -4,15 +4,13 @@ set -eu
 
 sh -c "git config --global --add safe.directory $PWD"
 
-echo "ENV START"
-env
-echo "ENV END"
+result=$(git-that-semver -c output.env.arrayDelimiter=, "$@")
 
-git-that-semver -c output.env.arrayDelimiter=, "$@" > /tmp/git-that-semver.env
+# write to output
+echo "$result" | tee -a $GITHUB_OUTPUT
 
-cat /tmp/git-that-semver.env | tee -a $GITHUB_OUTPUT
-
+# write to step summary
 echo '### git-that-semver result' >> $GITHUB_STEP_SUMMARY
 echo '```env' >> $GITHUB_STEP_SUMMARY
-cat /tmp/git-that-semver.env >> $GITHUB_STEP_SUMMARY
+echo "$result" >> $GITHUB_STEP_SUMMARY
 echo '```' >> $GITHUB_STEP_SUMMARY
