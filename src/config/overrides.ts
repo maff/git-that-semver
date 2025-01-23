@@ -2,7 +2,7 @@ import { set } from "lodash-es";
 
 import { logger } from "../logging";
 
-const utilLogger = logger.childLogger("util/config");
+const configLogger = logger.childLogger("config");
 
 function parseConfigOverride(override: string): { path: string; value: any } {
   if (!/^[^=]+=[^=]*$/.test(override)) {
@@ -51,15 +51,11 @@ export function applyConfigOverrides(
 ): Record<string, any> {
   const result = { ...config };
 
-  utilLogger.trace("Overrides", overrides);
-
   for (const override of overrides) {
     const { path, value } = parseConfigOverride(override);
-    utilLogger.trace("Applying config override", { path, value });
+    configLogger.trace("Applying config override", { path, value });
     set(result, path, value);
   }
-
-  utilLogger.trace("Resulting config", result);
 
   return result;
 }

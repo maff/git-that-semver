@@ -2,8 +2,8 @@ import { merge } from "merge-anything";
 import YAML from "yaml";
 
 import { logger } from "../logging";
-import { applyConfigOverrides } from "../util/config";
 import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
+import { applyConfigOverrides } from "./overrides";
 import { Config } from "./types";
 
 const configLogger = logger.childLogger("config");
@@ -54,7 +54,6 @@ export const resolveConfig = async (
   if (configOverrides.length > 0) {
     configLogger.trace("Config overrides", configOverrides);
     mergedConfig = applyConfigOverrides(mergedConfig, configOverrides);
-    configLogger.trace("Config after applying overrides", mergedConfig);
   }
 
   configLogger.trace("Merged config before strategy merge", mergedConfig);
