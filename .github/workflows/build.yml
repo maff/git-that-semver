@@ -22,8 +22,6 @@ jobs:
       contents: read
 
     outputs:
-      GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
-      GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
       GTS_JSON: ${{ steps.git-that-semver.outputs.GTS_JSON }}
 
     steps:
@@ -33,11 +31,6 @@ jobs:
       - id: git-that-semver
         name: git-that-semver
         uses: ./.github/actions/git-that-semver
-
-      - name: Debug GTS_DOCKER_TAGS
-        run: |
-          echo "GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
-          echo "GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
 
   test:
     runs-on: ubuntu-latest
@@ -88,27 +81,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Debug GTS_DOCKER_TAGS
-        run: |
-          echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
-          echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
-
-      - id: format_tags
-        run: |
-          tags=""
-          for tag in ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}; do
-            tags="${tags}type=raw,value=${tag}"$'\n'
-          done
-          echo "tags=${tags}" >> $GITHUB_OUTPUT
-
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: ${{ steps.format_tags.outputs.tags }}
+          tags: |-
+            ${{ join(fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags, '\n') }}
           labels: |
-            org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
+            org.opencontainers.image.version=${{ fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.version }}
 
       - name: Debug metadata-action outputs
         run: |
