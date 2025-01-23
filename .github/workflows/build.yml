@@ -93,16 +93,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
+      - id: prepare-tags
+        name: Prepare tags for Docker metadata
+        run: |
+          {
+            echo 'tags<<EOF'
+            for tag in ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}; do
+              echo "type=raw,value=$tag"
+            done
+            echo EOF
+          } | tee -a $GITHUB_OUTPUT
+
+      - id: meta
+        name: Extract Docker metadata
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |-
-            ${{ join(fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags, '
-            ') }}
+          tags: ${{ steps.prepare-tags.outputs.tags }}
           labels: |
-            org.opencontainers.image.version=${{ fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.version }}
+            org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
 
       - name: Debug metadata-action outputs
         run: |
