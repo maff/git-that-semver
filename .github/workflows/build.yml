@@ -22,8 +22,8 @@ jobs:
       contents: read
 
     outputs:
-      GTS_DOCKER_VERSION: ${{ fromJson(steps.git-that-semver.outputs.gts_json_result).strategies.docker.version }}
-      GTS_DOCKER_TAGS: ${{ fromJson(steps.git-that-semver.outputs.gts_json_result).strategies.docker.tags }}
+      GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
+      GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
 
     steps:
       - name: Checkout repository
@@ -37,7 +37,7 @@ jobs:
         run: |
           echo '### git-that-semver result' >> $GITHUB_STEP_SUMMARY
           echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "${{ toJson(fromJson(steps.git-that-semver.outputs.gts_json_result)) }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.git-that-semver.outputs.gts_json_result }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   test:
