@@ -33,6 +33,11 @@ jobs:
         name: git-that-semver
         uses: ./.github/actions/git-that-semver
 
+      - name: Debug GTS_DOCKER_TAGS
+        run: |
+          echo "GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
+          echo "GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
+
   test:
     runs-on: ubuntu-latest
     needs: git-that-semver
@@ -82,8 +87,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug GTS_DOCKER_TAGS
+        run: |
+          echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
+          echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
+
       - id: tags_with_prefix
         name: Convert GTS_DOCKER_TAGS to include image prefix
+        env:
+          GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}
         run: |
           tags=()
           for tag in $GTS_DOCKER_TAGS; do

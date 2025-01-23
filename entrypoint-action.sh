@@ -4,7 +4,7 @@ set -eu
 
 sh -c "git config --global --add safe.directory $PWD"
 
-result=$(git-that-semver -c output.env.arrayDelimiter=, "$@")
+result=$(git-that-semver "$@")
 
 # write to output
 echo "$result" | tee -a $GITHUB_OUTPUT
