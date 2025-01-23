@@ -31,8 +31,8 @@ jobs:
 
       - name: Debug git-that-semver outputs
         run: |
-          echo "GTS_DOCKER_VERSION: ${{ toJson(steps.git-that-semver.outputs).GTS_DOCKER_VERSION }}"
-          echo "GTS_DOCKER_TAGS: ${{ toJson(steps.git-that-semver.outputs).GTS_DOCKER_TAGS }}"
+          echo "GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
+          echo "GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
 
   test:
     runs-on: ubuntu-latest
