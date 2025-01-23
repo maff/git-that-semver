@@ -21,11 +21,16 @@ jobs:
     permissions:
       contents: read
 
+    outputs:
+      GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
+      GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: git-that-semver
+      - id: git-that-semver
+        name: git-that-semver
         uses: ./.github/actions/git-that-semver
 
   test:
@@ -46,14 +51,14 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Lint
-        run: bun prettier . --check
+        run: bun lint
 
       - name: Test
         run: bun test
 
   docker-build:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, git-that-semver]
 
     permissions:
       contents: read
@@ -77,17 +82,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
+      - id: prepare-tags
+        name: Prepare tags for Docker metadata
+        run: |
+          {
+            echo 'tags<<EOF'
+            for tag in ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}; do
+              echo "type=raw,value=$tag"
+            done
+            echo EOF
+          } | tee -a $GITHUB_OUTPUT
+
+      - id: meta
+        name: Extract Docker metadata
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,format=long,prefix=
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+          tags: ${{ steps.prepare-tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
 
       - name: Build and push Docker image
         id: build-and-push

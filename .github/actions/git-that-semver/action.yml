@@ -1,8 +1,24 @@
 name: "git-that-semver"
-description: "Generate SemVer version data from git history and tags"
+description: "Generates build version numbers and metadata based on your git repository state"
+inputs:
+  env:
+    description: "Uses the env output to create individual outputs"
+    type: boolean
+    default: true
+  json:
+    description: "Writes JSON result to GTS_JSON output if enabled"
+    type: boolean
+    default: false
+  yaml:
+    description: "Writes YAML result to GTS_YAML output if enabled"
+    type: boolean
+    default: false
 outputs:
-  result:
-    description: "Resolved variables"
+  GTS_JSON:
+    description: "git-that-semver result in JSON format (if enabled)"
+  GTS_YAML:
+    description: "git-that-semver result in YAML format (if enabled)"
 runs:
   using: "docker"
   image: "../../../Dockerfile"
+  entrypoint: "/entrypoint-action.sh"
