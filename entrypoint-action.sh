@@ -4,4 +4,6 @@ set -eu
 
 sh -c "git config --global --add safe.directory $PWD"
 
-git-that-semver "$@" | tee -a $GITHUB_OUTPUT
+json_result=$(git-that-semver "$@" -o json)
+
+echo "gts_json_result=$json_result" | tee -a $GITHUB_OUTPUT

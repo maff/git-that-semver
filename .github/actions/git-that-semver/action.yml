@@ -1,5 +1,8 @@
 name: "git-that-semver"
 description: "Generates build version numbers and metadata based on your git repository state"
+outputs:
+  gts_json_result:
+    description: "git-that-semver result in JSON format"
 runs:
   using: "docker"
   image: "../../../Dockerfile"
