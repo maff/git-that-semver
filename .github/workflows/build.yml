@@ -93,24 +93,20 @@ jobs:
           echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
           echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
 
-      - id: tags_newline
-        name: Convert GTS_DOCKER_TAGS to include image prefix
-        env:
-          GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}
+      - id: format_tags
         run: |
           tags=""
-          for tag in $GTS_DOCKER_TAGS; do
-            tags="${tags}${tag}\n"
+          for tag in ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}; do
+            tags="${tags}type=raw,value=${tag}"$'\n'
           done
-
-          echo "tags=$tags" | tee -a $GITHUB_OUTPUT
+          echo "tags=${tags}" >> $GITHUB_OUTPUT
 
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: ${{ fromJson(needs.git-that-semver.outputs.GTS_JSON).strategies.docker.tags }}
+          tags: ${{ steps.format_tags.outputs.tags }}
           labels: |
             org.opencontainers.image.version=${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}
 
