@@ -29,10 +29,12 @@ jobs:
         name: git-that-semver
         uses: ./.github/actions/git-that-semver
 
-      - name: Debug git-that-semver outputs
+      - name: Job Summary
         run: |
-          echo "GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
-          echo "GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
+          echo '### git-that-semver result' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ toJson(steps.git-that-semver.outputs) }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
   test:
     runs-on: ubuntu-latest
