@@ -36,8 +36,8 @@ jobs:
       - name: Job Summary
         run: |
           echo '### git-that-semver result' >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.git-that-semver.outputs.gts_json_result }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ toJson(steps.git-that-semver.outputs) }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   test:
