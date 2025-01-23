@@ -3,6 +3,7 @@ import YAML from "yaml";
 
 import { logger } from "../logging";
 import defaultConfigContents from "./git-that-semver.default.yaml" with { type: "text" };
+import { applyConfigOverrides } from "./overrides";
 import { Config } from "./types";
 
 const configLogger = logger.childLogger("config");
@@ -12,6 +13,7 @@ export const resolveConfig = async (
   enabledStrategies: string[],
   disabledStrategies: string[],
   outputFormat: string | undefined,
+  configOverrides: string[] = [],
 ): Promise<Config> => {
   const defaultConfig = YAML.parse(defaultConfigContents);
   configLogger.trace("Default config", defaultConfig);
@@ -47,6 +49,11 @@ export const resolveConfig = async (
 
   if (outputFormat) {
     mergedConfig = merge(mergedConfig, { output: { type: outputFormat } });
+  }
+
+  if (configOverrides.length > 0) {
+    configLogger.trace("Config overrides", configOverrides);
+    mergedConfig = applyConfigOverrides(mergedConfig, configOverrides);
   }
 
   configLogger.trace("Merged config before strategy merge", mergedConfig);

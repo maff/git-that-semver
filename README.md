@@ -161,7 +161,35 @@ GTS_DOCKER_TAGS=1.0.1 1.0
 
 As you can see, the resolved version is not the highest in the repository, but as it is the highest within its minor version the Docker tags include `1.0` as well.
 
+## Configuration
+
+TODO
+
+### Configuration overrides
+
+You can override any configuration value from the command line using the `-c/--config-value` option. This is useful for one-off changes without modifying the config file:
+
+```shell
+# Override JSON output indentation
+git-that-semver -o json -c output.json.indent=2
+
+# Configure environment variable prefix
+git-that-semver -c output.env.prefix=CUSTOM_
+
+# Enable/disable strategies
+git-that-semver -c strategies.npm.enabled=true
+
+# Configure default branches (using JSON array syntax)
+git-that-semver -c 'defaults.snapshot.defaultBranches=["main","develop"]'
+
+# Disable change request identifier for snapshots
+git-that-semver -c defaults.snapshot.useChangeRequestIdentifier=false
+
+# Configure snapshot version template
+git-that-semver -c 'defaults.snapshot.versionTpl={{ prefix }}-{{ commitIdentifier }}'
+```
+
 ## TODOs
 
 - dynamic loading of SCM adapters?
-- logging to STDERR colorizes to the output to red by default - this is overridden and works as long as the output is not redirected, but results in red output otherwise - any way to fix this?
+- logging to STDERR colorizes to the output to red by default - this is overridden and works as long as the output is not redir

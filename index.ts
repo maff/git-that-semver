@@ -15,11 +15,17 @@ const program = new Command("git-that-semver")
   .version("0.0.1")
   .addOption(
     new Option(
-      "-c, --config-file <configFile>",
+      "-f, --config-file <config-file>",
       "Config file (git-that-semver.yaml)",
     )
       .env("GTS_CONFIG_FILE")
       .default("git-that-semver.yaml"),
+  )
+  .addOption(
+    new Option(
+      "-c, --config-value <config-values...>",
+      "Override config values (e.g. output.json.indent=2)",
+    ).default([]),
   )
   .addOption(
     new Option("--log-level <level>", "Log level")
@@ -29,13 +35,13 @@ const program = new Command("git-that-semver")
   )
   .addOption(
     new Option(
-      "-e, --enable-strategies <strategies...>",
+      "-e, --enable-strategy <strategies...>",
       "Enable strategies by name",
     ).default([]),
   )
   .addOption(
     new Option(
-      "-d, --disable-strategies <strategies...>",
+      "-d, --disable-strategy <strategies...>",
       "Disable strategies by name",
     ).default([]),
   )
@@ -58,9 +64,10 @@ logger.setLevel(LogLevel[program.opts().logLevel]);
 try {
   const config = await resolveConfig(
     path.resolve(program.opts().configFile),
-    [...program.opts().enableStrategies],
-    [...program.opts().disableStrategies],
+    [...program.opts().enableStrategy],
+    [...program.opts().disableStrategy],
     program.opts().outputFormat,
+    [...program.opts().configValue],
   );
 
   if (program.opts().dumpConfig) {
