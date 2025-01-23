@@ -52,6 +52,7 @@ export const resolveConfig = async (
   }
 
   if (configOverrides.length > 0) {
+    configLogger.trace("Config overrides", configOverrides);
     mergedConfig = applyConfigOverrides(mergedConfig, configOverrides);
     configLogger.trace("Config after applying overrides", mergedConfig);
   }
