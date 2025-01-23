@@ -42,6 +42,7 @@ export const OutputConfig = z.object({
   env: z.object({
     prefix: z.string().default(""),
     arrayDelimiter: z.string().default(" "),
+    quoteArrays: z.boolean().default(false),
   }),
   json: z
     .object({

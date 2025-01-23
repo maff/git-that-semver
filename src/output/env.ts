@@ -42,12 +42,17 @@ export class EnvOutputPrinter implements OutputPrinter {
     config: Config,
     value: boolean | string | string[],
   ): string {
-    if (value === true || value === false) {
-      return value ? "true" : "false";
+    if (typeof value === "boolean") {
+      return value.toString();
     }
 
     if (Array.isArray(value)) {
-      return value.join(config.output.env.arrayDelimiter);
+      const joined = value.join(config.output.env.arrayDelimiter);
+      if (joined.includes(" ") && config.output.env.quoteArrays) {
+        return `"${joined}"`;
+      }
+
+      return joined;
     }
 
     return value;
