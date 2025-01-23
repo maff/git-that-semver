@@ -164,4 +164,5 @@ As you can see, the resolved version is not the highest in the repository, but a
 ## TODOs
 
 - dynamic loading of SCM adapters?
+- allow to add config values from the command line, e.g. `git-that-semver -v output.json.indent=2`
 - logging to STDERR colorizes to the output to red by default - this is overridden and works as long as the output is not redirected, but results in red output otherwise - any way to fix this?

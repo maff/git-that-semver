@@ -42,6 +42,11 @@ export const OutputConfig = z.object({
   env: z.object({
     prefix: z.string().default(""),
   }),
+  json: z
+    .object({
+      indent: z.number().optional(),
+    })
+    .optional(),
 });
 
 export const Config = z.object({
