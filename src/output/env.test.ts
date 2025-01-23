@@ -29,8 +29,11 @@ describe("EnvOutputPrinter", () => {
     it(`should print ${description} as env vars`, () => {
       const config = {
         output: {
+          type: "env",
           env: {
             prefix,
+            arrayDelimiter: " ",
+            quoteArrays: false,
           },
         },
       } as Config;
@@ -90,4 +93,92 @@ describe("EnvOutputPrinter", () => {
     ],
     "FOO_",
   );
+
+  describe("array output", () => {
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    const defaultTags = releaseVersionResult.strategies["docker"].tags;
+
+    const testArrayOutput = (
+      description: string,
+      arrayValue: string[] = defaultTags,
+      arrayDelimiter: string | undefined = " ",
+      quoteArrays: boolean = false,
+      expected: string,
+    ) => {
+      it(description, () => {
+        printer.printResult(
+          {
+            output: {
+              type: "env",
+              env: {
+                prefix: "GTS_",
+                arrayDelimiter,
+                quoteArrays,
+              },
+            },
+          } as Config,
+          {
+            ...releaseVersionResult,
+            strategies: {
+              ...releaseVersionResult.strategies,
+              docker: {
+                ...releaseVersionResult.strategies["docker"],
+                version: releaseVersionResult.strategies["docker"].version,
+                tags: arrayValue,
+              },
+            },
+          },
+        );
+
+        expect(
+          consoleSpy.mock.calls.find((call: [string, ...unknown[]]) =>
+            call[0].startsWith("GTS_DOCKER_TAGS="),
+          )[0],
+        ).toBe(`GTS_DOCKER_TAGS=${expected}`);
+      });
+    };
+
+    testArrayOutput(
+      "uses space delimiter when configured",
+      defaultTags,
+      " ",
+      false,
+      "1.0.0 1.0 1 latest",
+    );
+
+    testArrayOutput(
+      "falls back to space delimiter when not configured",
+      defaultTags,
+      undefined,
+      false,
+      "1.0.0 1.0 1 latest",
+    );
+
+    testArrayOutput(
+      "uses custom delimiter",
+      defaultTags,
+      ",",
+      false,
+      "1.0.0,1.0,1,latest",
+    );
+
+    testArrayOutput(
+      "doesn't quote arrays with spaces if not configured",
+      ["feature branch", "main"],
+      ",",
+      false,
+      "feature branch,main",
+    );
+
+    testArrayOutput(
+      "quotes arrays with spaces if configured",
+      ["feature branch", "main"],
+      ",",
+      true,
+      '"feature branch,main"',
+    );
+  });
 });

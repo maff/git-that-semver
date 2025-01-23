@@ -41,6 +41,8 @@ export const OutputConfig = z.object({
   type: z.enum(["env", "json", "yaml"]).default("env"),
   env: z.object({
     prefix: z.string().default(""),
+    arrayDelimiter: z.string().default(" "),
+    quoteArrays: z.boolean().default(false),
   }),
   json: z
     .object({
