@@ -21,6 +21,10 @@ jobs:
     permissions:
       contents: read
 
+    outputs:
+      GTS_DOCKER_VERSION: ${{ steps.git-that-semver.outputs.GTS_DOCKER_VERSION }}
+      GTS_DOCKER_TAGS: ${{ steps.git-that-semver.outputs.GTS_DOCKER_TAGS }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -68,6 +72,11 @@ jobs:
       packages: write
 
     steps:
+      - name: Debug git-that-semver outputs
+        run: |
+          echo "GTS_DOCKER_VERSION: ${{ needs.git-that-semver.outputs.GTS_DOCKER_VERSION }}"
+          echo "GTS_DOCKER_TAGS: ${{ needs.git-that-semver.outputs.GTS_DOCKER_TAGS }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
