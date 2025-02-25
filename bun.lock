@@ -23,7 +23,7 @@
         "@types/slug": "^5.0.9",
         "husky": "^9.1.7",
         "lint-staged": "^15.4.1",
-        "prettier": "3.5.1",
+        "prettier": "3.5.2",
       },
       "peerDependencies": {
         "typescript": "^5.7.3",
@@ -173,7 +173,7 @@
 
     "pidtree": ["pidtree@0.6.0", "", { "bin": { "pidtree": "bin/pidtree.js" } }, "sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g=="],
 
-    "prettier": ["prettier@3.5.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-hPpFQvHwL3Qv5AdRvBFMhnKo4tYxp0ReXiPn2bxkiohEX6mBeBwEpBSQTkD458RaaDKQMYSp4hX4UtfUTA5wDw=="],
+    "prettier": ["prettier@3.5.2", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-lc6npv5PH7hVqozBR7lkBNOGXV9vMwROAPlumdBkX0wTbbzPu/U1hk5yL8p2pt4Xoc+2mkT8t/sow2YrV/M5qg=="],
 
     "restore-cursor": ["restore-cursor@5.1.0", "", { "dependencies": { "onetime": "^7.0.0", "signal-exit": "^4.1.0" } }, "sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA=="],
 
