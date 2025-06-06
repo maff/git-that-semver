@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "chalk": "^5.4.1",
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "liquidjs": "^10.20.2",
     "lodash-es": "^4.17.21",
     "merge-anything": "^6.0.2",
