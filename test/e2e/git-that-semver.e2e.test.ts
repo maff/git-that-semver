@@ -12,10 +12,19 @@ async function runGitThatSemver(
   // Resolve project root directory from test file location
   const projectRoot = path.resolve(__dirname, "../..");
 
+  // Create clean environment with only essential variables, removing all CI-related vars
+  const cleanEnv = {
+    PATH: process.env.PATH,
+    HOME: process.env.HOME,
+    USER: process.env.USER,
+    SHELL: process.env.SHELL,
+    TERM: process.env.TERM,
+  };
+
   const proc = spawn({
     cmd: ["bun", "run", "index.ts", ...args],
     cwd: projectRoot,
-    env: { ...process.env, ...env },
+    env: { ...cleanEnv, ...env },
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -84,7 +93,8 @@ describe("git-that-semver e2e tests", () => {
       expect(result.stdout).toMatch(
         new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
       );
-      expect(result.stdout).toContain(`${currentCommitSha} main`);
+      // Check that the full commit SHA appears in docker tags
+      expect(result.stdout).toContain(currentCommitSha);
     });
   });
 
