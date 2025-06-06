@@ -54,206 +54,397 @@ describe("git-that-semver e2e tests", () => {
     currentCommitSha = (await new Response(proc.stdout).text()).trim();
   });
 
-  describe("Snapshot build (README example 1)", () => {
-    it("should generate snapshot versions when on untagged commit", async () => {
-      const result = await runGitThatSemver(
-        ["-e", "java", "-e", "npm", "-e", "docker"],
-        {
-          CI: "true",
-          GITLAB_CI: "true",
-          CI_COMMIT_REF_NAME: "main",
-          CI_COMMIT_SHA: currentCommitSha,
-        },
-      );
+  describe("GitLab CI", () => {
+    const gitlabEnv = {
+      CI: "true",
+      GITLAB_CI: "true",
+    };
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_HIGHEST_SEMVER_VERSION=false");
-      expect(result.stdout).toContain(
-        "GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false",
-      );
-      expect(result.stdout).toContain(
-        "GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false",
-      );
-      expect(result.stdout).toContain(
-        "GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false",
-      );
+    describe("Snapshot build (README example 1)", () => {
+      it("should generate snapshot versions when on untagged commit", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...gitlabEnv,
+            CI_COMMIT_REF_NAME: "main",
+            CI_COMMIT_SHA: currentCommitSha,
+          },
+        );
 
-      // Check that version strings contain expected patterns
-      const shortSha = currentCommitSha.substring(0, 12);
-      expect(result.stdout).toMatch(
-        new RegExp(`GTS_JAVA_VERSION=.*${shortSha}-SNAPSHOT`),
-      );
-      expect(result.stdout).toMatch(
-        new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
-      );
-      expect(result.stdout).toMatch(
-        new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
-      );
-      // Check that the full commit SHA appears in docker tags
-      expect(result.stdout).toContain(currentCommitSha);
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_HIGHEST_SEMVER_VERSION=false");
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false",
+        );
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false",
+        );
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false",
+        );
+
+        // Check that version strings contain expected patterns
+        const shortSha = currentCommitSha.substring(0, 12);
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_JAVA_VERSION=.*${shortSha}-SNAPSHOT`),
+        );
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
+        );
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
+        );
+        // Check that the full commit SHA appears in docker tags
+        expect(result.stdout).toContain(currentCommitSha);
+      });
     });
-  });
 
-  describe("Release version (README example 2)", () => {
-    it("should generate release versions when on tagged commit", async () => {
-      const result = await runGitThatSemver(
-        ["-e", "java", "-e", "npm", "-e", "docker"],
-        {
-          CI: "true",
-          GITLAB_CI: "true",
+    describe("Release version (README example 2)", () => {
+      it("should generate release versions when on tagged commit", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...gitlabEnv,
+            CI_COMMIT_REF_NAME: "main",
+            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_TAG: "v1.0.0",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.0");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.0");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.0");
+      });
+    });
+
+    describe("Pre-release version (README example 3)", () => {
+      it("should generate pre-release versions with beta tag", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...gitlabEnv,
+            CI_COMMIT_REF_NAME: "main",
+            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_TAG: "v1.1.0-beta.1",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_DOCKER_TAGS=1.1.0-beta.1");
+      });
+    });
+
+    describe("Patch version (README example 4)", () => {
+      it("should generate patch versions on release branch", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...gitlabEnv,
+            CI_COMMIT_REF_NAME: "release/1.0.x",
+            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_TAG: "v1.0.1",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.1");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.1");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.1");
+      });
+    });
+
+    describe("Configuration override", () => {
+      it("should allow configuration overrides via CLI", async () => {
+        const result = await runGitThatSemver(
+          [
+            "-e",
+            "npm",
+            "-c",
+            "output.env.prefix=CUSTOM_",
+            "-c",
+            "defaults.snapshot.useChangeRequestIdentifier=false",
+          ],
+          {
+            ...gitlabEnv,
+            CI_COMMIT_REF_NAME: "main",
+            CI_COMMIT_SHA: currentCommitSha,
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("CUSTOM_IS_SNAPSHOT_VERSION=true");
+        expect(result.stdout).toMatch(/CUSTOM_NPM_VERSION=/);
+      });
+    });
+
+    describe("Output formats", () => {
+      it("should output JSON format when requested", async () => {
+        const result = await runGitThatSemver(["-o", "json", "-e", "npm"], {
+          ...gitlabEnv,
           CI_COMMIT_REF_NAME: "main",
           CI_COMMIT_SHA: currentCommitSha,
           CI_COMMIT_TAG: "v1.0.0",
-        },
-      );
+        });
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-      expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.0");
-      expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.0");
-      expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.0");
-    });
-  });
+        expect(result.exitCode).toBe(0);
 
-  describe("Pre-release version (README example 3)", () => {
-    it("should generate pre-release versions with beta tag", async () => {
-      const result = await runGitThatSemver(
-        ["-e", "java", "-e", "npm", "-e", "docker"],
-        {
-          CI: "true",
-          GITLAB_CI: "true",
+        let output;
+        try {
+          output = JSON.parse(result.stdout);
+        } catch (e) {
+          console.log("Failed to parse JSON output:", result.stdout);
+          throw e;
+        }
+
+        expect(output.isSnapshotVersion).toBe(false);
+        expect(output.isTaggedVersion).toBe(true);
+        expect(output.strategies.npm.version).toBe("1.0.0");
+      });
+
+      it("should output YAML format when requested", async () => {
+        const result = await runGitThatSemver(["-o", "yaml", "-e", "npm"], {
+          ...gitlabEnv,
           CI_COMMIT_REF_NAME: "main",
           CI_COMMIT_SHA: currentCommitSha,
-          CI_COMMIT_TAG: "v1.1.0-beta.1",
-        },
-      );
+          CI_COMMIT_TAG: "v1.0.0",
+        });
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-      expect(result.stdout).toContain("GTS_JAVA_VERSION=1.1.0-beta.1");
-      expect(result.stdout).toContain("GTS_NPM_VERSION=1.1.0-beta.1");
-      expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.1.0-beta.1");
-      expect(result.stdout).toContain("GTS_DOCKER_TAGS=1.1.0-beta.1");
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("isSnapshotVersion: false");
+        expect(result.stdout).toContain("isTaggedVersion: true");
+        expect(result.stdout).toContain("version: 1.0.0");
+      });
     });
   });
 
-  describe("Patch version (README example 4)", () => {
-    it("should generate patch versions on release branch", async () => {
-      const result = await runGitThatSemver(
-        ["-e", "java", "-e", "npm", "-e", "docker"],
-        {
-          CI: "true",
-          GITLAB_CI: "true",
-          CI_COMMIT_REF_NAME: "release/1.0.x",
-          CI_COMMIT_SHA: currentCommitSha,
-          CI_COMMIT_TAG: "v1.0.1",
-        },
-      );
+  describe("GitHub Actions", () => {
+    const githubEnv = {
+      CI: "true",
+      GITHUB_ACTIONS: "true",
+      GITHUB_EVENT_NAME: "push",
+      GITHUB_REF_TYPE: "branch",
+    };
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-      expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-      expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-      expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.1");
-      expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.1");
-      expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.1");
+    describe("Snapshot build (README example 1)", () => {
+      it("should generate snapshot versions when on untagged commit", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...githubEnv,
+            GITHUB_REF_NAME: "main",
+            GITHUB_SHA: currentCommitSha,
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_HIGHEST_SEMVER_VERSION=false");
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false",
+        );
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false",
+        );
+        expect(result.stdout).toContain(
+          "GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false",
+        );
+
+        // Check that version strings contain expected patterns
+        const shortSha = currentCommitSha.substring(0, 12);
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_JAVA_VERSION=.*${shortSha}-SNAPSHOT`),
+        );
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
+        );
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
+        );
+        // Check that the full commit SHA appears in docker tags
+        expect(result.stdout).toContain(currentCommitSha);
+      });
     });
-  });
 
-  describe("GitHub Actions platform", () => {
-    it("should detect GitHub Actions platform and generate versions", async () => {
-      const result = await runGitThatSemver(["-e", "npm"], {
-        CI: "true",
-        GITHUB_ACTIONS: "true",
-        GITHUB_REF_NAME: "main",
-        GITHUB_SHA: currentCommitSha,
-        GITHUB_EVENT_NAME: "push",
-        GITHUB_REF_TYPE: "branch",
+    describe("Release version (README example 2)", () => {
+      it("should generate release versions when on tagged commit", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...githubEnv,
+            GITHUB_REF_NAME: "v1.0.0",
+            GITHUB_SHA: currentCommitSha,
+            GITHUB_REF_TYPE: "tag",
+            GITHUB_REF: "refs/tags/v1.0.0",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.0");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.0");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.0");
+      });
+    });
+
+    describe("Pre-release version (README example 3)", () => {
+      it("should generate pre-release versions with beta tag", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...githubEnv,
+            GITHUB_REF_NAME: "v1.1.0-beta.1",
+            GITHUB_SHA: currentCommitSha,
+            GITHUB_REF_TYPE: "tag",
+            GITHUB_REF: "refs/tags/v1.1.0-beta.1",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.1.0-beta.1");
+        expect(result.stdout).toContain("GTS_DOCKER_TAGS=1.1.0-beta.1");
+      });
+    });
+
+    describe("Patch version (README example 4)", () => {
+      it("should generate patch versions on release branch", async () => {
+        const result = await runGitThatSemver(
+          ["-e", "java", "-e", "npm", "-e", "docker"],
+          {
+            ...githubEnv,
+            GITHUB_REF_NAME: "v1.0.1",
+            GITHUB_SHA: currentCommitSha,
+            GITHUB_REF_TYPE: "tag",
+            GITHUB_REF: "refs/tags/v1.0.1",
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
+        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
+        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.1");
+        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.1");
+        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.1");
+      });
+    });
+
+    describe("Pull Request context", () => {
+      it("should generate snapshot versions with PR identifier", async () => {
+        const result = await runGitThatSemver(["-e", "npm"], {
+          ...githubEnv,
+          GITHUB_EVENT_NAME: "pull_request",
+          GITHUB_REF: "refs/pull/30/merge",
+          GITHUB_REF_NAME: "30/merge",
+          GITHUB_SHA: currentCommitSha,
+          GITHUB_HEAD_REF: "feature/test-branch",
+          GITHUB_BASE_REF: "main",
+        });
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
+        const shortSha = currentCommitSha.substring(0, 12);
+        expect(result.stdout).toMatch(
+          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
+        );
+      });
+    });
+
+    describe("Configuration override", () => {
+      it("should allow configuration overrides via CLI", async () => {
+        const result = await runGitThatSemver(
+          [
+            "-e",
+            "npm",
+            "-c",
+            "output.env.prefix=CUSTOM_",
+            "-c",
+            "defaults.snapshot.useChangeRequestIdentifier=false",
+          ],
+          {
+            ...githubEnv,
+            GITHUB_REF_NAME: "main",
+            GITHUB_SHA: currentCommitSha,
+          },
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("CUSTOM_IS_SNAPSHOT_VERSION=true");
+        expect(result.stdout).toMatch(/CUSTOM_NPM_VERSION=/);
+      });
+    });
+
+    describe("Output formats", () => {
+      it("should output JSON format when requested", async () => {
+        const result = await runGitThatSemver(["-o", "json", "-e", "npm"], {
+          ...githubEnv,
+          GITHUB_REF_NAME: "v1.0.0",
+          GITHUB_SHA: currentCommitSha,
+          GITHUB_REF_TYPE: "tag",
+          GITHUB_REF: "refs/tags/v1.0.0",
+        });
+
+        expect(result.exitCode).toBe(0);
+
+        let output;
+        try {
+          output = JSON.parse(result.stdout);
+        } catch (e) {
+          console.log("Failed to parse JSON output:", result.stdout);
+          throw e;
+        }
+
+        expect(output.isSnapshotVersion).toBe(false);
+        expect(output.isTaggedVersion).toBe(true);
+        expect(output.strategies.npm.version).toBe("1.0.0");
       });
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
-      const shortSha = currentCommitSha.substring(0, 12);
-      expect(result.stdout).toMatch(
-        new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
-      );
-    });
-  });
+      it("should output YAML format when requested", async () => {
+        const result = await runGitThatSemver(["-o", "yaml", "-e", "npm"], {
+          ...githubEnv,
+          GITHUB_REF_NAME: "v1.0.0",
+          GITHUB_SHA: currentCommitSha,
+          GITHUB_REF_TYPE: "tag",
+          GITHUB_REF: "refs/tags/v1.0.0",
+        });
 
-  describe("Configuration override", () => {
-    it("should allow configuration overrides via CLI", async () => {
-      const result = await runGitThatSemver(
-        [
-          "-e",
-          "npm",
-          "-c",
-          "output.env.prefix=CUSTOM_",
-          "-c",
-          "defaults.snapshot.useChangeRequestIdentifier=false",
-        ],
-        {
-          CI: "true",
-          GITLAB_CI: "true",
-          CI_COMMIT_REF_NAME: "main",
-          CI_COMMIT_SHA: currentCommitSha,
-        },
-      );
-
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("CUSTOM_IS_SNAPSHOT_VERSION=true");
-      expect(result.stdout).toMatch(/CUSTOM_NPM_VERSION=/);
-    });
-  });
-
-  describe("Output formats", () => {
-    it("should output JSON format when requested", async () => {
-      const result = await runGitThatSemver(["-o", "json", "-e", "npm"], {
-        CI: "true",
-        GITLAB_CI: "true",
-        CI_COMMIT_REF_NAME: "main",
-        CI_COMMIT_SHA: currentCommitSha,
-        CI_COMMIT_TAG: "v1.0.0",
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain("isSnapshotVersion: false");
+        expect(result.stdout).toContain("isTaggedVersion: true");
+        expect(result.stdout).toContain("version: 1.0.0");
       });
-
-      expect(result.exitCode).toBe(0);
-
-      let output;
-      try {
-        output = JSON.parse(result.stdout);
-      } catch (e) {
-        console.log("Failed to parse JSON output:", result.stdout);
-        throw e;
-      }
-
-      expect(output.isSnapshotVersion).toBe(false);
-      expect(output.isTaggedVersion).toBe(true);
-      expect(output.strategies.npm.version).toBe("1.0.0");
-    });
-
-    it("should output YAML format when requested", async () => {
-      const result = await runGitThatSemver(["-o", "yaml", "-e", "npm"], {
-        CI: "true",
-        GITLAB_CI: "true",
-        CI_COMMIT_REF_NAME: "main",
-        CI_COMMIT_SHA: currentCommitSha,
-        CI_COMMIT_TAG: "v1.0.0",
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain("isSnapshotVersion: false");
-      expect(result.stdout).toContain("isTaggedVersion: true");
-      expect(result.stdout).toContain("version: 1.0.0");
     });
   });
 
