@@ -41,18 +41,9 @@ async function runGitThatSemver(
 }
 
 describe("git-that-semver e2e tests", () => {
-  let currentCommitSha: string;
-
-  beforeEach(async () => {
-    // Get current commit SHA for tests
-    const projectRoot = path.resolve(__dirname, "../..");
-    const proc = spawn({
-      cmd: ["git", "rev-parse", "HEAD"],
-      cwd: projectRoot,
-      stdout: "pipe",
-    });
-    currentCommitSha = (await new Response(proc.stdout).text()).trim();
-  });
+  // Use fixed past commit with predictable timestamp for deterministic tests
+  const testCommitSha = "abed3856b14da92e6b4f4a7a53ab8856c7a2e517"; // Full SHA
+  const testCommitTimestamp = "20250606215244";
 
   describe("GitLab CI", () => {
     const gitlabEnv = {
@@ -67,39 +58,27 @@ describe("git-that-semver e2e tests", () => {
           {
             ...gitlabEnv,
             CI_COMMIT_REF_NAME: "main",
-            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_SHA: testCommitSha,
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_HIGHEST_SEMVER_VERSION=false");
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false",
-        );
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false",
-        );
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false",
-        );
 
-        // Check that version strings contain expected patterns
-        const shortSha = currentCommitSha.substring(0, 12);
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_JAVA_VERSION=.*${shortSha}-SNAPSHOT`),
-        );
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
-        );
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
-        );
-        // Check that the full commit SHA appears in docker tags
-        expect(result.stdout).toContain(currentCommitSha);
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=true
+GTS_IS_TAGGED_VERSION=false
+GTS_IS_SEMVER_VERSION=false
+GTS_IS_RELEASE_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+GTS_JAVA_VERSION=0.9.0-20250606215244.abed3856b14d-SNAPSHOT
+GTS_NPM_VERSION=0.9.0-20250606215244.abed3856b14d
+GTS_DOCKER_VERSION=0.9.0-20250606215244.abed3856b14d
+GTS_DOCKER_TAGS=0.9.0-20250606215244.abed3856b14d abed3856b14da92e6b4f4a7a53ab8856c7a2e517 main
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -110,19 +89,28 @@ describe("git-that-semver e2e tests", () => {
           {
             ...gitlabEnv,
             CI_COMMIT_REF_NAME: "main",
-            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_SHA: testCommitSha,
             CI_COMMIT_TAG: "v1.0.0",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.0");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.0");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.0");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=true
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=true
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=true
+GTS_JAVA_VERSION=1.0.0
+GTS_NPM_VERSION=1.0.0
+GTS_DOCKER_VERSION=1.0.0
+GTS_DOCKER_TAGS=1.0.0 1.0 1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -133,20 +121,28 @@ describe("git-that-semver e2e tests", () => {
           {
             ...gitlabEnv,
             CI_COMMIT_REF_NAME: "main",
-            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_SHA: testCommitSha,
             CI_COMMIT_TAG: "v1.1.0-beta.1",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_DOCKER_TAGS=1.1.0-beta.1");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+GTS_JAVA_VERSION=1.1.0-beta.1
+GTS_NPM_VERSION=1.1.0-beta.1
+GTS_DOCKER_VERSION=1.1.0-beta.1
+GTS_DOCKER_TAGS=1.1.0-beta.1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -157,19 +153,28 @@ describe("git-that-semver e2e tests", () => {
           {
             ...gitlabEnv,
             CI_COMMIT_REF_NAME: "release/1.0.x",
-            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_SHA: testCommitSha,
             CI_COMMIT_TAG: "v1.0.1",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.1");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.1");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.1");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=true
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=true
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=true
+GTS_JAVA_VERSION=1.0.1
+GTS_NPM_VERSION=1.0.1
+GTS_DOCKER_VERSION=1.0.1
+GTS_DOCKER_TAGS=1.0.1 1.0 1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -187,13 +192,26 @@ describe("git-that-semver e2e tests", () => {
           {
             ...gitlabEnv,
             CI_COMMIT_REF_NAME: "main",
-            CI_COMMIT_SHA: currentCommitSha,
+            CI_COMMIT_SHA: testCommitSha,
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("CUSTOM_IS_SNAPSHOT_VERSION=true");
-        expect(result.stdout).toMatch(/CUSTOM_NPM_VERSION=/);
+
+        const expectedOutput = `CUSTOM_IS_SNAPSHOT_VERSION=true
+CUSTOM_IS_TAGGED_VERSION=false
+CUSTOM_IS_SEMVER_VERSION=false
+CUSTOM_IS_RELEASE_SEMVER_VERSION=false
+CUSTOM_IS_HIGHEST_SEMVER_VERSION=false
+CUSTOM_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+CUSTOM_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+CUSTOM_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+CUSTOM_DOCKER_VERSION=0.9.0-20250606215244.abed3856b14d
+CUSTOM_DOCKER_TAGS=0.9.0-20250606215244.abed3856b14d abed3856b14da92e6b4f4a7a53ab8856c7a2e517 main
+CUSTOM_NPM_VERSION=0.9.0-20250606215244.abed3856b14d
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -202,7 +220,7 @@ describe("git-that-semver e2e tests", () => {
         const result = await runGitThatSemver(["-o", "json", "-e", "npm"], {
           ...gitlabEnv,
           CI_COMMIT_REF_NAME: "main",
-          CI_COMMIT_SHA: currentCommitSha,
+          CI_COMMIT_SHA: testCommitSha,
           CI_COMMIT_TAG: "v1.0.0",
         });
 
@@ -225,7 +243,7 @@ describe("git-that-semver e2e tests", () => {
         const result = await runGitThatSemver(["-o", "yaml", "-e", "npm"], {
           ...gitlabEnv,
           CI_COMMIT_REF_NAME: "main",
-          CI_COMMIT_SHA: currentCommitSha,
+          CI_COMMIT_SHA: testCommitSha,
           CI_COMMIT_TAG: "v1.0.0",
         });
 
@@ -252,39 +270,27 @@ describe("git-that-semver e2e tests", () => {
           {
             ...githubEnv,
             GITHUB_REF_NAME: "main",
-            GITHUB_SHA: currentCommitSha,
+            GITHUB_SHA: testCommitSha,
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_HIGHEST_SEMVER_VERSION=false");
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false",
-        );
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false",
-        );
-        expect(result.stdout).toContain(
-          "GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false",
-        );
 
-        // Check that version strings contain expected patterns
-        const shortSha = currentCommitSha.substring(0, 12);
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_JAVA_VERSION=.*${shortSha}-SNAPSHOT`),
-        );
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
-        );
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_DOCKER_VERSION=.*${shortSha}`),
-        );
-        // Check that the full commit SHA appears in docker tags
-        expect(result.stdout).toContain(currentCommitSha);
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=true
+GTS_IS_TAGGED_VERSION=false
+GTS_IS_SEMVER_VERSION=false
+GTS_IS_RELEASE_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+GTS_JAVA_VERSION=0.9.0-20250606215244.abed3856b14d-SNAPSHOT
+GTS_NPM_VERSION=0.9.0-20250606215244.abed3856b14d
+GTS_DOCKER_VERSION=0.9.0-20250606215244.abed3856b14d
+GTS_DOCKER_TAGS=0.9.0-20250606215244.abed3856b14d abed3856b14da92e6b4f4a7a53ab8856c7a2e517 main
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -295,20 +301,29 @@ describe("git-that-semver e2e tests", () => {
           {
             ...githubEnv,
             GITHUB_REF_NAME: "v1.0.0",
-            GITHUB_SHA: currentCommitSha,
+            GITHUB_SHA: testCommitSha,
             GITHUB_REF_TYPE: "tag",
             GITHUB_REF: "refs/tags/v1.0.0",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.0");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.0");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.0");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=true
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=true
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=true
+GTS_JAVA_VERSION=1.0.0
+GTS_NPM_VERSION=1.0.0
+GTS_DOCKER_VERSION=1.0.0
+GTS_DOCKER_TAGS=1.0.0 1.0 1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -319,21 +334,29 @@ describe("git-that-semver e2e tests", () => {
           {
             ...githubEnv,
             GITHUB_REF_NAME: "v1.1.0-beta.1",
-            GITHUB_SHA: currentCommitSha,
+            GITHUB_SHA: testCommitSha,
             GITHUB_REF_TYPE: "tag",
             GITHUB_REF: "refs/tags/v1.1.0-beta.1",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=false");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.1.0-beta.1");
-        expect(result.stdout).toContain("GTS_DOCKER_TAGS=1.1.0-beta.1");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+GTS_JAVA_VERSION=1.1.0-beta.1
+GTS_NPM_VERSION=1.1.0-beta.1
+GTS_DOCKER_VERSION=1.1.0-beta.1
+GTS_DOCKER_TAGS=1.1.0-beta.1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -344,20 +367,29 @@ describe("git-that-semver e2e tests", () => {
           {
             ...githubEnv,
             GITHUB_REF_NAME: "v1.0.1",
-            GITHUB_SHA: currentCommitSha,
+            GITHUB_SHA: testCommitSha,
             GITHUB_REF_TYPE: "tag",
             GITHUB_REF: "refs/tags/v1.0.1",
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=false");
-        expect(result.stdout).toContain("GTS_IS_TAGGED_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_IS_RELEASE_SEMVER_VERSION=true");
-        expect(result.stdout).toContain("GTS_JAVA_VERSION=1.0.1");
-        expect(result.stdout).toContain("GTS_NPM_VERSION=1.0.1");
-        expect(result.stdout).toContain("GTS_DOCKER_VERSION=1.0.1");
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=false
+GTS_IS_TAGGED_VERSION=true
+GTS_IS_SEMVER_VERSION=true
+GTS_IS_RELEASE_SEMVER_VERSION=true
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=true
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=true
+GTS_JAVA_VERSION=1.0.1
+GTS_NPM_VERSION=1.0.1
+GTS_DOCKER_VERSION=1.0.1
+GTS_DOCKER_TAGS=1.0.1 1.0 1
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -368,17 +400,27 @@ describe("git-that-semver e2e tests", () => {
           GITHUB_EVENT_NAME: "pull_request",
           GITHUB_REF: "refs/pull/30/merge",
           GITHUB_REF_NAME: "30/merge",
-          GITHUB_SHA: currentCommitSha,
+          GITHUB_SHA: testCommitSha,
           GITHUB_HEAD_REF: "feature/test-branch",
           GITHUB_BASE_REF: "main",
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("GTS_IS_SNAPSHOT_VERSION=true");
-        const shortSha = currentCommitSha.substring(0, 12);
-        expect(result.stdout).toMatch(
-          new RegExp(`GTS_NPM_VERSION=.*${shortSha}`),
-        );
+
+        const expectedOutput = `GTS_IS_SNAPSHOT_VERSION=true
+GTS_IS_TAGGED_VERSION=false
+GTS_IS_SEMVER_VERSION=false
+GTS_IS_RELEASE_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_VERSION=false
+GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+GTS_DOCKER_VERSION=0.9.0-pr-30.20250606215244.abed3856b14d
+GTS_DOCKER_TAGS=0.9.0-pr-30.20250606215244.abed3856b14d abed3856b14da92e6b4f4a7a53ab8856c7a2e517
+GTS_NPM_VERSION=0.9.0-pr-30.20250606215244.abed3856b14d
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -396,13 +438,26 @@ describe("git-that-semver e2e tests", () => {
           {
             ...githubEnv,
             GITHUB_REF_NAME: "main",
-            GITHUB_SHA: currentCommitSha,
+            GITHUB_SHA: testCommitSha,
           },
         );
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("CUSTOM_IS_SNAPSHOT_VERSION=true");
-        expect(result.stdout).toMatch(/CUSTOM_NPM_VERSION=/);
+
+        const expectedOutput = `CUSTOM_IS_SNAPSHOT_VERSION=true
+CUSTOM_IS_TAGGED_VERSION=false
+CUSTOM_IS_SEMVER_VERSION=false
+CUSTOM_IS_RELEASE_SEMVER_VERSION=false
+CUSTOM_IS_HIGHEST_SEMVER_VERSION=false
+CUSTOM_IS_HIGHEST_SEMVER_RELEASE_VERSION=false
+CUSTOM_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION=false
+CUSTOM_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION=false
+CUSTOM_DOCKER_VERSION=0.9.0-20250606215244.abed3856b14d
+CUSTOM_DOCKER_TAGS=0.9.0-20250606215244.abed3856b14d abed3856b14da92e6b4f4a7a53ab8856c7a2e517 main
+CUSTOM_NPM_VERSION=0.9.0-20250606215244.abed3856b14d
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
 
@@ -411,7 +466,7 @@ describe("git-that-semver e2e tests", () => {
         const result = await runGitThatSemver(["-o", "json", "-e", "npm"], {
           ...githubEnv,
           GITHUB_REF_NAME: "v1.0.0",
-          GITHUB_SHA: currentCommitSha,
+          GITHUB_SHA: testCommitSha,
           GITHUB_REF_TYPE: "tag",
           GITHUB_REF: "refs/tags/v1.0.0",
         });
@@ -435,7 +490,7 @@ describe("git-that-semver e2e tests", () => {
         const result = await runGitThatSemver(["-o", "yaml", "-e", "npm"], {
           ...githubEnv,
           GITHUB_REF_NAME: "v1.0.0",
-          GITHUB_SHA: currentCommitSha,
+          GITHUB_SHA: testCommitSha,
           GITHUB_REF_TYPE: "tag",
           GITHUB_REF: "refs/tags/v1.0.0",
         });
@@ -456,7 +511,7 @@ describe("git-that-semver e2e tests", () => {
           CI: "true",
           GITLAB_CI: "true",
           CI_COMMIT_REF_NAME: "main",
-          CI_COMMIT_SHA: currentCommitSha,
+          CI_COMMIT_SHA: testCommitSha,
         },
       );
 
