@@ -1,28 +1,30 @@
-import { executeCommand } from "./process";
+import { processUtils } from "./process";
 
 export function listTags(): string[] {
-  return executeCommand(["git", "tag", "-l"])
+  return processUtils
+    .executeCommand(["git", "tag", "-l"])
     .split("\n")
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
 }
 
 export function listTagsBeforeCommit(commitSha: string): string[] {
-  return executeCommand([
-    "git",
-    "tag",
-    "-l",
-    "--sort=-version:refname",
-    "--merged",
-    commitSha,
-  ])
+  return processUtils
+    .executeCommand([
+      "git",
+      "tag",
+      "-l",
+      "--sort=-version:refname",
+      "--merged",
+      commitSha,
+    ])
     .split("\n")
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
 }
 
 export function getCommitDateTime(commitSha: string): string {
-  return executeCommand([
+  return processUtils.executeCommand([
     "git",
     "show",
     "-s",

@@ -59,68 +59,97 @@ const program = new Command("git-that-semver")
   .allowExcessArguments(true) // TODO revisit why this is needed after the commander 13 upgrade
   .parse();
 
-logger.setLevel(LogLevel[program.opts().logLevel]);
+// Define a type for parsed options for clarity, based on program.opts()
+// This might need to be more specific based on actual options.
+type ParsedOptions = ReturnType<typeof program.parse>["opts"];
 
-try {
-  const config = await resolveConfig(
-    path.resolve(program.opts().configFile),
-    [...program.opts().enableStrategy],
-    [...program.opts().disableStrategy],
-    program.opts().outputFormat,
-    [...program.opts().configValue],
-  );
+export async function mainLogic(options: ParsedOptions, cmdInstance: Command) {
+  logger.setLevel(LogLevel[options.logLevel]);
 
-  if (program.opts().dumpConfig) {
-    logger.info("Dumping resolved config file as --dump-config was passed");
+  try {
+    const config = await resolveConfig(
+      path.resolve(options.configFile),
+      [...options.enableStrategy],
+      [...options.disableStrategy],
+      options.outputFormat,
+      [...options.configValue],
+    );
 
-    let configOutputFormat = program.opts().outputFormat;
-    if (configOutputFormat === "env") {
-      logger.info(
-        "Selected output format is 'env' which is not supported for config dump, using YAML instead",
-      );
+    if (options.dumpConfig) {
+      logger.info("Dumping resolved config file as --dump-config was passed");
 
-      configOutputFormat = "yaml";
+      let configOutputFormat = options.outputFormat;
+      if (configOutputFormat === "env") {
+        logger.info(
+          "Selected output format is 'env' which is not supported for config dump, using YAML instead",
+        );
+        configOutputFormat = "yaml";
+      }
+
+      if (configOutputFormat === "json") {
+        console.log(JSON.stringify(config, null, 2));
+      } else if (configOutputFormat === "yaml") {
+        console.log(YAML.stringify(config));
+      }
+
+      if (!process.env.BUN_TEST) {
+        process.exit(0);
+      }
+      return; // Return for testability
     }
 
-    if (configOutputFormat === "json") {
-      console.log(JSON.stringify(config, null, 2));
-    } else if (configOutputFormat === "yaml") {
-      console.log(YAML.stringify(config));
+    const platform = resolvePlatform(config.platform);
+    const strategies = resolveStrategies(config.strategies);
+    const result = resolveVersion(config, platform, strategies);
+
+    const outputPrinter = resolveOutputPrinter(config);
+    // In a test context, we might want to capture this instead of printing
+    if (process.env.BUN_TEST) {
+      // For testing, let's assume the test will spy on console.log or capture stdout
+      outputPrinter.printResult(config, result);
+    } else {
+      outputPrinter.printResult(config, result);
+    }
+  } catch (e) {
+    logger.debug("Encountered exception", e);
+
+    let exitCode = 2;
+    let errorMessage = chalk.white.bold("An unexpected error occurred.");
+
+    if (e instanceof ZodError) {
+      exitCode = 3;
+      errorMessage =
+        chalk.white.bold("Failed to parse configuration:") + "\n\n";
+      errorMessage += e.errors
+        .map(
+          (err) =>
+            chalk.red.bold(" •") +
+            " " +
+            chalk.white.bold(err.path.join(".") + ": ") +
+            err.message,
+        )
+        .join("\n");
+    } else if (e instanceof Error) {
+      errorMessage = chalk.white.bold(e.message);
+    } else if (typeof e === "string") {
+      errorMessage = chalk.white.bold(e);
     }
 
-    process.exit(0);
+    if (process.env.BUN_TEST) {
+      // Re-throw the error for test assertions
+      const testError = new Error(errorMessage);
+      // @ts-ignore
+      testError.exitCode = exitCode;
+      throw testError;
+    } else {
+      cmdInstance.error(errorMessage, { exitCode: exitCode });
+    }
   }
-
-  const platform = resolvePlatform(config.platform);
-  const strategies = resolveStrategies(config.strategies);
-  const result = resolveVersion(config, platform, strategies);
-
-  const outputPrinter = resolveOutputPrinter(config);
-  outputPrinter.printResult(config, result);
-} catch (e) {
-  logger.debug("Encountered exception", e);
-
-  let exitCode = 2;
-  let errorMessage = chalk.white.bold("An unexpected error occurred.");
-
-  if (e instanceof ZodError) {
-    exitCode = 3;
-
-    errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
-    errorMessage += e.errors
-      .map(
-        (err) =>
-          chalk.red.bold(" •") +
-          " " +
-          chalk.white.bold(err.path.join(".") + ": ") +
-          err.message,
-      )
-      .join("\n");
-  } else if (e instanceof Error) {
-    errorMessage = chalk.white.bold(e.message);
-  } else if (typeof e === "string") {
-    errorMessage = chalk.white.bold(e);
-  }
-
-  program.error(errorMessage, { exitCode: exitCode });
 }
+
+if (import.meta.main) {
+  // program is already parsed at the top level
+  mainLogic(program.opts() as ParsedOptions, program);
+}
+
+export { program as cliProgram };

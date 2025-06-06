@@ -1,20 +1,20 @@
 import { describe, expect, test } from "bun:test";
 
-import { executeCommand } from "./process";
+import { processUtils } from "./process";
 
 describe("executeCommand", () => {
   test("successfully executes a command and returns stdout", () => {
-    const result = executeCommand(["echo", "hello world"]);
+    const result = processUtils.executeCommand(["echo", "hello world"]);
     expect(result).toBe("hello world");
   });
 
   test("handles empty output", () => {
-    const result = executeCommand(["echo", ""]);
+    const result = processUtils.executeCommand(["echo", ""]);
     expect(result).toBe("");
   });
 
   test("trims whitespace from output", () => {
-    const result = executeCommand(["echo", "  hello  "]);
+    const result = processUtils.executeCommand(["echo", "  hello  "]);
     expect(result).toBe("hello");
   });
 });

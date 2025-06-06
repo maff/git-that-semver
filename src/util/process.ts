@@ -1,4 +1,4 @@
-export function executeCommand(parts: string[]): string {
+const executeCommandInternal = (parts: string[]): string => {
   const proc = Bun.spawnSync(parts);
 
   if (proc.success) {
@@ -10,4 +10,8 @@ export function executeCommand(parts: string[]): string {
       proc.exitCode
     }. STDERR: ${proc.stderr.toString()}`,
   );
-}
+};
+
+export const processUtils = {
+  executeCommand: executeCommandInternal,
+};

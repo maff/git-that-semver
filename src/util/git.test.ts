@@ -9,13 +9,13 @@ import {
 } from "bun:test";
 
 import { listTags, listTagsBeforeCommit, getCommitDateTime } from "./git";
-import * as processModule from "./process";
+import { processUtils } from "./process";
 
 describe("git utilities", () => {
   let executeCommandSpy: ReturnType<typeof spyOn>;
 
   beforeEach(() => {
-    executeCommandSpy = spyOn(processModule, "executeCommand");
+    executeCommandSpy = spyOn(processUtils, "executeCommand");
   });
 
   afterEach(() => {
