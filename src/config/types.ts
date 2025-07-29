@@ -23,15 +23,15 @@ export const TagsConfig = z.object({
 
 export const DefaultConfig = z.object({
   branchPrefixes: z.array(z.string()).default([]),
-  snapshot: SnapshotConfig.default({}),
-  tags: TagsConfig.default({}),
+  snapshot: SnapshotConfig.prefault({}),
+  tags: TagsConfig.prefault({}),
   properties: FreeformProperties.default({}),
 });
 
 export const StrategyConfig = z.object({
   enabled: z.boolean().default(true),
-  snapshot: SnapshotConfig.default({}),
-  tags: TagsConfig.default({}),
+  snapshot: SnapshotConfig.prefault({}),
+  tags: TagsConfig.prefault({}),
   properties: FreeformProperties.default({}),
 });
 
@@ -52,9 +52,9 @@ export const OutputConfig = z.object({
 });
 
 export const Config = z.object({
-  defaults: DefaultConfig.default({}),
+  defaults: DefaultConfig.prefault({}),
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
-  strategies: z.record(StrategyConfig),
+  strategies: z.record(z.string(), StrategyConfig),
   output: OutputConfig,
 });
 

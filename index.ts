@@ -107,7 +107,7 @@ try {
     exitCode = 3;
 
     errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
-    errorMessage += e.errors
+    errorMessage += e.issues
       .map(
         (err) =>
           chalk.red.bold(" •") +
