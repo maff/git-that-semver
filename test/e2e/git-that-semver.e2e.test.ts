@@ -231,9 +231,28 @@ CUSTOM_NPM_VERSION=0.8.0-20250123134343.a84bc7cab7ec
           throw e;
         }
 
-        expect(output.isSnapshotVersion).toBe(false);
-        expect(output.isTaggedVersion).toBe(true);
-        expect(output.strategies.npm.version).toBe("1.0.0");
+        const expectedOutput = {
+          isSnapshotVersion: false,
+          isTaggedVersion: true,
+          isSemVerVersion: true,
+          isReleaseSemVerVersion: true,
+          isHighestSemVerVersion: false,
+          isHighestSemVerReleaseVersion: false,
+          isHighestSameMajorReleaseVersion: true,
+          isHighestSameMinorReleaseVersion: true,
+          strategies: {
+            docker: {
+              version: "1.0.0",
+              tags: ["1.0.0", "1.0", "1"],
+            },
+            npm: {
+              version: "1.0.0",
+              tags: [],
+            },
+          },
+        };
+
+        expect(output).toEqual(expectedOutput);
       });
 
       it("should output YAML format when requested", async () => {
@@ -245,9 +264,29 @@ CUSTOM_NPM_VERSION=0.8.0-20250123134343.a84bc7cab7ec
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("isSnapshotVersion: false");
-        expect(result.stdout).toContain("isTaggedVersion: true");
-        expect(result.stdout).toContain("version: 1.0.0");
+
+        const expectedOutput = `isSnapshotVersion: false
+isTaggedVersion: true
+isSemVerVersion: true
+isReleaseSemVerVersion: true
+isHighestSemVerVersion: false
+isHighestSemVerReleaseVersion: false
+isHighestSameMajorReleaseVersion: true
+isHighestSameMinorReleaseVersion: true
+strategies:
+  docker:
+    version: 1.0.0
+    tags:
+      - 1.0.0
+      - "1.0"
+      - "1"
+  npm:
+    version: 1.0.0
+    tags: []
+
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
   });
@@ -478,9 +517,28 @@ CUSTOM_NPM_VERSION=0.8.0-20250123134343.a84bc7cab7ec
           throw e;
         }
 
-        expect(output.isSnapshotVersion).toBe(false);
-        expect(output.isTaggedVersion).toBe(true);
-        expect(output.strategies.npm.version).toBe("1.0.0");
+        const expectedOutput = {
+          isSnapshotVersion: false,
+          isTaggedVersion: true,
+          isSemVerVersion: true,
+          isReleaseSemVerVersion: true,
+          isHighestSemVerVersion: false,
+          isHighestSemVerReleaseVersion: false,
+          isHighestSameMajorReleaseVersion: true,
+          isHighestSameMinorReleaseVersion: true,
+          strategies: {
+            docker: {
+              version: "1.0.0",
+              tags: ["1.0.0", "1.0", "1"],
+            },
+            npm: {
+              version: "1.0.0",
+              tags: [],
+            },
+          },
+        };
+
+        expect(output).toEqual(expectedOutput);
       });
 
       it("should output YAML format when requested", async () => {
@@ -493,9 +551,29 @@ CUSTOM_NPM_VERSION=0.8.0-20250123134343.a84bc7cab7ec
         });
 
         expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain("isSnapshotVersion: false");
-        expect(result.stdout).toContain("isTaggedVersion: true");
-        expect(result.stdout).toContain("version: 1.0.0");
+
+        const expectedOutput = `isSnapshotVersion: false
+isTaggedVersion: true
+isSemVerVersion: true
+isReleaseSemVerVersion: true
+isHighestSemVerVersion: false
+isHighestSemVerReleaseVersion: false
+isHighestSameMajorReleaseVersion: true
+isHighestSameMinorReleaseVersion: true
+strategies:
+  docker:
+    version: 1.0.0
+    tags:
+      - 1.0.0
+      - "1.0"
+      - "1"
+  npm:
+    version: 1.0.0
+    tags: []
+
+`;
+
+        expect(result.stdout).toBe(expectedOutput);
       });
     });
   });
