@@ -6,8 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 
-- `bun test` - Run all tests
+- `bun test` - Run all tests (unit + e2e)
 - `bun test <pattern>` - Run specific test files (e.g., `bun test util` for util tests)
+- `bun test test/e2e/` - Run end-to-end tests only
 - `bun test --test-name-pattern <pattern>` - Run tests matching pattern
 - `bun run lint` - Check code formatting with Prettier
 - `bun run lint-fix` - Fix code formatting issues
@@ -75,3 +76,17 @@ git-that-semver (GTS) is a CLI tool that generates semantic version numbers base
 - Defaults merged with user config
 - Strategy-specific configs inherit from defaults
 - CLI overrides applied last
+
+## Testing
+
+**Unit Tests**: Located alongside source files with `.test.ts` suffix
+
+- Test individual functions and components in isolation
+- Mock external dependencies when needed
+
+**End-to-End Tests** (`test/e2e/`):
+
+- Test complete CLI workflows using real git repository state
+- Cover all README scenarios: snapshot, release, pre-release, patch versions
+- Test platform detection (GitHub Actions, GitLab CI)
+- Test output formats (env, JSON, YAML) and configuration overrides
