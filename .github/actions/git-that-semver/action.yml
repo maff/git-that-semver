@@ -3,16 +3,13 @@ description: "Generates build version numbers and metadata based on your git rep
 inputs:
   env:
     description: "Uses the env output to create individual outputs"
-    type: boolean
-    default: true
+    default: "true"
   json:
     description: "Writes JSON result to GTS_JSON output if enabled"
-    type: boolean
-    default: false
+    default: "false"
   yaml:
     description: "Writes YAML result to GTS_YAML output if enabled"
-    type: boolean
-    default: false
+    default: "false"
 outputs:
   GTS_JSON:
     description: "git-that-semver result in JSON format (if enabled)"
