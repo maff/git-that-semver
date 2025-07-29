@@ -1,7 +1,5 @@
 import { spawn } from "bun";
-import { beforeEach, describe, expect, it, afterEach } from "bun:test";
-import * as fs from "fs";
-import * as os from "os";
+import { describe, expect, it } from "bun:test";
 import * as path from "path";
 
 // Helper to run git-that-semver CLI
@@ -14,11 +12,11 @@ async function runGitThatSemver(
 
   // Create clean environment with only essential variables, removing all CI-related vars
   const cleanEnv = {
-    PATH: process.env.PATH,
-    HOME: process.env.HOME,
-    USER: process.env.USER,
-    SHELL: process.env.SHELL,
-    TERM: process.env.TERM,
+    PATH: process.env["PATH"],
+    HOME: process.env["HOME"],
+    USER: process.env["USER"],
+    SHELL: process.env["SHELL"],
+    TERM: process.env["TERM"],
   };
 
   const proc = spawn({
@@ -43,8 +41,6 @@ async function runGitThatSemver(
 describe("git-that-semver e2e tests", () => {
   // Use fixed past commit with predictable timestamp for deterministic tests
   const testCommitSha = "a84bc7cab7ec01a3827c1d2841e8c4e3b5a0986b"; // Full SHA as provided by CI
-  const testCommitShortSha = "a84bc7cab7ec"; // 12-char SHA for version strings
-  const testCommitTimestamp = "20250123134343";
 
   describe("GitLab CI", () => {
     const gitlabEnv = {
