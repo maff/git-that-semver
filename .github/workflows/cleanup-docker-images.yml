@@ -21,4 +21,4 @@ jobs:
           package-type: container
           min-versions-to-keep: 20
           delete-only-untagged-versions: false
-          ignore-versions: "^(latest|main|\\d+|\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+)$"
+          ignore-versions: "^(latest|main|\\d+|\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+(-.+)?)$"
