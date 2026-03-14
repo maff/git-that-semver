@@ -1,5 +1,8 @@
 name: "git-that-semver"
 description: "Generates build version numbers and metadata based on your git repository state"
+branding:
+  icon: "tag"
+  color: "blue"
 inputs:
   env:
     description: "Uses the env output to create individual outputs"
@@ -17,5 +20,5 @@ outputs:
     description: "git-that-semver result in YAML format (if enabled)"
 runs:
   using: "docker"
-  image: "../../../Dockerfile"
+  image: "docker://ghcr.io/maff/git-that-semver:1"
   entrypoint: "/entrypoint-action.sh"
