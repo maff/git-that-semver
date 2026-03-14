@@ -3,15 +3,12 @@ name: Test and Build
 on:
   push:
     branches: ["main"]
-    # Publish semver tags as releases.
     tags: ["v*.*.*"]
   pull_request:
     branches: ["main"]
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -31,9 +28,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
       - id: git-that-semver
         name: git-that-semver
-        uses: ./.github/actions/git-that-semver
+        run: bun run index.ts -e docker | tee -a "$GITHUB_OUTPUT"
 
   test:
     runs-on: ubuntu-latest
@@ -62,9 +65,105 @@ jobs:
       - name: E2E tests
         run: bun run test:e2e
 
+  test-action:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build Docker image
+        run: docker build -t git-that-semver-test .
+
+      - name: Test action entrypoint - env output
+        run: |
+          OUTPUT_FILE=$(mktemp)
+          SUMMARY_FILE=$(mktemp)
+
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            -e INPUT_ENV=true \
+            -e INPUT_JSON=false \
+            -e INPUT_YAML=false \
+            -e GITHUB_ACTIONS=true \
+            -e GITHUB_EVENT_NAME=push \
+            -e GITHUB_REF_TYPE=branch \
+            -e GITHUB_REF_NAME=main \
+            -e GITHUB_SHA=$(git rev-parse HEAD) \
+            -e GITHUB_OUTPUT=/workspace/.gts-output \
+            -e GITHUB_STEP_SUMMARY=/workspace/.gts-summary \
+            --entrypoint /entrypoint-action.sh \
+            git-that-semver-test
+
+          echo "--- Validating env output ---"
+          grep -q "GTS_IS_SNAPSHOT_VERSION=" .gts-output
+          grep -q "GTS_IS_TAGGED_VERSION=" .gts-output
+          grep -q "GTS_DOCKER_VERSION=" .gts-output
+          echo "env output OK"
+
+          echo "--- Validating step summary ---"
+          grep -q '```env' .gts-summary
+          echo "step summary OK"
+
+          rm -f .gts-output .gts-summary
+
+      - name: Test action entrypoint - JSON output
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            -e INPUT_ENV=false \
+            -e INPUT_JSON=true \
+            -e INPUT_YAML=false \
+            -e GITHUB_ACTIONS=true \
+            -e GITHUB_EVENT_NAME=push \
+            -e GITHUB_REF_TYPE=branch \
+            -e GITHUB_REF_NAME=main \
+            -e GITHUB_SHA=$(git rev-parse HEAD) \
+            -e GITHUB_OUTPUT=/workspace/.gts-output \
+            -e GITHUB_STEP_SUMMARY=/workspace/.gts-summary \
+            --entrypoint /entrypoint-action.sh \
+            git-that-semver-test
+
+          echo "--- Validating JSON output ---"
+          sed -n '/^GTS_JSON<<EOF$/,/^EOF$/p' .gts-output | sed '1d;$d' | python3 -m json.tool > /dev/null
+          echo "JSON output OK"
+
+          rm -f .gts-output .gts-summary
+
+      - name: Test action entrypoint - YAML output
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            -e INPUT_ENV=false \
+            -e INPUT_JSON=false \
+            -e INPUT_YAML=true \
+            -e GITHUB_ACTIONS=true \
+            -e GITHUB_EVENT_NAME=push \
+            -e GITHUB_REF_TYPE=branch \
+            -e GITHUB_REF_NAME=main \
+            -e GITHUB_SHA=$(git rev-parse HEAD) \
+            -e GITHUB_OUTPUT=/workspace/.gts-output \
+            -e GITHUB_STEP_SUMMARY=/workspace/.gts-summary \
+            --entrypoint /entrypoint-action.sh \
+            git-that-semver-test
+
+          echo "--- Validating YAML output ---"
+          sed -n '/^GTS_YAML<<EOF$/,/^EOF$/p' .gts-output | sed '1d;$d' | python3 -c "import sys, yaml; yaml.safe_load(sys.stdin)"
+          echo "YAML output OK"
+
+          rm -f .gts-output .gts-summary
+
   docker-build:
     runs-on: ubuntu-latest
-    needs: [test, git-that-semver]
+    needs: [git-that-semver, test, test-action]
 
     permissions:
       contents: read
