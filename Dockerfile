@@ -13,7 +13,7 @@ RUN bun build ./index.ts --compile --outfile git-that-semver
 # release stage
 FROM alpine:3 AS release
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git libstdc++ libgcc
 
 COPY entrypoint.sh /entrypoint.sh
 COPY entrypoint-action.sh /entrypoint-action.sh
