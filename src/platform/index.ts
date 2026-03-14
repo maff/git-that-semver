@@ -1,6 +1,4 @@
-import chalk from "chalk";
-
-import { logger } from "../logging";
+import { style, logger } from "../logging";
 import { GitHubPlatform } from "./github";
 import { GitLabPlatform } from "./gitlab";
 
@@ -45,7 +43,7 @@ function resolveAutoPlatform(): Platform {
     throw new Error("Platform could not be resolved automatically.");
   }
 
-  platformLogger.info(`Resolved platform: ${chalk.white.bold(platformType)}`);
+  platformLogger.info(`Resolved platform: ${style.white.bold(platformType)}`);
 
   return platforms[platformType];
 }

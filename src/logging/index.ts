@@ -1,5 +1,7 @@
-import chalk, { type ChalkInstance } from "chalk";
+import { chalkStderr, type ChalkInstance } from "chalk";
 import util from "util";
+
+export { chalkStderr as style };
 
 export type LogLevelValue = 0 | 1 | 2 | 3 | 4 | 5;
 export const LogLevel = {
@@ -30,27 +32,27 @@ class RootLogger implements Logger {
   }
 
   trace(message: string, ...args: any[]) {
-    this.log("TRACE", chalk.cyan.bold, message, ...args);
+    this.log("TRACE", chalkStderr.cyan.bold, message, ...args);
   }
 
   debug(message: string, ...args: any[]) {
-    this.log("DEBUG", chalk.blue.bold, message, ...args);
+    this.log("DEBUG", chalkStderr.blue.bold, message, ...args);
   }
 
   info(message: string, ...args: any[]) {
-    this.log("INFO", chalk.green.bold, message, ...args);
+    this.log("INFO", chalkStderr.green.bold, message, ...args);
   }
 
   warn(message: string, ...args: any[]) {
-    this.log("WARN", chalk.yellow.bold, message, ...args);
+    this.log("WARN", chalkStderr.yellow.bold, message, ...args);
   }
 
   error(message: string, ...args: any[]) {
-    this.log("ERROR", chalk.red.bold, message, ...args);
+    this.log("ERROR", chalkStderr.red.bold, message, ...args);
   }
 
   childLogger(name: string): Logger {
-    const childPrefix = chalk.white.bold(`(${name})`);
+    const childPrefix = chalkStderr.white.bold(`(${name})`);
     const wrapMessage = (message: string) => `${childPrefix} ${message}`;
 
     return {
@@ -79,9 +81,9 @@ class RootLogger implements Logger {
     }
 
     const formattedLevel = levelColor.call(this, `[${level}]`);
-    const formattedMessage = `${formattedLevel} ${chalk.white(message)}`;
+    const formattedMessage = `${formattedLevel} ${chalkStderr.white(message)}`;
     const formattedArgs = args.map((arg) =>
-      chalk.white(util.inspect(arg, false, null, true)),
+      chalkStderr.white(util.inspect(arg, false, null, chalkStderr.level > 0)),
     );
 
     // always write to stderr to allow redirecting stdout to a file (stderr is also fine for diagnostics)
