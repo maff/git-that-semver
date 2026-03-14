@@ -88,6 +88,7 @@ jobs:
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
+            -e CI=true \
             -e INPUT_ENV=true \
             -e INPUT_JSON=false \
             -e INPUT_YAML=false \
@@ -118,6 +119,7 @@ jobs:
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
+            -e CI=true \
             -e INPUT_ENV=false \
             -e INPUT_JSON=true \
             -e INPUT_YAML=false \
@@ -142,6 +144,7 @@ jobs:
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
+            -e CI=true \
             -e INPUT_ENV=false \
             -e INPUT_JSON=false \
             -e INPUT_YAML=true \
