@@ -5,6 +5,11 @@ on:
     # Run weekly on Sunday at 03:00 UTC
     - cron: "0 3 * * 0"
   workflow_dispatch:
+    inputs:
+      min-versions-to-keep:
+        description: "Minimum number of snapshot versions to keep (0 = delete all snapshots)"
+        type: number
+        default: 20
 
 permissions:
   packages: write
@@ -19,6 +24,6 @@ jobs:
         with:
           package-name: git-that-semver
           package-type: container
-          min-versions-to-keep: 20
+          min-versions-to-keep: ${{ inputs.min-versions-to-keep || 20 }}
           delete-only-untagged-versions: false
           ignore-versions: "^(latest|main|\\d+|\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+(-.+)?)$"
