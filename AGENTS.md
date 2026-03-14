@@ -214,7 +214,7 @@ Uses LiquidJS. Templates are defined in config YAML (both defaults and per-strat
 
 ## Distribution
 
-- **Docker**: Multi-stage build (`oven/bun:1-alpine`). Compiles to standalone binary via `bun build --compile`. Published to `ghcr.io`.
-- **GitHub Action**: `.github/actions/git-that-semver/action.yml`. Runs Docker image. Outputs env vars + optional JSON/YAML to `$GITHUB_OUTPUT` and `$GITHUB_STEP_SUMMARY`.
+- **Docker**: Multi-stage build (compile on `oven/bun:1-alpine`, release on `alpine:3`). Compiles to standalone binary via `bun build --compile`. Published to `ghcr.io`.
+- **GitHub Action**: `action.yml` at repo root. Docker action referencing `ghcr.io/maff/git-that-semver:1`. Outputs env vars + optional JSON/YAML to `$GITHUB_OUTPUT` and `$GITHUB_STEP_SUMMARY`. Consumer usage: `uses: maff/git-that-semver@v1`.
 - **Standalone binary**: `bun build ./index.ts --compile --outfile git-that-semver`.
 - **Direct**: `bun run index.ts [args]`.

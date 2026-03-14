@@ -38,16 +38,17 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # GTS needs full history for tag analysis
 
       - id: gts
-        uses: maff/git-that-semver/.github/actions/git-that-semver@main
-        with:
-          env: "true" # Output individual env vars (default)
-          json: "false" # Output JSON to GTS_JSON
-          yaml: "false" # Output YAML to GTS_YAML
+        uses: maff/git-that-semver@v1
+        # with:
+        #   env: "true"    # Output individual env vars (default)
+        #   json: "false"  # Output JSON to GTS_JSON
+        #   yaml: "false"  # Output YAML to GTS_YAML
+        #   args: ""       # Additional CLI arguments
 
       - run: |
           echo "Version: ${{ steps.gts.outputs.GTS_DOCKER_VERSION }}"
@@ -56,17 +57,20 @@ jobs:
 
 #### Action Inputs
 
-| Input  | Default   | Description                              |
-| ------ | --------- | ---------------------------------------- |
-| `env`  | `"true"`  | Output individual environment variables  |
-| `json` | `"false"` | Output full result as JSON in `GTS_JSON` |
-| `yaml` | `"false"` | Output full result as YAML in `GTS_YAML` |
+| Input  | Default   | Description                                             |
+| ------ | --------- | ------------------------------------------------------- |
+| `env`  | `"true"`  | Output individual environment variables                 |
+| `json` | `"false"` | Output full result as JSON in `GTS_JSON`                |
+| `yaml` | `"false"` | Output full result as YAML in `GTS_YAML`                |
+| `args` | `""`      | Additional CLI arguments (e.g. `-e npm -e java -c ...`) |
 
 When `env` is enabled, each version info flag and strategy result is available as an individual step output (`steps.gts.outputs.GTS_*`).
 
 When `json` or `yaml` is enabled, the full structured result is available as `GTS_JSON` or `GTS_YAML` respectively.
 
 The action also writes results to the GitHub Actions job summary for easy visibility.
+
+For complete workflow examples including Docker build pipelines and conditional logic, see the [GitHub Actions Usage Guide](github-actions.md).
 
 #### Important: `fetch-depth: 0`
 

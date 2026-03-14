@@ -19,21 +19,24 @@ As the name suggests, it targets versioning based on the [Semantic Versioning](h
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
     with:
       fetch-depth: 0  # required — GTS needs full git history
 
   - id: gts
-    uses: maff/git-that-semver/.github/actions/git-that-semver@main
+    uses: maff/git-that-semver@v1
     # with:
     #   env: "true"    # env var output (default)
     #   json: "false"  # JSON output
     #   yaml: "false"  # YAML output
+    #   args: ""       # additional CLI arguments (e.g. "-e npm -e java")
 
   - run: echo "Version: ${{ steps.gts.outputs.GTS_DOCKER_VERSION }}"
 ```
 
-The action outputs individual environment variables by default. Enable `json` or `yaml` for structured output via `GTS_JSON` / `GTS_YAML`.
+The action outputs individual environment variables by default. All `GTS_*` keys are available as step outputs. Enable `json` or `yaml` for structured output via `GTS_JSON` / `GTS_YAML`.
+
+See the [GitHub Actions Usage Guide](docs/github-actions.md) for complete workflow examples including Docker build pipelines and conditional logic.
 
 ### Docker
 
@@ -270,9 +273,10 @@ Every run outputs these boolean flags, which can be used to drive downstream CI 
 
 ## Further Reading
 
+- [GitHub Actions Usage Guide](docs/github-actions.md) — complete workflow examples, Docker build pipeline, conditional logic
 - [Configuration Reference](docs/configuration.md) — full config schema, strategy system, defaults
 - [Template Customization](docs/templates.md) — template variables, filters, and examples
-- [CI Platform Integration](docs/platforms.md) — GitHub Actions and GitLab CI details
+- [CI Platform Integration](docs/platforms.md) — GitHub Actions and GitLab CI platform details
 - [AI Agent Instructions](AGENTS.md) — for AI coding tools (Claude Code, Cursor, Copilot, etc.)
 
 ## License
