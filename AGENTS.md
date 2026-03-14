@@ -131,16 +131,16 @@ Config
 
 **Version info flags** (all booleans, all available in templates):
 
-| Flag                               | Meaning                                                                              |
-| ---------------------------------- | ------------------------------------------------------------------------------------ |
-| `isSnapshotVersion`                | Commit has no tag                                                                    |
-| `isTaggedVersion`                  | Commit has a tag (any)                                                               |
-| `isSemVerVersion`                  | Tag is valid semver                                                                  |
-| `isReleaseSemVerVersion`           | Semver tag with no prerelease/build metadata                                         |
-| `isHighestSemVerVersion`           | Highest semver tag in entire repo                                                    |
-| `isHighestSemVerReleaseVersion`    | Highest release (non-prerelease) tag in repo                                         |
-| `isHighestSameMajorReleaseVersion` | This is a release tag AND it is the highest semver tag within the same major version |
-| `isHighestSameMinorReleaseVersion` | This is a release tag AND it is the highest semver tag within the same major.minor   |
+| Flag                               | Meaning                                                        |
+| ---------------------------------- | -------------------------------------------------------------- |
+| `isSnapshotVersion`                | Commit has no tag                                              |
+| `isTaggedVersion`                  | Commit has a tag (any)                                         |
+| `isSemVerVersion`                  | Tag is valid semver                                            |
+| `isReleaseSemVerVersion`           | Semver tag with no prerelease/build metadata                   |
+| `isHighestSemVerVersion`           | Highest semver tag in entire repo                              |
+| `isHighestSemVerReleaseVersion`    | Highest release (non-prerelease) tag in repo                   |
+| `isHighestSameMajorReleaseVersion` | Highest release (non-prerelease) tag within same major version |
+| `isHighestSameMinorReleaseVersion` | Highest release (non-prerelease) tag within same major.minor   |
 
 **Snapshot base version**: When no previous release exists, defaults to `0.0.0`. The default `prefixTpl` bumps the minor: `0.0.0` -> `0.1.0-`.
 

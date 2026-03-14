@@ -42,16 +42,16 @@ All templates have access to these variables:
 
 ### `versionInfo` — Version classification flags
 
-| Variable                                       | Type      | Description                                                                    |
-| ---------------------------------------------- | --------- | ------------------------------------------------------------------------------ |
-| `versionInfo.isSnapshotVersion`                | `boolean` | Commit has no tag                                                              |
-| `versionInfo.isTaggedVersion`                  | `boolean` | Commit has a tag (any)                                                         |
-| `versionInfo.isSemVerVersion`                  | `boolean` | Tag is a valid semver version                                                  |
-| `versionInfo.isReleaseSemVerVersion`           | `boolean` | Semver tag with no prerelease or build metadata                                |
-| `versionInfo.isHighestSemVerVersion`           | `boolean` | Highest semver tag in the entire repository                                    |
-| `versionInfo.isHighestSemVerReleaseVersion`    | `boolean` | Highest release tag in the repository                                          |
-| `versionInfo.isHighestSameMajorReleaseVersion` | `boolean` | This is a release tag and the highest semver tag within the same major version |
-| `versionInfo.isHighestSameMinorReleaseVersion` | `boolean` | This is a release tag and the highest semver tag within the same major.minor   |
+| Variable                                       | Type      | Description                                                        |
+| ---------------------------------------------- | --------- | ------------------------------------------------------------------ |
+| `versionInfo.isSnapshotVersion`                | `boolean` | Commit has no tag                                                  |
+| `versionInfo.isTaggedVersion`                  | `boolean` | Commit has a tag (any)                                             |
+| `versionInfo.isSemVerVersion`                  | `boolean` | Tag is a valid semver version                                      |
+| `versionInfo.isReleaseSemVerVersion`           | `boolean` | Semver tag with no prerelease or build metadata                    |
+| `versionInfo.isHighestSemVerVersion`           | `boolean` | Highest semver tag in the entire repository                        |
+| `versionInfo.isHighestSemVerReleaseVersion`    | `boolean` | Highest release tag in the repository                              |
+| `versionInfo.isHighestSameMajorReleaseVersion` | `boolean` | Highest release (non-prerelease) tag within the same major version |
+| `versionInfo.isHighestSameMinorReleaseVersion` | `boolean` | Highest release (non-prerelease) tag within the same major.minor   |
 
 ### `config` — Current strategy configuration
 
