@@ -6,10 +6,14 @@ on:
     - cron: "0 3 * * 0"
   workflow_dispatch:
     inputs:
-      min-versions-to-keep:
-        description: "Minimum number of snapshot versions to keep (0 = delete all snapshots)"
+      keep-n-tagged:
+        description: "Number of snapshot versions to keep (0 = delete all snapshots)"
         type: number
         default: 20
+      dry-run:
+        description: "Dry run (log what would be deleted without deleting)"
+        type: boolean
+        default: false
 
 permissions:
   packages: write
@@ -20,10 +24,12 @@ jobs:
 
     steps:
       - name: Delete old snapshot images
-        uses: actions/delete-package-versions@v5
+        uses: dataaxiom/ghcr-cleanup-action@v1
         with:
-          package-name: git-that-semver
-          package-type: container
-          min-versions-to-keep: ${{ inputs.min-versions-to-keep || 20 }}
-          delete-only-untagged-versions: false
-          ignore-versions: "^(latest|main|\\d+|\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+(-[a-zA-Z][\\w.]*)?)$"
+          package: git-that-semver
+          # Match snapshot tags: X.Y.Z-TIMESTAMP.SHA (timestamp starts with digit)
+          delete-tags: ".*-\\d{14}\\.[0-9a-f]+"
+          use-regex: true
+          keep-n-tagged: ${{ inputs.keep-n-tagged || 20 }}
+          dry-run: ${{ inputs.dry-run || false }}
+          token: ${{ github.token }}
