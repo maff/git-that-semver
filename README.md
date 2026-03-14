@@ -1,5 +1,10 @@
 # git-that-semver
 
+[![CI](https://github.com/maff/git-that-semver/actions/workflows/build.yml/badge.svg)](https://github.com/maff/git-that-semver/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/maff/git-that-semver)](https://github.com/maff/git-that-semver/releases/latest)
+[![Docker](https://img.shields.io/badge/ghcr.io-maff%2Fgit--that--semver-blue?logo=docker)](https://github.com/maff/git-that-semver/pkgs/container/git-that-semver)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A CLI tool that generates semantic version numbers from your git repository state, designed for CI/CD pipelines.
 
 ## Overview
