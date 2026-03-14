@@ -1,6 +1,8 @@
 import { chalkStderr, type ChalkInstance } from "chalk";
 import util from "util";
 
+export { chalkStderr as style };
+
 export type LogLevelValue = 0 | 1 | 2 | 3 | 4 | 5;
 export const LogLevel = {
   TRACE: 0 as LogLevelValue,

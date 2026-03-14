@@ -1,11 +1,10 @@
 import { Command, Option } from "@commander-js/extra-typings";
-import { chalkStderr } from "chalk";
 import path from "path";
 import YAML from "yaml";
 import { ZodError } from "zod";
 
 import { resolveConfig } from "./src/config";
-import { LogLevel, logger } from "./src/logging";
+import { style, LogLevel, logger } from "./src/logging";
 import { resolveOutputPrinter } from "./src/output";
 import { resolvePlatform } from "./src/platform";
 import { resolveVersion } from "./src/version/versionResolver";
@@ -54,7 +53,7 @@ const program = new Command("git-that-semver")
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
-      process.stderr.write(`${chalkStderr.red.bold("[ERROR]")} ${str}`),
+      process.stderr.write(`${style.red.bold("[ERROR]")} ${str}`),
   })
   .allowExcessArguments(true) // TODO revisit why this is needed after the commander 13 upgrade
   .parse();
@@ -101,26 +100,25 @@ try {
   logger.debug("Encountered exception", e);
 
   let exitCode = 2;
-  let errorMessage = chalkStderr.white.bold("An unexpected error occurred.");
+  let errorMessage = style.white.bold("An unexpected error occurred.");
 
   if (e instanceof ZodError) {
     exitCode = 3;
 
-    errorMessage =
-      chalkStderr.white.bold("Failed to parse configuration:") + "\n\n";
+    errorMessage = style.white.bold("Failed to parse configuration:") + "\n\n";
     errorMessage += e.issues
       .map(
         (err) =>
-          chalkStderr.red.bold(" •") +
+          style.red.bold(" •") +
           " " +
-          chalkStderr.white.bold(err.path.join(".") + ": ") +
+          style.white.bold(err.path.join(".") + ": ") +
           err.message,
       )
       .join("\n");
   } else if (e instanceof Error) {
-    errorMessage = chalkStderr.white.bold(e.message);
+    errorMessage = style.white.bold(e.message);
   } else if (typeof e === "string") {
-    errorMessage = chalkStderr.white.bold(e);
+    errorMessage = style.white.bold(e);
   }
 
   program.error(errorMessage, { exitCode: exitCode });
