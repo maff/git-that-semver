@@ -279,9 +279,10 @@ Every run outputs these boolean flags, which can be used to drive downstream CI 
 ## Further Reading
 
 - [GitHub Actions Usage Guide](docs/github-actions.md) — complete workflow examples, Docker build pipeline, conditional logic
+- [GitLab CI Usage Guide](docs/gitlab-ci.md) — complete pipeline examples, Kaniko Docker build, reusable templates
 - [Configuration Reference](docs/configuration.md) — full config schema, strategy system, defaults
 - [Template Customization](docs/templates.md) — template variables, filters, and examples
-- [CI Platform Integration](docs/platforms.md) — GitHub Actions and GitLab CI platform details
+- [CI Platform Integration](docs/platforms.md) — platform detection and environment variable details
 - [AI Agent Instructions](AGENTS.md) — for AI coding tools (Claude Code, Cursor, Copilot, etc.)
 
 ## License

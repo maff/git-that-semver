@@ -113,12 +113,14 @@ version:
 
 #### Important: Git history
 
-Ensure your GitLab CI runner fetches full history. In `.gitlab-ci.yml`:
+GTS requires full git history. Set `GIT_DEPTH: 0` in `.gitlab-ci.yml`:
 
 ```yaml
 variables:
-  GIT_DEPTH: 0 # or GIT_STRATEGY: clone
+  GIT_DEPTH: 0
 ```
+
+For complete pipeline examples including Docker builds and reusable templates, see the [GitLab CI Usage Guide](gitlab-ci.md).
 
 ## Adding Platform Support
 
