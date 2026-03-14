@@ -143,17 +143,24 @@ const resolveTaggedVersion = (
     isReleaseSemVerVersion &&
     isHighestTagInList(semVerTags.filter((t) => isReleaseSemVerTag(t)));
 
-  // is it the highest same major semver tag in the repository?
+  // is it the highest same major semver release tag in the repository?
   const isHighestSameMajorReleaseVersion =
     isReleaseSemVerVersion &&
-    isHighestTagInList(semVerTags.filter((t) => t.major === version.major));
+    isHighestTagInList(
+      semVerTags.filter(
+        (t) => isReleaseSemVerTag(t) && t.major === version.major,
+      ),
+    );
 
-  // is it the highest same minor semver tag in the repository?
+  // is it the highest same minor semver release tag in the repository?
   const isHighestSameMinorReleaseVersion =
     isReleaseSemVerVersion &&
     isHighestTagInList(
       semVerTags.filter(
-        (t) => t.major == version.major && t.minor === version.minor,
+        (t) =>
+          isReleaseSemVerTag(t) &&
+          t.major === version.major &&
+          t.minor === version.minor,
       ),
     );
 

@@ -257,16 +257,16 @@ Exit codes: `0` success, `2` unexpected error, `3` configuration validation erro
 
 Every run outputs these boolean flags, which can be used to drive downstream CI logic:
 
-| Flag                                        | Meaning                                                                        |
-| ------------------------------------------- | ------------------------------------------------------------------------------ |
-| `GTS_IS_SNAPSHOT_VERSION`                   | Commit has no tag (snapshot build)                                             |
-| `GTS_IS_TAGGED_VERSION`                     | Commit has a tag                                                               |
-| `GTS_IS_SEMVER_VERSION`                     | Tag is a valid semver version                                                  |
-| `GTS_IS_RELEASE_SEMVER_VERSION`             | Semver tag with no prerelease or build metadata                                |
-| `GTS_IS_HIGHEST_SEMVER_VERSION`             | Highest semver tag in the entire repo                                          |
-| `GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION`     | Highest release (non-prerelease) tag in the repo                               |
-| `GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION` | This is a release tag and the highest semver tag within the same major version |
-| `GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION` | This is a release tag and the highest semver tag within the same major.minor   |
+| Flag                                        | Meaning                                                            |
+| ------------------------------------------- | ------------------------------------------------------------------ |
+| `GTS_IS_SNAPSHOT_VERSION`                   | Commit has no tag (snapshot build)                                 |
+| `GTS_IS_TAGGED_VERSION`                     | Commit has a tag                                                   |
+| `GTS_IS_SEMVER_VERSION`                     | Tag is a valid semver version                                      |
+| `GTS_IS_RELEASE_SEMVER_VERSION`             | Semver tag with no prerelease or build metadata                    |
+| `GTS_IS_HIGHEST_SEMVER_VERSION`             | Highest semver tag in the entire repo                              |
+| `GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION`     | Highest release (non-prerelease) tag in the repo                   |
+| `GTS_IS_HIGHEST_SAME_MAJOR_RELEASE_VERSION` | Highest release (non-prerelease) tag within the same major version |
+| `GTS_IS_HIGHEST_SAME_MINOR_RELEASE_VERSION` | Highest release (non-prerelease) tag within the same major.minor   |
 
 ## Further Reading
 
