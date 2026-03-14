@@ -33,6 +33,9 @@
   "scripts": {
     "prepare": "husky",
     "lint": "prettier --check .",
-    "lint-fix": "prettier --write ."
+    "lint-fix": "prettier --write .",
+    "test": "bun test",
+    "test:unit": "bun test src/",
+    "test:e2e": "bun test test/e2e/"
   }
 }

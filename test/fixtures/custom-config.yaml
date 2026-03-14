@@ -1,0 +1,7 @@
+strategies:
+  python:
+    enabled: true
+
+output:
+  env:
+    prefix: CUSTOM_
