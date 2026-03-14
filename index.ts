@@ -1,5 +1,5 @@
 import { Command, Option } from "@commander-js/extra-typings";
-import chalk from "chalk";
+import { chalkStderr } from "chalk";
 import path from "path";
 import YAML from "yaml";
 import { ZodError } from "zod";
@@ -54,7 +54,7 @@ const program = new Command("git-that-semver")
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
-      process.stderr.write(`${chalk.red.bold("[ERROR]")} ${str}`),
+      process.stderr.write(`${chalkStderr.red.bold("[ERROR]")} ${str}`),
   })
   .allowExcessArguments(true) // TODO revisit why this is needed after the commander 13 upgrade
   .parse();
@@ -101,25 +101,26 @@ try {
   logger.debug("Encountered exception", e);
 
   let exitCode = 2;
-  let errorMessage = chalk.white.bold("An unexpected error occurred.");
+  let errorMessage = chalkStderr.white.bold("An unexpected error occurred.");
 
   if (e instanceof ZodError) {
     exitCode = 3;
 
-    errorMessage = chalk.white.bold("Failed to parse configuration:") + "\n\n";
+    errorMessage =
+      chalkStderr.white.bold("Failed to parse configuration:") + "\n\n";
     errorMessage += e.issues
       .map(
         (err) =>
-          chalk.red.bold(" •") +
+          chalkStderr.red.bold(" •") +
           " " +
-          chalk.white.bold(err.path.join(".") + ": ") +
+          chalkStderr.white.bold(err.path.join(".") + ": ") +
           err.message,
       )
       .join("\n");
   } else if (e instanceof Error) {
-    errorMessage = chalk.white.bold(e.message);
+    errorMessage = chalkStderr.white.bold(e.message);
   } else if (typeof e === "string") {
-    errorMessage = chalk.white.bold(e);
+    errorMessage = chalkStderr.white.bold(e);
   }
 
   program.error(errorMessage, { exitCode: exitCode });
