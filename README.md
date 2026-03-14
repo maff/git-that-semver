@@ -43,6 +43,26 @@ The action outputs individual environment variables by default. All `GTS_*` keys
 
 See the [GitHub Actions Usage Guide](docs/github-actions.md) for complete workflow examples including Docker build pipelines and conditional logic.
 
+### GitLab CI
+
+```yaml
+variables:
+  GIT_DEPTH: 0 # required — GTS needs full git history
+
+git-that-semver:
+  stage: .pre
+  image: ghcr.io/maff/git-that-semver:1
+  script:
+    - git-that-semver -e docker | tee git-that-semver.env
+  artifacts:
+    reports:
+      dotenv: git-that-semver.env
+```
+
+GTS variables are automatically available in downstream jobs via the `dotenv` artifact report.
+
+See the [GitLab CI Usage Guide](docs/gitlab-ci.md) for complete pipeline examples including Docker builds and reusable templates.
+
 ### Docker
 
 ```shell
