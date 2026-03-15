@@ -66,15 +66,20 @@ index.ts                          CLI entry point (Commander.js)
 
 ## CLI Options
 
-| Option               | Short | Default                | Env Var             | Description                                  |
-| -------------------- | ----- | ---------------------- | ------------------- | -------------------------------------------- |
-| `--config-file`      | `-f`  | `git-that-semver.yaml` | `GTS_CONFIG_FILE`   | Config file path                             |
-| `--config-value`     | `-c`  | `[]`                   |                     | Override config values (`path.to.key=value`) |
-| `--log-level`        |       | `INFO`                 | `GTS_LOG_LEVEL`     | `TRACE\|DEBUG\|INFO\|WARN\|ERROR\|SILENT`    |
-| `--enable-strategy`  | `-e`  | `[]`                   |                     | Enable strategies by name                    |
-| `--disable-strategy` | `-d`  | `[]`                   |                     | Disable strategies by name                   |
-| `--output-format`    | `-o`  | `env`                  | `GTS_OUTPUT_FORMAT` | `env\|json\|yaml`                            |
-| `--dump-config`      |       | `false`                |                     | Dump resolved config and exit                |
+| Option                | Short | Default                | Env Var                 | Description                                         |
+| --------------------- | ----- | ---------------------- | ----------------------- | --------------------------------------------------- |
+| `--config-file`       | `-f`  | `git-that-semver.yaml` | `GTS_CONFIG_FILE`       | Config file path                                    |
+| `--config-value`      | `-c`  | `[]`                   |                         | Override config values (`path.to.key=value`)        |
+| `--log-level`         |       | `INFO`                 | `GTS_LOG_LEVEL`         | `TRACE\|DEBUG\|INFO\|WARN\|ERROR\|SILENT`           |
+| `--enable-strategy`   | `-e`  | `[]`                   |                         | Enable strategies by name                           |
+| `--disable-strategy`  | `-d`  | `[]`                   |                         | Disable strategies by name                          |
+| `--output-format`     | `-o`  | `env`                  | `GTS_OUTPUT_FORMAT`     | `env\|json\|yaml`                                   |
+| `--platform`          |       | (from config)          | `GTS_PLATFORM`          | Platform type (`auto\|github\|gitlab\|git\|manual`) |
+| `--commit-sha`        |       |                        | `GTS_COMMIT_SHA`        | Commit SHA (manual platform)                        |
+| `--ref-name`          |       |                        | `GTS_REF_NAME`          | Branch/tag name (manual platform)                   |
+| `--git-tag`           |       |                        | `GTS_GIT_TAG`           | Git tag (manual platform)                           |
+| `--change-request-id` |       |                        | `GTS_CHANGE_REQUEST_ID` | Change request ID (manual platform)                 |
+| `--dump-config`       |       | `false`                |                         | Dump resolved config and exit                       |
 
 Exit codes: `0` success, `2` unexpected error, `3` Zod validation error.
 
@@ -92,7 +97,7 @@ Strategy configs inherit from `defaults` (deep merge, except `branchPrefixes`). 
 
 ```
 Config
-  platform: "auto" | "github" | "gitlab"
+  platform: "auto" | "github" | "gitlab" | "git" | "manual"
   defaults: DefaultConfig
     branchPrefixes: string[]           # stripped from branch names (e.g. "feature/")
     snapshot: SnapshotConfig
@@ -181,10 +186,12 @@ Uses LiquidJS. Templates are defined in config YAML (both defaults and per-strat
 
 **Auto-detection** (`platform: auto`): tries GitHub, then GitLab; throws if neither matches.
 
-| Platform       | Detection                         | SHA             | Ref Name                                                             | Tag                                        | Change Request                                                     |
-| -------------- | --------------------------------- | --------------- | -------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ |
-| GitHub Actions | `CI=true` + `GITHUB_ACTIONS=true` | `GITHUB_SHA`    | `GITHUB_HEAD_REF` (PR, via `GITHUB_EVENT_NAME`) or `GITHUB_REF_NAME` | `GITHUB_REF_NAME` if `GITHUB_REF_TYPE=tag` | `pr-{N}` from `GITHUB_REF` (when `GITHUB_EVENT_NAME=pull_request`) |
-| GitLab CI      | `CI=true` + `GITLAB_CI=true`      | `CI_COMMIT_SHA` | `CI_COMMIT_REF_NAME`                                                 | `CI_COMMIT_TAG`                            | `mr-{N}` from `CI_MERGE_REQUEST_IID`                               |
+| Platform       | Detection                         | SHA                  | Ref Name                                                             | Tag                                        | Change Request                                                     |
+| -------------- | --------------------------------- | -------------------- | -------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ |
+| GitHub Actions | `CI=true` + `GITHUB_ACTIONS=true` | `GITHUB_SHA`         | `GITHUB_HEAD_REF` (PR, via `GITHUB_EVENT_NAME`) or `GITHUB_REF_NAME` | `GITHUB_REF_NAME` if `GITHUB_REF_TYPE=tag` | `pr-{N}` from `GITHUB_REF` (when `GITHUB_EVENT_NAME=pull_request`) |
+| GitLab CI      | `CI=true` + `GITLAB_CI=true`      | `CI_COMMIT_SHA`      | `CI_COMMIT_REF_NAME`                                                 | `CI_COMMIT_TAG`                            | `mr-{N}` from `CI_MERGE_REQUEST_IID`                               |
+| Git            | Explicit (`--platform git`)       | `git rev-parse HEAD` | `git branch --show-current`                                          | `git describe --tags --exact-match HEAD`   | Always `undefined`                                                 |
+| Manual         | Explicit or auto (when flags set) | `--commit-sha` / env | `--ref-name` / env                                                   | `--git-tag` / env                          | `--change-request-id` / env                                        |
 
 ## Output Formats
 

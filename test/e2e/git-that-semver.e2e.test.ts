@@ -667,6 +667,188 @@ output:
     });
   });
 
+  describe("Git Platform", () => {
+    it("snapshot build - untagged commit", async () => {
+      testRepo = await createTestRepo({
+        commits: [
+          { message: "initial", tag: "v1.0.0" },
+          { message: "feature work" },
+        ],
+      });
+
+      const result = await runGTS(
+        ["--platform", "git", "-e", "docker", "-e", "npm"],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_SNAPSHOT_VERSION"]).toBe("true");
+      expect(env["GTS_IS_TAGGED_VERSION"]).toBe("false");
+      expect(env["GTS_DOCKER_VERSION"]).toMatch(
+        /^1\.1\.0-20250115120000\.[0-9a-f]{12}$/,
+      );
+      expect(env["GTS_NPM_VERSION"]).toMatch(
+        /^1\.1\.0-20250115120000\.[0-9a-f]{12}$/,
+      );
+    });
+
+    it("release version - tagged commit", async () => {
+      testRepo = await createTestRepo({
+        commits: [{ message: "release", tag: "v1.0.0" }],
+      });
+
+      const result = await runGTS(
+        ["--platform", "git", "-e", "docker", "-e", "npm"],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_SNAPSHOT_VERSION"]).toBe("false");
+      expect(env["GTS_IS_TAGGED_VERSION"]).toBe("true");
+      expect(env["GTS_IS_SEMVER_VERSION"]).toBe("true");
+      expect(env["GTS_IS_RELEASE_SEMVER_VERSION"]).toBe("true");
+      expect(env["GTS_IS_HIGHEST_SEMVER_VERSION"]).toBe("true");
+      expect(env["GTS_IS_HIGHEST_SEMVER_RELEASE_VERSION"]).toBe("true");
+      expect(env["GTS_DOCKER_VERSION"]).toBe("1.0.0");
+      expect(env["GTS_NPM_VERSION"]).toBe("1.0.0");
+    });
+  });
+
+  describe("Manual Platform", () => {
+    it("snapshot build via CLI flags", async () => {
+      testRepo = await createTestRepo({
+        commits: [
+          { message: "initial", tag: "v1.0.0" },
+          { message: "feature work" },
+        ],
+      });
+      const sha = testRepo.shas[1];
+
+      const result = await runGTS(
+        [
+          "--commit-sha",
+          sha,
+          "--ref-name",
+          "main",
+          "-e",
+          "docker",
+          "-e",
+          "npm",
+        ],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_SNAPSHOT_VERSION"]).toBe("true");
+      expect(env["GTS_IS_TAGGED_VERSION"]).toBe("false");
+      expect(env["GTS_DOCKER_VERSION"]).toMatch(
+        /^1\.1\.0-20250115120000\.[0-9a-f]{12}$/,
+      );
+    });
+
+    it("release version via CLI flags", async () => {
+      testRepo = await createTestRepo({
+        commits: [{ message: "release", tag: "v2.0.0" }],
+      });
+      const sha = testRepo.shas[0];
+
+      const result = await runGTS(
+        [
+          "--commit-sha",
+          sha,
+          "--ref-name",
+          "main",
+          "--git-tag",
+          "v2.0.0",
+          "-e",
+          "docker",
+        ],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_TAGGED_VERSION"]).toBe("true");
+      expect(env["GTS_IS_SEMVER_VERSION"]).toBe("true");
+      expect(env["GTS_DOCKER_VERSION"]).toBe("2.0.0");
+    });
+
+    it("explicit --platform manual", async () => {
+      testRepo = await createTestRepo({
+        commits: [{ message: "initial" }],
+      });
+      const sha = testRepo.shas[0];
+
+      const result = await runGTS(
+        [
+          "--platform",
+          "manual",
+          "--commit-sha",
+          sha,
+          "--ref-name",
+          "develop",
+          "-e",
+          "npm",
+        ],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_SNAPSHOT_VERSION"]).toBe("true");
+    });
+
+    it("errors when manual platform missing required flags", async () => {
+      testRepo = await createTestRepo({
+        commits: [{ message: "initial" }],
+      });
+
+      const result = await runGTS(
+        ["--platform", "manual", "-e", "npm"],
+        {},
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(2);
+      expect(result.stderr).toContain("--commit-sha");
+      expect(result.stderr).toContain("--ref-name");
+    });
+
+    it("manual via GTS env vars", async () => {
+      testRepo = await createTestRepo({
+        commits: [{ message: "initial", tag: "v1.0.0" }, { message: "work" }],
+      });
+      const sha = testRepo.shas[1];
+
+      const result = await runGTS(
+        ["-e", "npm"],
+        {
+          GTS_COMMIT_SHA: sha,
+          GTS_REF_NAME: "main",
+        },
+        testRepo.path,
+      );
+
+      expect(result.exitCode).toBe(0);
+      const env = parseEnvOutput(result.stdout);
+
+      expect(env["GTS_IS_SNAPSHOT_VERSION"]).toBe("true");
+    });
+  });
+
   describe("real repo - date parsing", () => {
     // Tests against a known commit in this repo to verify real git date parsing
     // works correctly (not just the synthetic dates in temp repos).
