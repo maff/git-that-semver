@@ -39,11 +39,13 @@ export type StrategyConfig = z.infer<typeof StrategyConfig>;
 
 export const OutputConfig = z.object({
   type: z.enum(["env", "json", "yaml"]).default("env"),
-  env: z.object({
-    prefix: z.string().default(""),
-    arrayDelimiter: z.string().default(" "),
-    quoteArrays: z.boolean().default(false),
-  }),
+  env: z
+    .object({
+      prefix: z.string().default(""),
+      arrayDelimiter: z.string().default(" "),
+      quoteArrays: z.boolean().default(false),
+    })
+    .prefault({}),
   json: z
     .object({
       indent: z.number().optional(),
