@@ -6,7 +6,7 @@ git config --global --add safe.directory "$PWD"
 
 # create and write ENV result (individual env variables)
 if [ "$INPUT_ENV" = "true" ]; then
-    env_result=$(git-that-semver "$@")
+    env_result=$(git-that-semver $INPUT_ARGS)
     echo "$env_result" | tee -a "$GITHUB_OUTPUT"
     echo ""
 
@@ -17,7 +17,7 @@ fi
 
 # create and write JSON result
 if [ "$INPUT_JSON" = "true" ]; then
-    json_result=$(git-that-semver "$@" -o json -c output.json.indent=2)
+    json_result=$(git-that-semver $INPUT_ARGS -o json -c output.json.indent=2)
     {
         echo 'GTS_JSON<<EOF'
         echo "$json_result"
@@ -32,7 +32,7 @@ fi
 
 # create and write YAML result
 if [ "$INPUT_YAML" = "true" ]; then
-    yaml_result=$(git-that-semver "$@" -o yaml)
+    yaml_result=$(git-that-semver $INPUT_ARGS -o yaml)
     {
         echo 'GTS_YAML<<EOF'
         echo "$yaml_result"
