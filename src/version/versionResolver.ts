@@ -72,8 +72,12 @@ const fetchCommitInfo = (config: Config, platform: Platform): CommitInfo => {
   const commitSha = platform.getCommitSha();
   const commitRefName = platform.getCommitRefName();
   const changeRequestIdentifier = platform.getChangeRequestIdentifier();
-  const tag = platform.getGitTag();
-  const previousSemVerVersions = findPreviousSemVerVersions(commitSha);
+  const rawTag = platform.getGitTag();
+  const tag = matchesTagPrefix(rawTag, config.tagPrefix) ? rawTag : undefined;
+  const previousSemVerVersions = findPreviousSemVerVersions(
+    commitSha,
+    config.tagPrefix,
+  );
 
   return {
     sha: commitSha,
@@ -93,9 +97,10 @@ const resolveTaggedVersion = (
   commitInfo: CommitInfo,
   tag: string,
 ): VersionResult => {
-  const version = semver.parse(tag);
+  const strippedTag = stripTagPrefix(tag, config.tagPrefix);
+  const version = semver.parse(strippedTag);
 
-  // no semver tag -> tag is the version
+  // no semver tag -> stripped tag is the version
   if (!version) {
     const versionInfo: VersionInfo = {
       isSnapshotVersion: false,
@@ -116,7 +121,7 @@ const resolveTaggedVersion = (
           strategy.taggedVersionResult(
             { config, platform, versionInfo },
             commitInfo,
-            tag,
+            strippedTag,
           ),
         ]),
       ),
@@ -126,11 +131,7 @@ const resolveTaggedVersion = (
   const isHighestTagInList = (tags: SemVer[]) =>
     tags.length == 0 || version.compare(tags[0]) === 0;
 
-  const semVerTags = listTags()
-    .map((tag) => semver.parse(tag))
-    .filter((tag): tag is SemVer => tag !== null)
-    .sort(semver.compareBuild)
-    .reverse();
+  const semVerTags = parseSemVerTags(listTags(), config.tagPrefix);
 
   // is it a release semver version?
   const isReleaseSemVerVersion = isReleaseSemVerTag(version);
@@ -240,12 +241,12 @@ const isReleaseSemVerTag = (tag: SemVer) =>
 // find previous semver version tags in the repository
 const findPreviousSemVerVersions = (
   commitSha: string,
+  tagPrefix: string,
 ): PreviousSemVerVersions => {
-  const previousSemVerTags = listTagsBeforeCommit(commitSha)
-    .map((tag) => semver.parse(tag))
-    .filter((tag): tag is SemVer => tag !== null)
-    .sort(semver.compareBuild)
-    .reverse();
+  const previousSemVerTags = parseSemVerTags(
+    listTagsBeforeCommit(commitSha),
+    tagPrefix,
+  );
 
   const releaseSemVerTags = previousSemVerTags.filter((t) =>
     isReleaseSemVerTag(t),
@@ -261,4 +262,27 @@ const findPreviousSemVerVersions = (
         ? semVerVersionString(releaseSemVerTags[0])
         : "0.0.0",
   };
+};
+
+// filter tags by prefix, strip prefix, parse as semver, sort descending
+const parseSemVerTags = (tags: string[], tagPrefix: string): SemVer[] =>
+  tags
+    .filter((tag) => matchesTagPrefix(tag, tagPrefix))
+    .map((tag) => semver.parse(stripTagPrefix(tag, tagPrefix)))
+    .filter((tag): tag is SemVer => tag !== null)
+    .sort(semver.compareBuild)
+    .reverse();
+
+const matchesTagPrefix = (
+  tag: string | undefined,
+  tagPrefix: string,
+): boolean => {
+  if (!tag) return false;
+  if (tagPrefix === "") return true;
+  return tag.startsWith(tagPrefix);
+};
+
+const stripTagPrefix = (tag: string, tagPrefix: string): string => {
+  if (tagPrefix === "" || !tag.startsWith(tagPrefix)) return tag;
+  return tag.substring(tagPrefix.length);
 };

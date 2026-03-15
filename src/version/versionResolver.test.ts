@@ -32,6 +32,7 @@ function createMockPlatform(overrides: Partial<Platform> = {}): Platform {
 function createMinimalConfig(overrides: Partial<Config> = {}): Config {
   return {
     platform: "auto",
+    tagPrefix: "",
     defaults: {
       branchPrefixes: ["feature/", "bugfix/"],
       snapshot: {
@@ -341,6 +342,100 @@ describe("versionResolver", () => {
 
       // Previous release is v1.0.0, so prefix should increment minor: "1.1.0-"
       expect(result.strategies.test.version).toMatch(/^1\.1\.0-/);
+    });
+  });
+
+  describe("tagPrefix", () => {
+    it("should treat non-matching tag as snapshot", () => {
+      mockListTags.mockReturnValue([]);
+      mockListTagsBeforeCommit.mockReturnValue([]);
+
+      const platform = createMockPlatform({
+        getGitTag: () => "lib-v1.0.0",
+      });
+      const config = createMinimalConfig({ tagPrefix: "app-" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      expect(result.isSnapshotVersion).toBe(true);
+      expect(result.isTaggedVersion).toBe(false);
+    });
+
+    it("should strip prefix from matching tag and resolve as semver", () => {
+      mockListTags.mockReturnValue(["app-v1.0.0"]);
+      mockListTagsBeforeCommit.mockReturnValue([]);
+
+      const platform = createMockPlatform({
+        getGitTag: () => "app-v1.0.0",
+      });
+      const config = createMinimalConfig({ tagPrefix: "app-" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      expect(result.isTaggedVersion).toBe(true);
+      expect(result.isSemVerVersion).toBe(true);
+      expect(result.strategies.test.version).toBe("1.0.0");
+    });
+
+    it("should strip prefix from non-semver tag", () => {
+      mockListTags.mockReturnValue(["app-build-123"]);
+      mockListTagsBeforeCommit.mockReturnValue([]);
+
+      const platform = createMockPlatform({
+        getGitTag: () => "app-build-123",
+      });
+      const config = createMinimalConfig({ tagPrefix: "app-" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      expect(result.isTaggedVersion).toBe(true);
+      expect(result.isSemVerVersion).toBe(false);
+      expect(result.strategies.test.version).toBe("build-123");
+    });
+
+    it("should only consider matching tags for highest version checks", () => {
+      mockListTags.mockReturnValue(["app-v1.0.0", "app-v2.0.0", "lib-v3.0.0"]);
+      mockListTagsBeforeCommit.mockReturnValue([]);
+
+      const platform = createMockPlatform({
+        getGitTag: () => "app-v2.0.0",
+      });
+      const config = createMinimalConfig({ tagPrefix: "app-" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      // app-v2.0.0 is highest among app-* tags, lib-v3.0.0 is ignored
+      expect(result.isHighestSemVerVersion).toBe(true);
+      expect(result.isHighestSemVerReleaseVersion).toBe(true);
+    });
+
+    it("should scope previousSemVerVersion to matching prefix", () => {
+      mockListTags.mockReturnValue([]);
+      mockListTagsBeforeCommit.mockReturnValue(["app-v1.0.0", "lib-v5.0.0"]);
+
+      const platform = createMockPlatform();
+      const config = createMinimalConfig({ tagPrefix: "app-" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      // Should base on app-v1.0.0 (1.0.0), not lib-v5.0.0
+      expect(result.strategies.test.version).toMatch(/^1\.1\.0-/);
+    });
+
+    it("should work with empty tagPrefix (default behavior)", () => {
+      mockListTags.mockReturnValue(["v1.0.0", "v2.0.0"]);
+      mockListTagsBeforeCommit.mockReturnValue([]);
+
+      const platform = createMockPlatform({
+        getGitTag: () => "v2.0.0",
+      });
+      const config = createMinimalConfig({ tagPrefix: "" });
+      const strategies = [new VersionStrategy("test", config.strategies.test)];
+      const result = resolveVersion(config, platform, strategies);
+
+      expect(result.isSemVerVersion).toBe(true);
+      expect(result.isHighestSemVerVersion).toBe(true);
+      expect(result.strategies.test.version).toBe("2.0.0");
     });
   });
 });

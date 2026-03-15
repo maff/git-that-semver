@@ -56,6 +56,7 @@ export const OutputConfig = z.object({
 export const Config = z.object({
   defaults: DefaultConfig.prefault({}),
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
+  tagPrefix: z.string().default(""),
   strategies: z.record(
     z
       .string()
