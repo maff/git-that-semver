@@ -15,7 +15,7 @@ Instructions for AI coding agents working on this repository.
 | Run e2e tests only | `bun test test/e2e/`                        |
 | Run by test name   | `bun test --test-name-pattern <pattern>`    |
 | Check formatting   | `bun run lint`                              |
-| Fix formatting     | `bun run lint-fix`                          |
+| Fix formatting     | `bun run lint:fix`                          |
 | Run CLI directly   | `bun run index.ts`                          |
 | Show CLI help      | `bun run index.ts --help`                   |
 
