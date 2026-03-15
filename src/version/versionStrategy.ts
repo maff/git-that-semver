@@ -104,6 +104,10 @@ export class VersionStrategy {
       tags: this.uniqueTags(this.config.tags.snapshot, {
         ...templateContext,
         version,
+        prefix,
+        suffix,
+        branchIdentifier,
+        commitIdentifier,
       }),
       ...this.config.properties,
     };

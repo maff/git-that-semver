@@ -252,6 +252,30 @@ describe("VersionStrategy", () => {
       expect(result.version).toContain("test.");
     });
 
+    it("should make intermediate variables available in snapshot tag templates", () => {
+      const config = createStrategyConfig({
+        tags: {
+          enabled: true,
+          snapshot: [
+            "{{ prefix | trim_alphanumeric }}",
+            "{{ branchIdentifier | trim_alphanumeric }}",
+            "{{ commitIdentifier }}",
+            "{{ suffix }}",
+          ],
+          tagged: [],
+          semVer: [],
+        },
+      });
+      const strategy = new VersionStrategy("test", config);
+      const result = strategy.snapshotVersionResult(
+        createContext({ isSnapshotVersion: true }),
+        createCommitInfo({ refName: "feature/test", refNameSlug: "test" }),
+      );
+      expect(result.tags).toContain("1.0.0");
+      expect(result.tags).toContain("test");
+      expect(result.tags).toContain("20240101120000.abc123def456");
+    });
+
     it("should apply suffix", () => {
       const config = createStrategyConfig({
         snapshot: {

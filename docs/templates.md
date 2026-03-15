@@ -74,18 +74,18 @@ All environment variables from `process.env`. Access any CI or custom variable:
 
 ### Additional variables (context-dependent)
 
-| Variable            | Available in                        | Description                                                                                                                                                |
-| ------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`           | Tag templates (`tagged`, `semVer`)  | The rendered version string                                                                                                                                |
-| `semVer`            | `semVer` tag templates only         | Parsed SemVer object                                                                                                                                       |
-| `semVer.major`      | `semVer` tag templates only         | Major version number                                                                                                                                       |
-| `semVer.minor`      | `semVer` tag templates only         | Minor version number                                                                                                                                       |
-| `semVer.patch`      | `semVer` tag templates only         | Patch version number                                                                                                                                       |
-| `semVer.prerelease` | `semVer` tag templates only         | Prerelease identifiers (array)                                                                                                                             |
-| `prefix`            | `versionTpl`                        | Rendered prefix from `prefixTpl`                                                                                                                           |
-| `suffix`            | `versionTpl`                        | Rendered suffix from `suffixTpl`                                                                                                                           |
-| `branchIdentifier`  | `versionTpl`, `branchIdentifierTpl` | In `branchIdentifierTpl`: the raw slugified ref name (or `undefined` for default branches). In `versionTpl`: the rendered output of `branchIdentifierTpl`. |
-| `commitIdentifier`  | `versionTpl`                        | Rendered commit identifier                                                                                                                                 |
+| Variable            | Available in                                                  | Description                                                                                                                                                                             |
+| ------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`           | All tag templates                                             | The rendered version string                                                                                                                                                             |
+| `semVer`            | `semVer` tag templates only                                   | Parsed SemVer object                                                                                                                                                                    |
+| `semVer.major`      | `semVer` tag templates only                                   | Major version number                                                                                                                                                                    |
+| `semVer.minor`      | `semVer` tag templates only                                   | Minor version number                                                                                                                                                                    |
+| `semVer.patch`      | `semVer` tag templates only                                   | Patch version number                                                                                                                                                                    |
+| `semVer.prerelease` | `semVer` tag templates only                                   | Prerelease identifiers (array)                                                                                                                                                          |
+| `prefix`            | `versionTpl`, `snapshot` tag templates                        | Rendered prefix from `prefixTpl`                                                                                                                                                        |
+| `suffix`            | `versionTpl`, `snapshot` tag templates                        | Rendered suffix from `suffixTpl`                                                                                                                                                        |
+| `branchIdentifier`  | `versionTpl`, `branchIdentifierTpl`, `snapshot` tag templates | In `branchIdentifierTpl`: the raw slugified ref name (or `undefined` for default branches). In `versionTpl` and `snapshot` tag templates: the rendered output of `branchIdentifierTpl`. |
+| `commitIdentifier`  | `versionTpl`, `snapshot` tag templates                        | Rendered commit identifier                                                                                                                                                              |
 
 ## Custom Filters
 
