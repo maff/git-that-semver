@@ -76,12 +76,13 @@ output:
 
 ### Top Level
 
-| Key          | Type                             | Default  | Description                                  |
-| ------------ | -------------------------------- | -------- | -------------------------------------------- |
-| `platform`   | `"auto" \| "github" \| "gitlab"` | `"auto"` | CI platform detection mode                   |
-| `defaults`   | `DefaultConfig`                  | `{}`     | Default settings inherited by all strategies |
-| `strategies` | `Record<string, StrategyConfig>` | `{}`     | Named version strategies (arbitrary names)   |
-| `output`     | `OutputConfig`                   | `{}`     | Output format and formatting options         |
+| Key          | Type                             | Default  | Description                                                            |
+| ------------ | -------------------------------- | -------- | ---------------------------------------------------------------------- |
+| `platform`   | `"auto" \| "github" \| "gitlab"` | `"auto"` | CI platform detection mode                                             |
+| `tagPrefix`  | `string`                         | `""`     | Only consider tags with this prefix; prefix is stripped before parsing |
+| `defaults`   | `DefaultConfig`                  | `{}`     | Default settings inherited by all strategies                           |
+| `strategies` | `Record<string, StrategyConfig>` | `{}`     | Named version strategies (arbitrary names)                             |
+| `output`     | `OutputConfig`                   | `{}`     | Output format and formatting options                                   |
 
 ### DefaultConfig
 
@@ -220,4 +221,33 @@ The path uses dot notation and maps directly to the config structure. For exampl
 -c output.env.prefix=MY_PREFIX_
 -c defaults.snapshot.defaultBranches='["main","develop"]'
 -c strategies.docker.tags.enabled=false
+```
+
+## Monorepo Support
+
+In monorepo setups where different packages are tagged with prefixed versions (e.g. `app-v1.0.0`, `lib-v2.1.0`), use the `tagPrefix` option to scope GTS to a specific package's tags:
+
+```yaml
+# git-that-semver.yaml for the "app" package
+tagPrefix: "app-"
+
+strategies:
+  docker:
+    enabled: true
+```
+
+With `tagPrefix: "app-"`:
+
+- Only tags starting with `app-` are considered (e.g. `app-v1.0.0`, `app-v1.1.0`)
+- Tags for other packages (e.g. `lib-v2.0.0`) are ignored
+- The prefix is stripped before parsing — `app-v1.0.0` becomes `v1.0.0`, which resolves to semver `1.0.0`
+- All version flags (`isHighest*`, `previousSemVerVersion`, etc.) are scoped to matching tags
+- If the current git tag doesn't match the prefix, the build is treated as a snapshot
+
+Each package in the monorepo uses its own `git-that-semver.yaml` (or `-f` path) with a different `tagPrefix`.
+
+You can also set the prefix via CLI override:
+
+```shell
+git-that-semver -c tagPrefix=app-
 ```
