@@ -59,7 +59,6 @@ const program = new Command("git-that-semver")
     writeErr: (str) =>
       process.stderr.write(`${style.red.bold("[ERROR]")} ${str}`),
   })
-  .allowExcessArguments(true) // TODO revisit why this is needed after the commander 13 upgrade
   .parse();
 
 logger.setLevel(LogLevel[program.opts().logLevel]);
