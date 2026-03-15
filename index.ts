@@ -130,8 +130,8 @@ try {
   );
   const manualOpts = hasManualOpts
     ? {
-        sha: opts.commitSha!,
-        refName: opts.refName!,
+        sha: opts.commitSha ?? "",
+        refName: opts.refName ?? "",
         tag: opts.gitTag,
         changeRequestId: opts.changeRequestId,
       }
