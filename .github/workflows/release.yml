@@ -40,14 +40,24 @@ jobs:
 
       - name: Create GitHub Release
         run: |
+          TAG="${{ github.ref_name }}"
+
           PRERELEASE_FLAG=""
           if [ "${{ steps.release-type.outputs.prerelease }}" = "true" ]; then
             PRERELEASE_FLAG="--prerelease"
           fi
 
-          gh release create "${{ github.ref_name }}" \
+          NOTES_START_FLAG=""
+          PREV_TAG=$(git tag -l 'v*.*.*' --merged HEAD --sort=-v:refname \
+            | grep -v "^${TAG}$" | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            NOTES_START_FLAG="--notes-start-tag $PREV_TAG"
+          fi
+
+          gh release create "$TAG" \
             --generate-notes \
-            $PRERELEASE_FLAG
+            $PRERELEASE_FLAG \
+            $NOTES_START_FLAG
         env:
           GH_TOKEN: ${{ github.token }}
 
