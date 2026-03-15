@@ -10,8 +10,12 @@ import { resolvePlatform } from "./src/platform";
 import { resolveVersion } from "./src/version/versionResolver";
 import { resolveStrategies } from "./src/version/versionStrategy";
 
+declare const __GTS_VERSION__: string;
+const gtsVersion =
+  typeof __GTS_VERSION__ !== "undefined" ? __GTS_VERSION__ : "dev";
+
 const program = new Command("git-that-semver")
-  .version("0.0.1")
+  .version(gtsVersion)
   .addOption(
     new Option(
       "-f, --config-file <config-file>",

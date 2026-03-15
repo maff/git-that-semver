@@ -2,13 +2,14 @@
 FROM oven/bun:1-alpine AS compile
 
 ENV HUSKY=0
+ARG GTS_VERSION=dev
 
 RUN mkdir -p /temp/compile
 WORKDIR /temp/compile
 
 COPY . .
 RUN bun install --frozen-lockfile
-RUN bun build ./index.ts --compile --outfile git-that-semver
+RUN bun build ./index.ts --compile --outfile git-that-semver --define __GTS_VERSION__="\"${GTS_VERSION}\""
 
 # release stage
 FROM alpine:3 AS release
