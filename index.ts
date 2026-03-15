@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import { resolveConfig } from "./src/config";
 import { style, LogLevel, logger } from "./src/logging";
 import { resolveOutputPrinter } from "./src/output";
-import { resolvePlatform } from "./src/platform";
+import { allPlatformTypes, resolvePlatform } from "./src/platform";
 import { resolveVersion } from "./src/version/versionResolver";
 import { resolveStrategies } from "./src/version/versionStrategy";
 
@@ -54,6 +54,32 @@ const program = new Command("git-that-semver")
       .default("env")
       .choices(["env", "json", "yaml"] as const),
   )
+  .addOption(
+    new Option("--platform <platform>", "Platform type")
+      .env("GTS_PLATFORM")
+      .choices(["auto", ...allPlatformTypes] as const),
+  )
+  .addOption(
+    new Option("--commit-sha <sha>", "Commit SHA (manual platform)").env(
+      "GTS_COMMIT_SHA",
+    ),
+  )
+  .addOption(
+    new Option("--ref-name <name>", "Branch/tag name (manual platform)").env(
+      "GTS_REF_NAME",
+    ),
+  )
+  .addOption(
+    new Option("--git-tag <tag>", "Git tag (manual platform)").env(
+      "GTS_GIT_TAG",
+    ),
+  )
+  .addOption(
+    new Option(
+      "--change-request-id <id>",
+      "Change request identifier (manual platform)",
+    ).env("GTS_CHANGE_REQUEST_ID"),
+  )
   .option("--dump-config", "Dump configuration for debug purposes")
   .configureOutput({
     writeErr: (str) =>
@@ -93,7 +119,25 @@ try {
     process.exit(0);
   }
 
-  const platform = resolvePlatform(config.platform);
+  const opts = program.opts();
+  const platformType = opts.platform ?? config.platform;
+
+  const hasManualOpts = !!(
+    opts.commitSha ||
+    opts.refName ||
+    opts.gitTag ||
+    opts.changeRequestId
+  );
+  const manualOpts = hasManualOpts
+    ? {
+        sha: opts.commitSha ?? "",
+        refName: opts.refName ?? "",
+        tag: opts.gitTag,
+        changeRequestId: opts.changeRequestId,
+      }
+    : undefined;
+
+  const platform = resolvePlatform(platformType, manualOpts);
   const strategies = resolveStrategies(config.strategies);
   const result = resolveVersion(config, platform, strategies);
 

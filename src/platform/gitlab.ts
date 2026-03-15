@@ -1,7 +1,7 @@
-import type { Platform } from "../platform";
+import type { AutoDetectablePlatform } from "../platform";
 import { env, requiredEnv } from "../util/env";
 
-export class GitLabPlatform implements Platform {
+export class GitLabPlatform implements AutoDetectablePlatform {
   type = "gitlab";
 
   getGitTag(): string | undefined {

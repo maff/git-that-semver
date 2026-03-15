@@ -20,7 +20,6 @@ mock.module("../util/git", () => ({
 function createMockPlatform(overrides: Partial<Platform> = {}): Platform {
   return {
     type: "test",
-    isSupported: () => true,
     getCommitSha: () => "abc123",
     getCommitRefName: () => "main",
     getGitTag: () => undefined,

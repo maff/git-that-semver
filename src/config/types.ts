@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { specificPlatformTypes } from "../platform";
+import { allPlatformTypes } from "../platform";
 
 export const FreeformProperties = z.record(z.string(), z.string());
 
@@ -55,7 +55,7 @@ export const OutputConfig = z.object({
 
 export const Config = z.object({
   defaults: DefaultConfig.prefault({}),
-  platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
+  platform: z.enum(["auto", ...allPlatformTypes]).default("auto"),
   tagPrefix: z.string().default(""),
   strategies: z.record(
     z

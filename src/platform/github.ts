@@ -1,7 +1,7 @@
-import type { Platform } from "../platform";
+import type { AutoDetectablePlatform } from "../platform";
 import { requiredEnv } from "../util/env";
 
-export class GitHubPlatform implements Platform {
+export class GitHubPlatform implements AutoDetectablePlatform {
   type = "github";
 
   getGitTag(): string | undefined {
