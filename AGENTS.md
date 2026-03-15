@@ -202,6 +202,8 @@ Uses LiquidJS. Templates are defined in config YAML (both defaults and per-strat
 
 **Test config override file**: `test/git-that-semver.overrides.yaml` demonstrates multi-strategy with custom prefix.
 
+**Test requirements**: All bugfixes and features must include tests. Error-path tests should assert on the specific error type and message, not just that an error was thrown.
+
 ## Conventions
 
 - **Runtime**: Bun. Prefer Bun APIs over Node.js equivalents.
