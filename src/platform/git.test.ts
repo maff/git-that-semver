@@ -1,4 +1,6 @@
-import { describe, expect, mock, test } from "bun:test";
+import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
+
+import { executeCommand as realExecuteCommand } from "../util/process";
 
 const mockExecuteCommand = mock();
 
@@ -7,6 +9,18 @@ mock.module("../util/process", () => ({
 }));
 
 const { GitPlatform } = await import("./git");
+
+afterEach(() => {
+  mockExecuteCommand.mockReset();
+});
+
+// Restore the real module after all tests in this file
+// to avoid poisoning other test files
+afterAll(() => {
+  mock.module("../util/process", () => ({
+    executeCommand: realExecuteCommand,
+  }));
+});
 
 describe("Git Platform", () => {
   const platform = new GitPlatform();

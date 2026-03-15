@@ -1,25 +1,34 @@
 import type { Platform } from "../platform";
-import { executeCommand } from "../util/process";
+import * as processUtil from "../util/process";
 
 export class GitPlatform implements Platform {
   type = "git";
 
   getCommitSha(): string {
-    return executeCommand(["git", "rev-parse", "HEAD"]);
+    return processUtil.executeCommand(["git", "rev-parse", "HEAD"]);
   }
 
   getCommitRefName(): string {
-    const branch = executeCommand(["git", "branch", "--show-current"]);
+    const branch = processUtil.executeCommand([
+      "git",
+      "branch",
+      "--show-current",
+    ]);
     if (branch.length > 0) {
       return branch;
     }
 
-    return executeCommand(["git", "rev-parse", "--abbrev-ref", "HEAD"]);
+    return processUtil.executeCommand([
+      "git",
+      "rev-parse",
+      "--abbrev-ref",
+      "HEAD",
+    ]);
   }
 
   getGitTag(): string | undefined {
     try {
-      return executeCommand([
+      return processUtil.executeCommand([
         "git",
         "describe",
         "--tags",
