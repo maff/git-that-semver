@@ -56,7 +56,15 @@ export const OutputConfig = z.object({
 export const Config = z.object({
   defaults: DefaultConfig.prefault({}),
   platform: z.enum(["auto", ...specificPlatformTypes]).default("auto"),
-  strategies: z.record(z.string(), StrategyConfig),
+  strategies: z.record(
+    z
+      .string()
+      .regex(
+        /^[a-zA-Z][a-zA-Z0-9_]*$/,
+        "Strategy names must start with a letter and contain only letters, digits, and underscores (they become environment variable names)",
+      ),
+    StrategyConfig,
+  ),
   output: OutputConfig,
 });
 

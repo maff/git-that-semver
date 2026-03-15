@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import * as path from "path";
+import { ZodError } from "zod";
 
 import { resolveConfig } from "./index";
 
@@ -136,6 +137,36 @@ describe("resolveConfig", () => {
           undefined,
         ),
       ).rejects.toThrow();
+    });
+
+    it("should reject strategy names with invalid characters", async () => {
+      try {
+        await resolveConfig(
+          "/nonexistent/path/git-that-semver.yaml",
+          ["my-strategy"],
+          [],
+          undefined,
+        );
+        expect.unreachable("should have thrown");
+      } catch (e) {
+        expect(e).toBeInstanceOf(ZodError);
+        const zodError = e as ZodError;
+        expect(zodError.issues).toHaveLength(1);
+        expect(zodError.issues[0].path).toEqual(["strategies", "my-strategy"]);
+        expect(zodError.issues[0].issues[0].message).toContain(
+          "Strategy names must start with a letter",
+        );
+      }
+    });
+
+    it("should accept strategy names with letters, digits, and underscores", async () => {
+      const config = await resolveConfig(
+        "/nonexistent/path/git-that-semver.yaml",
+        ["my_strategy"],
+        [],
+        undefined,
+      );
+      expect(config.strategies.my_strategy).toBeDefined();
     });
   });
 });
