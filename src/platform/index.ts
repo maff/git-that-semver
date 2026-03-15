@@ -10,7 +10,7 @@ export interface Platform {
   getCommitSha(): string;
   getCommitRefName(): string;
   getChangeRequestIdentifier(): string | undefined;
-  getGitTag(): string | undefined;
+  getGitTag(): string;
 }
 
 export const platforms = Object.fromEntries(

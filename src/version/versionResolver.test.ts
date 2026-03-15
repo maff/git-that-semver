@@ -23,7 +23,7 @@ function createMockPlatform(overrides: Partial<Platform> = {}): Platform {
     isSupported: () => true,
     getCommitSha: () => "abc123",
     getCommitRefName: () => "main",
-    getGitTag: () => undefined,
+    getGitTag: () => "",
     getChangeRequestIdentifier: () => undefined,
     ...overrides,
   };
