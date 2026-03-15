@@ -4,8 +4,9 @@ import { env, requiredEnv } from "../util/env";
 export class GitLabPlatform implements Platform {
   type = "gitlab";
 
-  getGitTag(): string {
-    return env("CI_COMMIT_TAG", "");
+  getGitTag(): string | undefined {
+    const tag = env("CI_COMMIT_TAG", "");
+    return tag.length > 0 ? tag : undefined;
   }
 
   getCommitSha(): string {

@@ -37,7 +37,7 @@ export type CommitInfo = {
   refName: string;
   refNameSlug: string;
   changeRequestIdentifier: string | undefined;
-  tag: string;
+  tag: string | undefined;
   dateTime: string;
 } & PreviousSemVerVersions;
 

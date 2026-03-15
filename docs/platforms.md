@@ -132,7 +132,7 @@ interface Platform {
   isSupported(): boolean;
   getCommitSha(): string;
   getCommitRefName(): string;
-  getGitTag(): string;
+  getGitTag(): string | undefined;
   getChangeRequestIdentifier(): string | undefined;
 }
 ```

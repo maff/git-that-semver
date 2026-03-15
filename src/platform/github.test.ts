@@ -50,9 +50,9 @@ describe("GitHub Platform", () => {
     expect(platform.getGitTag()).toBe("v1.0.0");
   });
 
-  test("returns empty string for non-tag refs", () => {
+  test("returns undefined for non-tag refs", () => {
     process.env["GITHUB_REF_TYPE"] = "branch";
-    expect(platform.getGitTag()).toBe("");
+    expect(platform.getGitTag()).toBeUndefined();
   });
 
   test("returns PR identifier for pull requests", () => {

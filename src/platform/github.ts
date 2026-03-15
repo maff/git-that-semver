@@ -4,12 +4,12 @@ import { requiredEnv } from "../util/env";
 export class GitHubPlatform implements Platform {
   type = "github";
 
-  getGitTag(): string {
+  getGitTag(): string | undefined {
     if (requiredEnv("GITHUB_REF_TYPE") === "tag") {
       return requiredEnv("GITHUB_REF_NAME");
     }
 
-    return "";
+    return undefined;
   }
 
   getCommitSha(): string {

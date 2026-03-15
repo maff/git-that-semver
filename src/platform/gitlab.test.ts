@@ -42,8 +42,8 @@ describe("GitLab Platform", () => {
     expect(platform.getGitTag()).toBe("v1.0.0");
   });
 
-  test("returns empty string when no tag is present", () => {
-    expect(platform.getGitTag()).toBe("");
+  test("returns undefined when no tag is present", () => {
+    expect(platform.getGitTag()).toBeUndefined();
   });
 
   test("returns MR identifier for merge requests", () => {
