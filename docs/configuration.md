@@ -19,7 +19,10 @@ platform: auto
 defaults:
   branchPrefixes:
     - feature/
+    - fix/
     - bugfix/
+    - hotfix/
+    - chore/
     - tech/
 
   snapshot:
