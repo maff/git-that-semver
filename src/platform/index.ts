@@ -36,10 +36,11 @@ export function resolvePlatform(
 ): Platform {
   if (platformType === "auto") {
     if (manualOpts) {
+      const platform = new ManualPlatform(manualOpts);
       platformLogger.info(
         `Resolved platform: ${style.white.bold("manual")} (manual options provided)`,
       );
-      return new ManualPlatform(manualOpts);
+      return platform;
     }
     return resolveAutoPlatform();
   }
@@ -53,8 +54,9 @@ export function resolvePlatform(
     if (!manualOpts) {
       throw new Error(MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR);
     }
+    const platform = new ManualPlatform(manualOpts);
     platformLogger.info(`Resolved platform: ${style.white.bold("manual")}`);
-    return new ManualPlatform(manualOpts);
+    return platform;
   }
 
   const platform = autoDetectablePlatforms[platformType];
