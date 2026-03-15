@@ -169,6 +169,23 @@ describe("VersionStrategy", () => {
       expect(result.tagName).toBe("build-123");
       expect(result.static).toBe("plain-value");
     });
+
+    it("should not allow properties to overwrite version or tags", () => {
+      const config = createStrategyConfig({
+        properties: {
+          version: "overwritten",
+          tags: "overwritten",
+        },
+      });
+      const strategy = new VersionStrategy("test", config);
+      const result = strategy.taggedVersionResult(
+        createContext({ isTaggedVersion: true }),
+        createCommitInfo({ tag: "build-123" }),
+        "build-123",
+      );
+      expect(result.version).toBe("build-123");
+      expect(result.tags).toContain("build-123");
+    });
   });
 
   describe("semVerVersionResult", () => {

@@ -33,9 +33,9 @@ export class VersionStrategy {
     };
 
     return {
+      ...this.renderProperties(tplContext),
       version: tag,
       tags: this.uniqueTags(this.config.tags.tagged, tplContext),
-      ...this.renderProperties(tplContext),
     };
   }
 
@@ -53,9 +53,9 @@ export class VersionStrategy {
     };
 
     return {
+      ...this.renderProperties(tplContext),
       version: stringVersion,
       tags: this.uniqueTags(this.config.tags.semVer, tplContext),
-      ...this.renderProperties(tplContext),
     };
   }
 
@@ -113,9 +113,9 @@ export class VersionStrategy {
     };
 
     return {
+      ...this.renderProperties(snapshotTplContext),
       version: version,
       tags: this.uniqueTags(this.config.tags.snapshot, snapshotTplContext),
-      ...this.renderProperties(snapshotTplContext),
     };
   }
 
@@ -131,7 +131,9 @@ export class VersionStrategy {
     };
   }
 
-  private renderProperties(context: any): Record<string, string> {
+  private renderProperties(
+    context: Record<string, unknown>,
+  ): Record<string, string> {
     return Object.fromEntries(
       Object.entries(this.config.properties).map(([key, value]) => [
         key,
