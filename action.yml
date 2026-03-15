@@ -13,6 +13,9 @@ inputs:
   yaml:
     description: "Writes YAML result to GTS_YAML output if enabled"
     default: "false"
+  args:
+    description: "Additional CLI arguments (e.g. -e npm -e java -c ...)"
+    default: ""
 outputs:
   GTS_JSON:
     description: "git-that-semver result in JSON format (if enabled)"

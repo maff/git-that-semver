@@ -92,6 +92,7 @@ jobs:
             -e INPUT_ENV=true \
             -e INPUT_JSON=false \
             -e INPUT_YAML=false \
+            -e INPUT_ARGS="" \
             -e GITHUB_ACTIONS=true \
             -e GITHUB_EVENT_NAME=push \
             -e GITHUB_REF_TYPE=branch \
@@ -114,6 +115,33 @@ jobs:
 
           rm -f .gts-output .gts-summary
 
+      - name: Test action entrypoint - env output with args
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            -e CI=true \
+            -e INPUT_ENV=true \
+            -e INPUT_JSON=false \
+            -e INPUT_YAML=false \
+            -e INPUT_ARGS="-e npm" \
+            -e GITHUB_ACTIONS=true \
+            -e GITHUB_EVENT_NAME=push \
+            -e GITHUB_REF_TYPE=branch \
+            -e GITHUB_REF_NAME=main \
+            -e GITHUB_SHA=$(git rev-parse HEAD) \
+            -e GITHUB_OUTPUT=/workspace/.gts-output \
+            -e GITHUB_STEP_SUMMARY=/workspace/.gts-summary \
+            --entrypoint /entrypoint-action.sh \
+            git-that-semver-test
+
+          echo "--- Validating args are forwarded ---"
+          grep -q "GTS_DOCKER_VERSION=" .gts-output
+          grep -q "GTS_NPM_VERSION=" .gts-output
+          echo "args forwarding OK"
+
+          rm -f .gts-output .gts-summary
+
       - name: Test action entrypoint - JSON output
         run: |
           docker run --rm \
@@ -123,6 +151,7 @@ jobs:
             -e INPUT_ENV=false \
             -e INPUT_JSON=true \
             -e INPUT_YAML=false \
+            -e INPUT_ARGS="" \
             -e GITHUB_ACTIONS=true \
             -e GITHUB_EVENT_NAME=push \
             -e GITHUB_REF_TYPE=branch \
@@ -148,6 +177,7 @@ jobs:
             -e INPUT_ENV=false \
             -e INPUT_JSON=false \
             -e INPUT_YAML=true \
+            -e INPUT_ARGS="" \
             -e GITHUB_ACTIONS=true \
             -e GITHUB_EVENT_NAME=push \
             -e GITHUB_REF_TYPE=branch \
