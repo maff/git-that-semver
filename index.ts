@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import { resolveConfig } from "./src/config";
 import { style, LogLevel, logger } from "./src/logging";
 import { resolveOutputPrinter } from "./src/output";
-import { resolvePlatform } from "./src/platform";
+import { allPlatformTypes, resolvePlatform } from "./src/platform";
 import { resolveVersion } from "./src/version/versionResolver";
 import { resolveStrategies } from "./src/version/versionStrategy";
 
@@ -57,7 +57,7 @@ const program = new Command("git-that-semver")
   .addOption(
     new Option("--platform <platform>", "Platform type")
       .env("GTS_PLATFORM")
-      .choices(["auto", "github", "gitlab", "git", "manual"] as const),
+      .choices(["auto", ...allPlatformTypes] as const),
   )
   .addOption(
     new Option("--commit-sha <sha>", "Commit SHA (manual platform)").env(

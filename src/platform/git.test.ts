@@ -1,6 +1,12 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 
-import { GitPlatform } from "./git";
+const mockExecuteCommand = mock();
+
+mock.module("../util/process", () => ({
+  executeCommand: mockExecuteCommand,
+}));
+
+const { GitPlatform } = await import("./git");
 
 describe("Git Platform", () => {
   const platform = new GitPlatform();
@@ -9,19 +15,65 @@ describe("Git Platform", () => {
     expect(platform.type).toBe("git");
   });
 
-  test("returns commit SHA as 40-char hex string", () => {
-    const sha = platform.getCommitSha();
-    expect(sha).toMatch(/^[0-9a-f]{40}$/);
+  test("returns commit SHA from git rev-parse HEAD", () => {
+    mockExecuteCommand.mockReturnValueOnce(
+      "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    );
+
+    expect(platform.getCommitSha()).toBe(
+      "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    );
+    expect(mockExecuteCommand).toHaveBeenLastCalledWith([
+      "git",
+      "rev-parse",
+      "HEAD",
+    ]);
   });
 
-  test("returns current branch name", () => {
-    const refName = platform.getCommitRefName();
-    expect(refName.length).toBeGreaterThan(0);
+  test("returns branch name from git branch --show-current", () => {
+    mockExecuteCommand.mockReturnValueOnce("feature/my-branch");
+
+    expect(platform.getCommitRefName()).toBe("feature/my-branch");
+    expect(mockExecuteCommand).toHaveBeenLastCalledWith([
+      "git",
+      "branch",
+      "--show-current",
+    ]);
   });
 
-  test("returns string or undefined for git tag", () => {
-    const tag = platform.getGitTag();
-    expect(tag === undefined || typeof tag === "string").toBe(true);
+  test("falls back to git rev-parse --abbrev-ref HEAD on detached HEAD", () => {
+    mockExecuteCommand
+      .mockReturnValueOnce("") // git branch --show-current returns empty
+      .mockReturnValueOnce("HEAD"); // git rev-parse --abbrev-ref HEAD
+
+    expect(platform.getCommitRefName()).toBe("HEAD");
+    expect(mockExecuteCommand).toHaveBeenLastCalledWith([
+      "git",
+      "rev-parse",
+      "--abbrev-ref",
+      "HEAD",
+    ]);
+  });
+
+  test("returns tag from git describe --tags --exact-match", () => {
+    mockExecuteCommand.mockReturnValueOnce("v1.2.3");
+
+    expect(platform.getGitTag()).toBe("v1.2.3");
+    expect(mockExecuteCommand).toHaveBeenLastCalledWith([
+      "git",
+      "describe",
+      "--tags",
+      "--exact-match",
+      "HEAD",
+    ]);
+  });
+
+  test("returns undefined when HEAD is not tagged", () => {
+    mockExecuteCommand.mockImplementationOnce(() => {
+      throw new Error("fatal: no tag exactly matches");
+    });
+
+    expect(platform.getGitTag()).toBeUndefined();
   });
 
   test("always returns undefined for change request identifier", () => {

@@ -2,7 +2,11 @@ import { style, logger } from "../logging";
 import { GitPlatform } from "./git";
 import { GitHubPlatform } from "./github";
 import { GitLabPlatform } from "./gitlab";
-import { ManualPlatform, type ManualPlatformOptions } from "./manual";
+import {
+  MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR,
+  ManualPlatform,
+  type ManualPlatformOptions,
+} from "./manual";
 
 const platformLogger = logger.childLogger("platform");
 
@@ -47,9 +51,7 @@ export function resolvePlatform(
 
   if (platformType === "manual") {
     if (!manualOpts) {
-      throw new Error(
-        "Manual platform requires --commit-sha and --ref-name (or GTS_COMMIT_SHA and GTS_REF_NAME)",
-      );
+      throw new Error(MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR);
     }
     platformLogger.info(`Resolved platform: ${style.white.bold("manual")}`);
     return new ManualPlatform(manualOpts);

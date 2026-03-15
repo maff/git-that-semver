@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
-import { ManualPlatform } from "./manual";
+import {
+  MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR,
+  ManualPlatform,
+} from "./manual";
 
 describe("Manual Platform", () => {
   test("identifies as manual platform", () => {
@@ -68,9 +71,7 @@ describe("Manual Platform", () => {
           sha: "",
           refName: "main",
         }),
-    ).toThrow(
-      "Manual platform requires --commit-sha and --ref-name (or GTS_COMMIT_SHA and GTS_REF_NAME)",
-    );
+    ).toThrow(MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR);
   });
 
   test("throws when ref name is missing", () => {
@@ -80,8 +81,6 @@ describe("Manual Platform", () => {
           sha: "abc123",
           refName: "",
         }),
-    ).toThrow(
-      "Manual platform requires --commit-sha and --ref-name (or GTS_COMMIT_SHA and GTS_REF_NAME)",
-    );
+    ).toThrow(MANUAL_PLATFORM_REQUIRED_OPTIONS_ERROR);
   });
 });
