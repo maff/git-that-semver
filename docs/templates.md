@@ -191,4 +191,5 @@ strategies:
         - "{% if versionInfo.isHighestSemVerReleaseVersion %}stable{% endif %}"
     properties:
       chartName: my-app
+      previousVersion: "{{ commitInfo.previousSemVerReleaseVersion }}"
 ```

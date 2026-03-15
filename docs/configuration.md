@@ -87,12 +87,12 @@ output:
 
 Settings defined here are inherited by all strategies via deep merge (except `branchPrefixes`, which is only used at the top level).
 
-| Key              | Type                     | Default | Description                                              |
-| ---------------- | ------------------------ | ------- | -------------------------------------------------------- |
-| `branchPrefixes` | `string[]`               | `[]`    | Prefixes stripped from branch names before slugification |
-| `snapshot`       | `SnapshotConfig`         | `{}`    | Snapshot version generation settings                     |
-| `tags`           | `TagsConfig`             | `{}`    | Tag generation settings                                  |
-| `properties`     | `Record<string, string>` | `{}`    | Custom key-value pairs included in output                |
+| Key              | Type                     | Default | Description                                                                             |
+| ---------------- | ------------------------ | ------- | --------------------------------------------------------------------------------------- |
+| `branchPrefixes` | `string[]`               | `[]`    | Prefixes stripped from branch names before slugification                                |
+| `snapshot`       | `SnapshotConfig`         | `{}`    | Snapshot version generation settings                                                    |
+| `tags`           | `TagsConfig`             | `{}`    | Tag generation settings                                                                 |
+| `properties`     | `Record<string, string>` | `{}`    | Custom key-value pairs included in output (supports [LiquidJS templates](templates.md)) |
 
 ### SnapshotConfig
 
@@ -125,12 +125,12 @@ Each entry is a LiquidJS template. Empty results are filtered out, and duplicate
 
 Each strategy is an independent configuration that produces its own version string and tags. Strategies inherit from `defaults` via deep merge.
 
-| Key          | Type                     | Default | Description                                    |
-| ------------ | ------------------------ | ------- | ---------------------------------------------- |
-| `enabled`    | `boolean`                | `true`  | Whether this strategy is active                |
-| `snapshot`   | `SnapshotConfig`         | `{}`    | Snapshot settings (merged with defaults)       |
-| `tags`       | `TagsConfig`             | `{}`    | Tag generation settings (merged with defaults) |
-| `properties` | `Record<string, string>` | `{}`    | Custom key-value pairs included in output      |
+| Key          | Type                     | Default | Description                                                                             |
+| ------------ | ------------------------ | ------- | --------------------------------------------------------------------------------------- |
+| `enabled`    | `boolean`                | `true`  | Whether this strategy is active                                                         |
+| `snapshot`   | `SnapshotConfig`         | `{}`    | Snapshot settings (merged with defaults)                                                |
+| `tags`       | `TagsConfig`             | `{}`    | Tag generation settings (merged with defaults)                                          |
+| `properties` | `Record<string, string>` | `{}`    | Custom key-value pairs included in output (supports [LiquidJS templates](templates.md)) |
 
 ### OutputConfig
 

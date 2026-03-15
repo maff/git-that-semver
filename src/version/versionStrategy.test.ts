@@ -150,6 +150,25 @@ describe("VersionStrategy", () => {
       );
       expect(result.customProp).toBe("value");
     });
+
+    it("should render template expressions in properties", () => {
+      const config = createStrategyConfig({
+        properties: {
+          commitSha: "{{ commitInfo.sha }}",
+          tagName: "{{ version }}",
+          static: "plain-value",
+        },
+      });
+      const strategy = new VersionStrategy("test", config);
+      const result = strategy.taggedVersionResult(
+        createContext({ isTaggedVersion: true }),
+        createCommitInfo({ sha: "abc123def456", tag: "build-123" }),
+        "build-123",
+      );
+      expect(result.commitSha).toBe("abc123def456");
+      expect(result.tagName).toBe("build-123");
+      expect(result.static).toBe("plain-value");
+    });
   });
 
   describe("semVerVersionResult", () => {
@@ -162,6 +181,24 @@ describe("VersionStrategy", () => {
         version,
       );
       expect(result.version).toBe("1.2.3");
+    });
+
+    it("should render template expressions in properties with semVer context", () => {
+      const config = createStrategyConfig({
+        properties: {
+          majorVersion: "{{ semVer.major }}",
+          previousRelease: "{{ commitInfo.previousSemVerReleaseVersion }}",
+        },
+      });
+      const strategy = new VersionStrategy("test", config);
+      const version = semver.parse("2.3.0")!;
+      const result = strategy.semVerVersionResult(
+        createContext({ isSemVerVersion: true }),
+        createCommitInfo({ tag: "v2.3.0" }),
+        version,
+      );
+      expect(result.majorVersion).toBe("2");
+      expect(result.previousRelease).toBe("1.0.0");
     });
 
     it("should make semVer context available in tag templates", () => {
@@ -289,6 +326,23 @@ describe("VersionStrategy", () => {
         createCommitInfo(),
       );
       expect(result.version).toEndWith("-SNAPSHOT");
+    });
+
+    it("should render template expressions in properties with snapshot context", () => {
+      const config = createStrategyConfig({
+        properties: {
+          baseVersion:
+            "{{ commitInfo.previousSemVerReleaseVersion | semver_inc: 'minor' }}",
+          snapshotVersion: "{{ version }}",
+        },
+      });
+      const strategy = new VersionStrategy("test", config);
+      const result = strategy.snapshotVersionResult(
+        createContext({ isSnapshotVersion: true }),
+        createCommitInfo(),
+      );
+      expect(result.baseVersion).toBe("1.1.0");
+      expect(result.snapshotVersion).toBe("1.0.0-20240101120000.abc123def456");
     });
   });
 });
