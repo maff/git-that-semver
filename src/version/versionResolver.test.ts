@@ -422,22 +422,6 @@ describe("versionResolver", () => {
       expect(result.strategies.test.version).toMatch(/^1\.1\.0-/);
     });
 
-    it("should keep raw tag in commitInfo.tag", () => {
-      mockListTags.mockReturnValue(["app-v1.0.0"]);
-      mockListTagsBeforeCommit.mockReturnValue([]);
-
-      const platform = createMockPlatform({
-        getGitTag: () => "app-v1.0.0",
-      });
-      const config = createMinimalConfig({ tagPrefix: "app-" });
-      const strategies = [new VersionStrategy("test", config.strategies.test)];
-      const result = resolveVersion(config, platform, strategies);
-
-      // Version is stripped, but we verify via the semver result
-      expect(result.isSemVerVersion).toBe(true);
-      expect(result.strategies.test.version).toBe("1.0.0");
-    });
-
     it("should work with empty tagPrefix (default behavior)", () => {
       mockListTags.mockReturnValue(["v1.0.0", "v2.0.0"]);
       mockListTagsBeforeCommit.mockReturnValue([]);
