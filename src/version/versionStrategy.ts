@@ -27,13 +27,15 @@ export class VersionStrategy {
     commitInfo: CommitInfo,
     tag: string,
   ): StrategyVersion {
-    return {
+    const tplContext = {
+      ...this.templateContext(context, commitInfo),
       version: tag,
-      tags: this.uniqueTags(this.config.tags.tagged, {
-        ...this.templateContext(context, commitInfo),
-        version: tag,
-      }),
-      ...this.config.properties,
+    };
+
+    return {
+      ...this.renderProperties(tplContext),
+      version: tag,
+      tags: this.uniqueTags(this.config.tags.tagged, tplContext),
     };
   }
 
@@ -44,14 +46,16 @@ export class VersionStrategy {
   ): StrategyVersion {
     const stringVersion = semVerVersionString(version);
 
-    return {
+    const tplContext = {
+      ...this.templateContext(context, commitInfo),
       version: stringVersion,
-      tags: this.uniqueTags(this.config.tags.semVer, {
-        ...this.templateContext(context, commitInfo),
-        version: stringVersion,
-        semVer: version,
-      }),
-      ...this.config.properties,
+      semVer: version,
+    };
+
+    return {
+      ...this.renderProperties(tplContext),
+      version: stringVersion,
+      tags: this.uniqueTags(this.config.tags.semVer, tplContext),
     };
   }
 
@@ -99,17 +103,19 @@ export class VersionStrategy {
       },
     );
 
+    const snapshotTplContext = {
+      ...templateContext,
+      version,
+      prefix,
+      suffix,
+      branchIdentifier,
+      commitIdentifier,
+    };
+
     return {
+      ...this.renderProperties(snapshotTplContext),
       version: version,
-      tags: this.uniqueTags(this.config.tags.snapshot, {
-        ...templateContext,
-        version,
-        prefix,
-        suffix,
-        branchIdentifier,
-        commitIdentifier,
-      }),
-      ...this.config.properties,
+      tags: this.uniqueTags(this.config.tags.snapshot, snapshotTplContext),
     };
   }
 
@@ -123,6 +129,17 @@ export class VersionStrategy {
       versionInfo: context.versionInfo,
       env: process.env,
     };
+  }
+
+  private renderProperties(
+    context: Record<string, unknown>,
+  ): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(this.config.properties).map(([key, value]) => [
+        key,
+        templateEngine.parseAndRenderSync(value, context),
+      ]),
+    );
   }
 
   private uniqueTags(templates: string[], context: any) {
