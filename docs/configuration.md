@@ -134,13 +134,13 @@ Each strategy is an independent configuration that produces its own version stri
 
 ### OutputConfig
 
-| Key                         | Type                        | Default | Description                                     |
-| --------------------------- | --------------------------- | ------- | ----------------------------------------------- |
-| `output.type`               | `"env" \| "json" \| "yaml"` | `"env"` | Output format                                   |
-| `output.env.prefix`         | `string`                    | `""`    | Prefix for environment variable names           |
-| `output.env.arrayDelimiter` | `string`                    | `" "`   | Delimiter for array values (e.g. tags)          |
-| `output.env.quoteArrays`    | `boolean`                   | `false` | Whether to quote array values containing spaces |
-| `output.json.indent`        | `number`                    | —       | JSON indentation (omit for compact output)      |
+| Key                         | Type                        | Default  | Description                                     |
+| --------------------------- | --------------------------- | -------- | ----------------------------------------------- |
+| `output.type`               | `"env" \| "json" \| "yaml"` | `"env"`  | Output format                                   |
+| `output.env.prefix`         | `string`                    | `"GTS_"` | Prefix for environment variable names           |
+| `output.env.arrayDelimiter` | `string`                    | `" "`    | Delimiter for array values (e.g. tags)          |
+| `output.env.quoteArrays`    | `boolean`                   | `false`  | Whether to quote array values containing spaces |
+| `output.json.indent`        | `number`                    | —        | JSON indentation (omit for compact output)      |
 
 ## Strategies
 

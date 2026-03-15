@@ -102,7 +102,7 @@ Removes non-alphanumeric characters from the start and end of a string.
 
 ### `semver_inc`
 
-Increments a semver version string. Accepts: `major`, `minor`, `patch`.
+Increments a semver version string. Accepts any semver release type such as `major`, `minor`, `patch` (delegates to the `semver` library).
 
 ```liquid
 {{ "1.2.3" | semver_inc: 'minor' }}
@@ -112,7 +112,7 @@ Increments a semver version string. Accepts: `major`, `minor`, `patch`.
 → "0.1.0"
 ```
 
-Note: `prerelease` is also accepted (delegates to the `semver` library) but behaves unexpectedly on non-prerelease versions — e.g. `"1.0.0" | semver_inc: 'prerelease'` produces `"1.0.1-0"`. Prefer `major`, `minor`, or `patch`.
+Note: `prerelease` behaves unexpectedly on non-prerelease versions — e.g. `"1.0.0" | semver_inc: 'prerelease'` produces `"1.0.1-0"`. Prefer `major`, `minor`, or `patch` for most use cases.
 
 ## Examples
 
