@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "@commander-js/extra-typings": "^14.0.0",
+    "@commander-js/extra-typings": "^15.0.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/bun": "^1.2.19",
     "@types/lodash-es": "^4.17.12",
